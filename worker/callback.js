@@ -1,8 +1,8 @@
 // Anmeldung der Redaktion, Schritt 2: GitHub schickt den Besucher hierher zurück.
 // Das Zugriffstoken wird nur an das Redaktionssystem auf derselben Adresse übergeben.
-const seite = (status, inhalt) =>
+const seite = (status, inhalt, nonce = crypto.randomUUID().replaceAll('-', '')) =>
   new Response(
-    `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Anmeldung</title></head><body><p>Anmeldung wird abgeschlossen …</p><script>
+    `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Anmeldung</title></head><body><p>Anmeldung wird abgeschlossen …</p><script nonce="${nonce}">
 (() => {
   const nachricht = 'authorization:github:${status}:' + ${JSON.stringify(JSON.stringify(inhalt))};
   if (!window.opener) { document.body.textContent = 'Dieses Fenster kann geschlossen werden.'; return; }
@@ -17,6 +17,8 @@ const seite = (status, inhalt) =>
       headers: {
         'content-type': 'text/html; charset=utf-8',
         'cache-control': 'no-store',
+        // nur dieses eine Skript darf laufen
+        'content-security-policy': `default-src 'none'; script-src 'nonce-${nonce}'; frame-ancestors 'none'`,
         'set-cookie': 'fmc_oauth=; HttpOnly; Secure; SameSite=Lax; Path=/api; Max-Age=0',
       },
     },

@@ -1,0 +1,16 @@
+# Prüft einmal im Monat, ob es neue Versionen der verwendeten Bausteine gibt,
+# und schlägt die Aktualisierung als einen gesammelten Pull Request vor.
+# Sicherheitsrelevante Aktualisierungen kommen unabhängig davon sofort.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "Aktualisierung"
+    groups:
+      bausteine:
+        patterns: ["*"]
+        update-types: [minor, patch]

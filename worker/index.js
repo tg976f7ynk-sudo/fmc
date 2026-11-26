@@ -6,6 +6,22 @@ import * as kontakt from './kontakt.js';
 import * as auth from './auth.js';
 import * as callback from './callback.js';
 
+// Schutz-Header für alle Antworten der Serverfunktionen
+// (für die fertigen Seiten stehen sie in public/_headers)
+const SCHUTZ = {
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'no-referrer',
+  'strict-transport-security': 'max-age=31536000',
+  'x-frame-options': 'DENY',
+  'content-security-policy': "default-src 'none'; frame-ancestors 'none'",
+  'x-robots-tag': 'noindex',
+};
+function absichern(antwort) {
+  const neu = new Response(antwort.body, antwort);
+  for (const [name, wert] of Object.entries(SCHUTZ)) if (!neu.headers.has(name)) neu.headers.set(name, wert);
+  return neu;
+}
+
 const routen = { '/api/wetter': wetter, '/api/kontakt': kontakt, '/api/auth': auth, '/api/callback': callback };
 
 export default {
@@ -16,12 +32,12 @@ export default {
 
     const name = request.method === 'POST' ? 'onRequestPost' : request.method === 'GET' || request.method === 'HEAD' ? 'onRequestGet' : null;
     const funktion = name && modul[name];
-    if (!funktion) return new Response('Methode nicht erlaubt', { status: 405 });
+    if (!funktion) return absichern(new Response('Methode nicht erlaubt', { status: 405 }));
     try {
-      return await funktion({ request, env, ctx });
+      return absichern(await funktion({ request, env, ctx }));
     } catch (fehler) {
       console.error(url.pathname, fehler?.message);
-      return Response.json({ ok: false, fehler: 'Interner Fehler' }, { status: 500 });
+      return absichern(Response.json({ ok: false, fehler: 'Interner Fehler' }, { status: 500 }));
     }
   },
 };

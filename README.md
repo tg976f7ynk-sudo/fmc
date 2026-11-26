@@ -61,7 +61,7 @@ Beim Worker unter *Einstellungen → Variablen und Secrets* eintragen:
 
 | Name | Beispiel |
 | --- | --- |
-| `SMTP_HOST` | `smtp.strato.de` |
+| `SMTP_HOST` | `smtp.ionos.de` (die Domain und ihre Postfächer liegen bei IONOS) |
 | `SMTP_PORT` | `465` |
 | `SMTP_USER` | Adresse des Postfachs |
 | `SMTP_PASS` | Passwort des Postfachs (**Secret**) |
@@ -69,12 +69,45 @@ Beim Worker unter *Einstellungen → Variablen und Secrets* eintragen:
 
 Ohne diese Angaben zeigt das Formular einen Hinweis und verweist auf die E-Mail-Adresse.
 
+Am besten ein eigenes Postfach nur für das Formular anlegen, nicht das Postfach des Vorstands.
+
+**Sicherheitsprüfung (Captcha) einschalten:** Im Cloudflare-Dashboard unter *Turnstile* ein
+Widget anlegen (Modus „Managed“, als Hostnamen die Adresse der Seite eintragen) und beim
+Worker zwei weitere Einträge anlegen: `TURNSTILE_SITEKEY` (Site Key) und `TURNSTILE_SECRET`
+(Secret Key, als **Secret**). Sobald beide vorhanden sind, verlangt das Formular die Prüfung;
+für Besucher ist sie in der Regel unsichtbar.
+
 ### 5. Domain umstellen
 
 1. In `site.config.mjs` die Adresse auf `https://fmc-dietzenbach.org` ändern.
 2. Beim Worker unter *Einstellungen → Domains & Routen* die Domain hinzufügen. Dafür muss
-   die Domain über Cloudflare verwaltet werden (Nameserver beim bisherigen Anbieter umstellen).
+   die Domain über Cloudflare verwaltet werden: Nameserver bei IONOS auf Cloudflare umstellen
+   und vorher alle Mail-Einträge (MX, SPF, DMARC) in Cloudflare übernehmen, sonst kommen
+   keine E-Mails mehr an.
 3. In der GitHub-OAuth-App die beiden Adressen aus Schritt 3 auf die neue Domain ändern.
+4. Im Turnstile-Widget die neue Domain als Hostnamen ergänzen.
+5. In `wrangler.jsonc` `"workers_dev": false` setzen, damit die vorläufige Adresse abgeschaltet wird.
+
+## Sicherheit
+
+| Maßnahme | Wo |
+| --- | --- |
+| Content-Security-Policy, HSTS und weitere Schutz-Header für alle Seiten | `public/_headers` |
+| Schutz-Header für die Serverfunktionen | `worker/index.js` |
+| Kontaktformular: verstecktes Feld, Mindestzeit, höchstens 3 Nachrichten pro Minute je Besucher, optional Turnstile | `worker/kontakt.js`, `wrangler.jsonc` |
+| Monatliche Prüfung auf veraltete Bausteine (Dependabot) | `.github/dependabot.yml` |
+
+Das Redaktionssystem unter `/admin/` ist von der Content-Security-Policy ausgenommen, weil es
+direkt mit GitHub spricht. Geschützt ist es über die GitHub-Anmeldung: Schreiben kann nur, wer
+Schreibrecht auf dieses Repository hat.
+
+Wer neue fremde Dienste einbindet (z. B. einen anderen Videoanbieter), muss dessen Adresse in
+der Content-Security-Policy in `public/_headers` ergänzen, sonst blockiert der Browser sie.
+
+Noch offen und nicht im Repository lösbar: Zwei-Faktor-Anmeldung für GitHub, Cloudflare und
+IONOS, ein eigenes GitHub-Konto für die Redaktion, Abschalten der alten WordPress-Seite nach
+dem Umzug und die Sicherheitshinweise von GitHub (*Settings → Advanced Security →
+Dependabot alerts* einschalten).
 
 ## Lokal arbeiten
 

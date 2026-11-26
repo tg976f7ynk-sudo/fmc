@@ -13,6 +13,8 @@
     // nur /api/ läuft durch den Worker, alles andere wird direkt ausgeliefert
     "run_worker_first": ["/api/*"]
   },
+  // Kontaktformular: höchstens 3 Nachrichten pro Minute je Besucher
+  "ratelimits": [{ "name": "KONTAKT_LIMIT", "namespace_id": "20261126", "simple": { "limit": 3, "period": 60 } }],
   // im Dashboard eingetragene Variablen bei einer neuen Veröffentlichung behalten
   "keep_vars": true,
   "observability": { "enabled": true }

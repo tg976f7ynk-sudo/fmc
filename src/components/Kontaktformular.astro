@@ -12,6 +12,7 @@ import seite from '../data/einstellungen.json';
     <input type="checkbox" name="einwilligung" required />
     <span>Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verwendet werden. Näheres in der <a href="/datenschutz/">Datenschutzerklärung</a>.</span>
   </label>
+  <div data-pruefung></div>
   <div><button class="knopf" type="submit">Nachricht senden</button></div>
   <p class="hinweis" data-meldung role="status" hidden></p>
   <p class="quelle">Sie erreichen uns auch direkt per E-Mail: <a href={`mailto:${seite.email}`}>{seite.email}</a></p>
@@ -20,6 +21,47 @@ import seite from '../data/einstellungen.json';
 <script>
   const form = document.querySelector<HTMLFormElement>('#kontaktformular');
   const geladen = Date.now();
+  const FEHLER = 'Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.';
+
+  // ---- Sicherheitsprüfung (Cloudflare Turnstile). Sie wird erst geladen, wenn jemand
+  // das Formular benutzt, und nur, wenn sie für die Seite eingerichtet ist.
+  let aktiv = false;
+  let token = '';
+  let wartende: ((t: string) => void)[] = [];
+  let schutz: Promise<void> | null = null;
+  const ladeSchutz = () =>
+    (schutz ??= (async () => {
+      const info = await fetch('/api/kontakt').then((r) => r.json()).catch(() => ({}));
+      if (!info.turnstile || !form) return;
+      await new Promise<void>((fertig, fehler) => {
+        const s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.onload = () => fertig();
+        s.onerror = () => fehler(new Error('Sicherheitsprüfung nicht ladbar'));
+        document.head.append(s);
+      });
+      (window as any).turnstile.render(form.querySelector('[data-pruefung]'), {
+        sitekey: info.turnstile,
+        language: 'de',
+        appearance: 'interaction-only',
+        callback: (t: string) => {
+          token = t;
+          wartende.splice(0).forEach((w) => w(t));
+        },
+        'expired-callback': () => (token = ''),
+        'error-callback': () => (token = ''),
+      });
+      aktiv = true;
+    })().catch(() => {}));
+  const holeToken = () =>
+    token
+      ? Promise.resolve(token)
+      : new Promise<string>((fertig) => {
+          wartende.push(fertig);
+          setTimeout(() => fertig(''), 15000);
+        });
+  form?.addEventListener('focusin', ladeSchutz, { once: true });
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const meldung = form.querySelector<HTMLElement>('[data-meldung]')!;
@@ -36,21 +78,33 @@ import seite from '../data/einstellungen.json';
     knopf.disabled = true;
     knopf.textContent = 'Wird gesendet …';
     try {
-      const daten = Object.fromEntries(new FormData(form));
-      const antwort = await fetch(form.action, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...daten, dauer: Date.now() - geladen }),
-      });
-      const ergebnis = await antwort.json().catch(() => ({}));
-      if (antwort.ok && ergebnis.ok) {
-        form.reset();
-        zeige('Vielen Dank! Ihre Nachricht wurde gesendet. Wir melden uns so bald wie möglich.', true);
+      await ladeSchutz();
+      const turnstile = aktiv ? await holeToken() : '';
+      if (aktiv && !turnstile) {
+        zeige('Die Sicherheitsprüfung ist noch nicht abgeschlossen. Bitte bestätigen Sie sie und senden Sie erneut.', false);
       } else {
-        zeige(ergebnis.fehler || 'Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.', false);
+        const daten = Object.fromEntries(new FormData(form));
+        delete (daten as any)['cf-turnstile-response'];
+        const antwort = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ...daten, turnstile, dauer: Date.now() - geladen }),
+        });
+        const ergebnis = await antwort.json().catch(() => ({}));
+        if (antwort.ok && ergebnis.ok) {
+          form.reset();
+          zeige('Vielen Dank! Ihre Nachricht wurde gesendet. Wir melden uns so bald wie möglich.', true);
+        } else {
+          zeige(ergebnis.fehler || FEHLER, false);
+        }
+        // ein Token gilt nur einmal
+        if (aktiv) {
+          token = '';
+          (window as any).turnstile?.reset();
+        }
       }
     } catch {
-      zeige('Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.', false);
+      zeige(FEHLER, false);
     }
     knopf.disabled = false;
     knopf.textContent = 'Nachricht senden';

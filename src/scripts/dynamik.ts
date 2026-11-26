@@ -153,3 +153,46 @@ if (buehne) {
       .catch(() => tele.classList.add('offline'));
   }
 }
+
+// ---------- Countdown bis zum nächsten Termin
+const countdown = document.querySelector<HTMLElement>('[data-countdown]');
+if (countdown) {
+  const heute = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
+  const naechster = [...document.querySelectorAll<HTMLElement>('.termin[data-von]')]
+    .filter((t) => (t.dataset.bis ?? '') >= heute)
+    .sort((a, b) => a.dataset.von!.localeCompare(b.dataset.von!))[0];
+  if (naechster) {
+    const m = /(\d{1,2})(?::(\d{2}))?\s*(?:[–-]|Uhr)/.exec(naechster.dataset.zeit ?? '');
+    const [j, mo, t] = naechster.dataset.von!.split('-').map(Number);
+    // Startzeit in deutscher Ortszeit; ohne Uhrzeit zählt der Tagesbeginn
+    const ortszeit = new Date(Date.UTC(j, mo - 1, t, m ? Number(m[1]) : 0, m?.[2] ? Number(m[2]) : 0));
+    const versatz = (d: Date) => {
+      const berlin = new Date(d.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+      const utc = new Date(d.toLocaleString('en-US', { timeZone: 'UTC' }));
+      return berlin.getTime() - utc.getTime();
+    };
+    const ziel = new Date(ortszeit.getTime() - versatz(ortszeit));
+    countdown.querySelector('[data-cd-titel]')!.textContent = naechster.dataset.titel ?? '';
+    const feld = (n: string) => countdown.querySelector<HTMLElement>(`[data-cd="${n}"]`)!;
+    const stellen = () => {
+      let rest = Math.max(0, Math.floor((ziel.getTime() - Date.now()) / 1000));
+      if (rest === 0) {
+        countdown.classList.add('jetzt');
+        countdown.querySelector('.countdown-label')!.textContent = 'Läuft gerade';
+      }
+      const tage = Math.floor(rest / 86400); rest %= 86400;
+      feld('t').textContent = String(tage).padStart(2, '0');
+      feld('h').textContent = String(Math.floor(rest / 3600)).padStart(2, '0'); rest %= 3600;
+      feld('m').textContent = String(Math.floor(rest / 60)).padStart(2, '0');
+      feld('s').textContent = String(rest % 60).padStart(2, '0');
+    };
+    stellen();
+    setInterval(stellen, 1000);
+    countdown.hidden = false;
+  }
+}
+
+// ---------- Kalender abonnieren: webcal-Adresse öffnet die Kalender-App
+document.querySelectorAll<HTMLAnchorElement>('a[data-abo]').forEach((a) => {
+  a.href = new URL(a.getAttribute('href')!, location.href).href.replace(/^https?:/, 'webcal:');
+});

@@ -18,6 +18,9 @@ export const getStaticPaths = (async () => {
 const { beitrag, neuer, aelter } = Astro.props;
 const d = beitrag.data;
 const { Content } = await render(beitrag);
+const woerter = (beitrag.body ?? '').replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').split(/\s+/).filter(Boolean).length;
+const lesezeit = Math.max(1, Math.round(woerter / 200));
+const bilderzahl = ((beitrag.body ?? '').match(/!\[/g) ?? []).length + d.bilder.length;
 // Dateiname des Titelbilds (ohne Kennung und Endung), um es im Text nicht doppelt zu zeigen
 const titelStamm = d.titelbild?.src?.split('/').pop()?.split('?')[0].replace(/\.[A-Za-z0-9_-]{6,}(_[A-Za-z0-9]+)?\.\w+$/, '') ?? '';
 ---
@@ -32,6 +35,8 @@ const titelStamm = d.titelbild?.src?.split('/').pop()?.split('?')[0].replace(/\.
           <h1>{d.titel}</h1>
           <div class="meta">
             <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
+            <span>{lesezeit} Min. Lesezeit</span>
+            {bilderzahl > 0 && <span>{bilderzahl} {bilderzahl === 1 ? 'Bild' : 'Bilder'}</span>}
             {d.kategorien.map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
           </div>
         </div>
@@ -40,6 +45,8 @@ const titelStamm = d.titelbild?.src?.split('/').pop()?.split('?')[0].replace(/\.
       <Seitenkopf titel={d.titel} pfad={[{ titel: 'Aktuelles', link: '/aktuelles/' }]}>
         <div class="meta" style="margin-top:.8rem">
           <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
+            <span>{lesezeit} Min. Lesezeit</span>
+            {bilderzahl > 0 && <span>{bilderzahl} {bilderzahl === 1 ? 'Bild' : 'Bilder'}</span>}
           {d.kategorien.map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
         </div>
       </Seitenkopf>

@@ -27,6 +27,12 @@ const endung = (datei: string) => (datei.split('.').pop() ?? '').slice(0, 4);
       {art === 'kontakt' && <div class="box"><Kontaktformular /></div>}
       {art === 'anfahrt' && <Karte />}
       {art === 'termine' && <TerminListe modus="alle" />}
+      {art === 'termine' && (
+        <p class="kalender-links">
+          <a href="/termine.ics" download>Alle Termine als Kalenderdatei</a>
+          <a data-abo href="/termine.ics">Kalender abonnieren</a>
+        </p>
+      )}
       {art === 'wetter' && <div class="box"><Wetter ausfuehrlich /></div>}
       {
         art === 'downloads' && (

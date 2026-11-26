@@ -15,7 +15,7 @@ const bisText = (von: Date, bis?: Date | null) => (bis && isoTag(bis) > isoTag(v
     <ul class="termine" data-kommend>
       {
         termine.map((t) => (
-          <li class="termin" data-von={isoTag(t.data.datum)} data-bis={isoTag(t.data.ende ?? t.data.datum)}>
+          <li class="termin" data-von={isoTag(t.data.datum)} data-bis={isoTag(t.data.ende ?? t.data.datum)} data-zeit={t.data.uhrzeit ?? ""} data-titel={t.data.titel}>
             <span class="termin-datum">{kurz(t.data.datum)}</span>
             <span class="termin-zeit">{[bisText(t.data.datum, t.data.ende), t.data.uhrzeit].filter(Boolean).join(' · ')}</span>
             <span class="termin-was">

@@ -19,11 +19,15 @@
   --linie: #223650;
   --text: #e7edf5;
   --leise: #92a3b9;
-  --signal: #ff6a2b;
-  --signal-dunkel: #e5531a;
-  --gelb: #ffd21f;
+  /* Vereinsfarben aus dem Logo: Gelb (Kreis) und Blau (Jet) */
+  --signal: #ffd21f;
+  --signal-dunkel: #f2bd00;
+  --auf-signal: #0b1422;
+  --jet: #3d86e0;
+  --jet-hell: #7fb6ff;
+  --gelb: #ffe066;
   --gruen: #35d07f;
-  --himmel: #5aa9ff;
+  --himmel: #7fb6ff;
   --schatten: 0 18px 40px rgba(0, 0, 0, 0.35);
   --breite: 1240px;
   --schmal-breite: 760px;
@@ -54,13 +58,13 @@ h2 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
 h3 { font-size: 1.45rem; }
 p { margin: 0 0 1.1em; }
 :focus-visible { outline: 2px solid var(--gelb); outline-offset: 3px; }
-::selection { background: var(--signal); color: #fff; }
+::selection { background: var(--signal); color: var(--auf-signal); }
 .container { width: min(100% - 2.5rem, var(--breite)); margin-inline: auto; }
 .schmal { width: min(100% - 2.5rem, var(--schmal-breite)); margin-inline: auto; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: -999px; top: 0; background: var(--gelb); color: #000; padding: 0.6rem 1rem; z-index: 100; }
 .skip:focus { left: 0.5rem; top: 0.5rem; }
-.kicker { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal); display: block; margin-bottom: 0.9rem; }
+.kicker { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--jet-hell); display: block; margin-bottom: 0.9rem; }
 
 /* ---------- Kopf ---------- */
 .kopf { position: sticky; top: 0; z-index: 50; background: var(--nacht); border-bottom: 1px solid var(--linie); }
@@ -107,8 +111,8 @@ p { margin: 0 0 1.1em; }
 .buehne p { font-size: clamp(1.1rem, 2vw, 1.3rem); max-width: 40ch; color: #d3dde9; }
 .koordinaten { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.12em; color: var(--gelb); text-transform: uppercase; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin-bottom: 1.4rem; }
 .knoepfe { display: flex; flex-wrap: wrap; gap: 0.8rem; }
-.knopf { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.5rem; font-family: var(--titel); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; cursor: pointer; border: 2px solid var(--signal); background: var(--signal); color: #fff; transition: background 0.15s, color 0.15s; }
-.knopf:hover { background: var(--signal-dunkel); border-color: var(--signal-dunkel); color: #fff; }
+.knopf { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.5rem; font-family: var(--titel); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; cursor: pointer; border: 2px solid var(--signal); background: var(--signal); color: var(--auf-signal); transition: background 0.15s, color 0.15s, transform 0.15s; }
+.knopf:hover { background: var(--signal-dunkel); border-color: var(--signal-dunkel); color: var(--auf-signal); transform: translateY(-2px); }
 .knopf.gelb { background: var(--signal); border-color: var(--signal); }
 .knopf.umriss, .knopf.hell { background: transparent; border-color: rgba(255, 255, 255, 0.55); color: #fff; }
 .knopf.umriss:hover, .knopf.hell:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
@@ -129,7 +133,7 @@ p { margin: 0 0 1.1em; }
 .seitenkopf h1 { margin-bottom: 0.2em; }
 .seitenkopf p { color: var(--leise); font-size: 1.2rem; margin: 0; max-width: 60ch; }
 .pfad { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--leise); margin-bottom: 1rem; }
-.pfad a { color: var(--signal); text-decoration: none; }
+.pfad a { color: var(--jet-hell); text-decoration: none; }
 .pfad a:hover { color: #fff; }
 
 /* ---------- Aktuelles: Aufmacher + Liste ---------- */
@@ -161,15 +165,15 @@ p { margin: 0 0 1.1em; }
 .karte:hover h3 a { color: var(--gelb); }
 .karte p { margin: 0; color: var(--leise); font-size: 0.98rem; }
 .meta { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--leise); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
-.marke-kat { color: var(--signal); text-decoration: none; position: relative; z-index: 1; }
+.marke-kat { color: var(--jet-hell); text-decoration: none; position: relative; z-index: 1; }
 .marke-kat::before { content: '// '; color: var(--linie); }
 a.marke-kat:hover { color: #fff; }
-.anzahl-bilder { position: absolute; left: 0; top: 0; background: var(--signal); color: #fff; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; padding: 0.3rem 0.6rem; z-index: 1; }
+.anzahl-bilder { position: absolute; left: 0; top: 0; background: var(--signal); color: var(--auf-signal); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; padding: 0.3rem 0.6rem; z-index: 1; }
 .filter { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 2.2rem; border: 1px solid var(--linie); width: fit-content; max-width: 100%; }
 .filter a { padding: 0.55rem 1rem; text-decoration: none; font-family: var(--titel); font-weight: 600; font-size: 1.02rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--leise); border-right: 1px solid var(--linie); }
 .filter a:last-child { border-right: 0; }
 .filter a:hover { color: #fff; background: var(--flaeche); }
-.filter a[aria-current='page'] { background: var(--signal); color: #fff; }
+.filter a[aria-current='page'] { background: var(--signal); color: var(--auf-signal); }
 .blaettern { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; }
 .jahr { font-size: clamp(3rem, 8vw, 5.5rem); color: transparent; -webkit-text-stroke: 1px var(--leise); margin: 3rem 0 1.4rem; line-height: 1; }
 .jahr:first-child { margin-top: 0; }
@@ -240,7 +244,7 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 .ziele { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linie); counter-reset: ziel; }
 .ziele li { border-bottom: 1px solid var(--linie); counter-increment: ziel; }
 .ziele a { display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: baseline; gap: 1rem; padding: 1.1rem 0.2rem; text-decoration: none; color: #fff; transition: padding 0.2s, color 0.2s; }
-.ziele a::before { content: counter(ziel, decimal-leading-zero); font-family: var(--mono); font-size: 0.85rem; color: var(--signal); }
+.ziele a::before { content: counter(ziel, decimal-leading-zero); font-family: var(--mono); font-size: 0.85rem; color: var(--jet-hell); }
 .ziele a::after { content: '→'; color: var(--leise); }
 .ziele strong { font-family: var(--titel); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
 .ziele span { display: block; font-size: 0.95rem; color: var(--leise); margin-top: 0.3rem; }
@@ -278,11 +282,11 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 .video-play { width: 76px; height: 76px; border-radius: 50%; border: 2px solid var(--signal); position: relative; }
 .video-play::after { content: ''; position: absolute; left: 30px; top: 22px; border-style: solid; border-width: 15px 0 15px 24px; border-color: transparent transparent transparent var(--signal); }
 .video-start:hover .video-play { background: var(--signal); }
-.video-start:hover .video-play::after { border-left-color: #fff; }
+.video-start:hover .video-play::after { border-left-color: var(--auf-signal); }
 .weiter { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem; padding-top: 1.6rem; border-top: 1px solid var(--linie); }
 .weiter a { text-decoration: none; font-family: var(--titel); font-weight: 600; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.03em; color: #fff; line-height: 1.15; }
 .weiter a:hover { color: var(--gelb); }
-.weiter small { display: block; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--signal); margin-bottom: 0.35rem; }
+.weiter small { display: block; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--jet-hell); margin-bottom: 0.35rem; }
 .weiter .rechts { text-align: right; }
 
 /* Beitragskopf mit großem Foto */
@@ -321,7 +325,7 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 .formular .einwilligung input { width: 1.2rem; height: 1.2rem; margin-top: 0.2rem; flex: none; accent-color: var(--signal); }
 .hinweis { padding: 1rem 1.2rem; font-weight: 500; border-left: 3px solid; }
 .hinweis.gut { background: rgba(53, 208, 127, 0.1); border-color: var(--gruen); color: #b8f3d3; }
-.hinweis.schlecht { background: rgba(255, 106, 43, 0.12); border-color: var(--signal); color: #ffd0bc; }
+.hinweis.schlecht { background: rgba(255, 90, 79, 0.12); border-color: #ff5a4f; color: #ffcfcb; }
 .downloads { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--linie); }
 .downloads a { display: flex; align-items: center; gap: 1.2rem; padding: 1.1rem 0.3rem; border-bottom: 1px solid var(--linie); text-decoration: none; color: var(--text); transition: padding 0.2s; }
 .downloads a:hover { padding-left: 0.9rem; }
@@ -341,13 +345,13 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 .fuss-wort { font-family: var(--titel); font-weight: 700; font-size: clamp(5rem, 22vw, 17rem); line-height: 0.8; letter-spacing: 0.02em; color: transparent; -webkit-text-stroke: 1px #2a4060; margin: 0 0 2.5rem -0.05em; user-select: none; }
 .fuss-raster { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; }
 @media (max-width: 760px) { .fuss-raster { grid-template-columns: 1fr; } }
-.fuss h2 { font-family: var(--mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.16em; color: var(--signal); margin-bottom: 0.9rem; }
+.fuss h2 { font-family: var(--mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.16em; color: var(--jet-hell); margin-bottom: 0.9rem; }
 .fuss ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
 .fuss address { font-style: normal; white-space: pre-line; color: var(--text); }
 .fuss .unten { border-top: 1px solid var(--linie); margin-top: 3rem; padding-top: 1.2rem; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; }
 
-.design-hinweis { background: var(--signal); color: #fff; text-align: center; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; padding: 0.45rem 1rem; }
-.design-hinweis a { color: #fff; font-weight: 500; }
+.design-hinweis { background: var(--signal); color: var(--auf-signal); text-align: center; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; padding: 0.45rem 1rem; }
+.design-hinweis a { color: var(--auf-signal); font-weight: 500; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 @media print { .kopf, .fuss, .lb, .knoepfe, .design-hinweis { display: none !important; } body { background: #fff; color: #000; } h1, h2, h3 { color: #000; } }
@@ -427,15 +431,15 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 .bewegung-aus *, .bewegung-aus *::before, .bewegung-aus *::after { animation-play-state: paused !important; }
 
 /* ---------- Laufband ---------- */
-.ticker { display: flex; align-items: stretch; background: var(--signal); color: #fff; overflow: hidden; border-bottom: 1px solid #000; }
+.ticker { display: flex; align-items: stretch; background: var(--signal); color: var(--auf-signal); overflow: hidden; border-bottom: 1px solid #000; }
 .ticker-marke { flex: none; display: flex; align-items: center; padding: 0 1rem; background: #000; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--signal); }
 .ticker-fenster { overflow: hidden; flex: 1; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
 .ticker-band { display: flex; width: max-content; list-style: none; margin: 0; padding: 0; animation: laufen 60s linear infinite; }
 .ticker:hover .ticker-band, .ticker:focus-within .ticker-band { animation-play-state: paused; }
 .ticker-band li { padding: 0.75rem 0; white-space: nowrap; }
 .ticker-band li::after { content: '+++'; margin: 0 1.4rem; opacity: 0.6; font-family: var(--mono); font-size: 0.8rem; }
-.ticker-band a { color: #fff; text-decoration: none; font-family: var(--titel); font-weight: 600; font-size: 1.12rem; letter-spacing: 0.06em; text-transform: uppercase; }
-.ticker-band a:hover { color: #000; }
+.ticker-band a { color: var(--auf-signal); text-decoration: none; font-family: var(--titel); font-weight: 600; font-size: 1.12rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.ticker-band a:hover { color: var(--jet); }
 @keyframes laufen { to { transform: translateX(-50%); } }
 
 /* ---------- Kennzahlen auf Bauplan-Raster ---------- */
@@ -453,7 +457,7 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 @media (max-width: 760px) { .zahlen { grid-template-columns: repeat(2, 1fr); } }
 
 /* ---------- Aufmacher ---------- */
-.neu { background: var(--signal); color: #fff; padding: 0.1rem 0.45rem; }
+.neu { background: var(--signal); color: var(--auf-signal); padding: 0.1rem 0.45rem; }
 
 /* ---------- Was wir fliegen ---------- */
 .flotte { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; perspective: 1200px; }
@@ -524,7 +528,7 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 /* ---------- Lesefortschritt (Beiträge) ---------- */
 .lesefortschritt { display: none; }
 @supports (animation-timeline: scroll()) {
-  .lesefortschritt { display: block; position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; background: linear-gradient(90deg, var(--signal), var(--gelb)); transform-origin: left; transform: scaleX(0);
+  .lesefortschritt { display: block; position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; background: linear-gradient(90deg, var(--jet), var(--signal)); transform-origin: left; transform: scaleX(0);
     animation: fortschritt linear both; animation-timeline: scroll(root); }
   @keyframes fortschritt { to { transform: scaleX(1); } }
 }
@@ -560,3 +564,27 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
   .ticker-fenster, .film-reihe { overflow-x: auto; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* ---------- Countdown & Kalender ---------- */
+.countdown { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.6rem; margin-bottom: 1.4rem; padding: 1.1rem 1.3rem; background: linear-gradient(90deg, rgba(255, 210, 31, 0.12), transparent 70%); border-left: 4px solid var(--signal); }
+.countdown-label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--jet-hell); }
+.countdown-titel { font-family: var(--titel); font-size: clamp(1.5rem, 3vw, 2.1rem); text-transform: uppercase; letter-spacing: 0.03em; color: #fff; line-height: 1; margin-right: auto; }
+.countdown-uhr { display: flex; align-items: baseline; gap: 0.3rem; font-family: var(--mono); }
+.countdown-uhr b { font-size: clamp(1.5rem, 3.2vw, 2.2rem); font-weight: 500; color: var(--signal); background: #05080e; border: 1px solid var(--linie); padding: 0.15rem 0.45rem; font-variant-numeric: tabular-nums; min-width: 2.4ch; text-align: center; }
+.countdown-uhr i { font-style: normal; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--leise); margin-right: 0.5rem; }
+.countdown.jetzt .countdown-label { color: var(--gruen); }
+.kalender-links { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; margin: 1.4rem 0 0; font-family: var(--titel); font-weight: 600; font-size: 1.05rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.kalender-links a { color: var(--signal); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+.kalender-links a::before { content: ''; width: 1em; height: 1em; background: currentColor; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zm-2 8h14v10H5z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.kalender-links a:hover { color: #fff; }
+.termin-status.heute { color: var(--auf-signal); background: var(--signal); padding: 0.15rem 0.4rem; justify-self: end; }
+
+/* ---------- Scroll-Hinweis ---------- */
+.scroll-hinweis { position: absolute; left: 50%; bottom: 4.6rem; transform: translateX(-50%); width: 26px; height: 42px; border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 14px; z-index: 1; }
+.scroll-hinweis span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--signal); animation: scrollen 1.8s ease-in-out infinite; }
+@keyframes scrollen { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+@media (max-width: 760px) { .scroll-hinweis { display: none; } }
+
+/* ---------- Galerie als Fotowand (Bilder im echten Seitenverhältnis) ---------- */
+.galerie a { border: 0; }
+.galerie img { aspect-ratio: auto; }

@@ -1,0 +1,14 @@
+{
+  "name": "Flug- und Modellbau Club Dietzenbach e.V.",
+  "kurzname": "FMC Dietzenbach",
+  "claim": "Modellflug in Dietzenbach – seit 1971",
+  "beschreibung": "Der Flug- und Modellbau Club Dietzenbach e.V. (FMCD): Modellflug für Motor-, Segel-, Jet-, Hubschrauber- und Wasserflugmodelle, Jugendarbeit und Veranstaltungen seit 1971.",
+  "anschrift": "Postfach 2053\n63120 Dietzenbach",
+  "email": "vorstand@fmc-dietzenbach.org",
+  "telefon": "0172-7686037",
+  "flugplatz": {
+    "name": "Modellflugplatz des FMCD",
+    "breite": 50.0122,
+    "laenge": 8.7992
+  }
+}

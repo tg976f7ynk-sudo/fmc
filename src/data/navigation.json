@@ -1,0 +1,49 @@
+{
+  "haupt": [
+    { "titel": "Aktuelles", "link": "/aktuelles/" },
+    { "titel": "Termine", "link": "/termine/" },
+    {
+      "titel": "Verein",
+      "link": "/ueber-uns/",
+      "unterpunkte": [
+        { "titel": "Über uns", "link": "/ueber-uns/" },
+        { "titel": "Vorstand", "link": "/vorstand/" },
+        { "titel": "Jugend", "link": "/jugend/" },
+        { "titel": "Downloads", "link": "/downloads/" }
+      ]
+    },
+    {
+      "titel": "Flugplatz",
+      "link": "/gastpiloten/",
+      "unterpunkte": [
+        { "titel": "Gastpiloten", "link": "/gastpiloten/" },
+        { "titel": "Anfahrt", "link": "/anfahrt/" },
+        { "titel": "Wetter am Platz", "link": "/wetter/" }
+      ]
+    },
+    {
+      "titel": "Impressionen",
+      "link": "/impressionen/",
+      "unterpunkte": [
+        { "titel": "Bildergalerien", "link": "/impressionen/" },
+        { "titel": "Videos", "link": "/videos/" }
+      ]
+    },
+    {
+      "titel": "Kruschelkiste",
+      "link": "/aktuelles/kategorie/kruschelkiste/",
+      "unterpunkte": [
+        { "titel": "Kruschelkiste", "link": "/aktuelles/kategorie/kruschelkiste/" },
+        { "titel": "Bauberichte", "link": "/aktuelles/kategorie/baubericht/" },
+        { "titel": "Bembel Crawler", "link": "/aktuelles/kategorie/bembel-crawler/" }
+      ]
+    },
+    { "titel": "Kontakt", "link": "/kontakt/" }
+  ],
+  "fuss": [
+    { "titel": "Impressum", "link": "/impressum/" },
+    { "titel": "Datenschutz", "link": "/datenschutz/" },
+    { "titel": "Kontakt", "link": "/kontakt/" },
+    { "titel": "Redaktion", "link": "/admin/" }
+  ]
+}

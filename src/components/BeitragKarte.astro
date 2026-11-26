@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.jpg';
+import { beitragUrl, datumLang, isoTag, kurztext, type Beitrag } from '../lib/inhalte';
+
+interface Props { beitrag: Beitrag; }
+const { beitrag } = Astro.props;
+const d = beitrag.data;
+---
+
+<article class="karte">
+  <div class="karte-bild">
+    {
+      d.titelbild ? (
+        <Image src={d.titelbild} alt="" width={640} height={400} fit="cover" layout="fixed" quality={70} loading="lazy" />
+      ) : (
+        <Image class="platzhalter" src={logo} alt="" width={96} height={96} layout="fixed" loading="lazy" />
+      )
+    }
+  </div>
+  <div class="karte-text">
+    <div class="meta">
+      <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
+      {d.kategorien.slice(0, 2).map((k) => <span class="marke-kat">{k}</span>)}
+    </div>
+    <h3><a href={beitragUrl(beitrag)}>{d.titel}</a></h3>
+    <p>{kurztext(beitrag)}</p>
+  </div>
+</article>

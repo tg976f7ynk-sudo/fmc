@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+import BeitragListe from '../../components/BeitragListe.astro';
+import { alleBeitraege } from '../../lib/inhalte';
+
+export const getStaticPaths = (async ({ paginate }) => paginate(await alleBeitraege(), { pageSize: 12 })) satisfies GetStaticPaths;
+const { page } = Astro.props;
+---
+
+<Basis titel="Aktuelles" beschreibung="Neuigkeiten, Berichte und Ankündigungen des FMC Dietzenbach.">
+  <Seitenkopf titel="Aktuelles" untertitel="Neuigkeiten, Berichte und Ankündigungen aus dem Vereinsleben." />
+  <section class="abschnitt">
+    <div class="container">
+      <BeitragListe beitraege={page.data} zurueck={page.url.prev} weiter={page.url.next} />
+    </div>
+  </section>
+</Basis>

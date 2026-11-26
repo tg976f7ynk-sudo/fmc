@@ -1,0 +1,25 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props { bilder: ImageMetadata[]; titel?: string; }
+const { bilder, titel = 'Bild' } = Astro.props;
+const liste = await Promise.all(
+  bilder.map(async (bild) => ({
+    gross: bild.src,
+    klein: await getImage({ src: bild, width: 480, height: 360, fit: 'cover', format: 'webp', quality: 62, layout: 'none' }),
+  })),
+);
+---
+
+{
+  liste.length > 0 && (
+    <div class="galerie" data-galerie>
+      {liste.map((b, i) => (
+        <a href={b.gross} data-bild>
+          <img src={b.klein.src} width="480" height="360" alt={`${titel} – Bild ${i + 1}`} loading="lazy" decoding="async" />
+        </a>
+      ))}
+    </div>
+  )
+}

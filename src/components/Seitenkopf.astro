@@ -1,0 +1,16 @@
+---
+interface Props { titel: string; untertitel?: string; pfad?: { titel: string; link: string }[]; }
+const { titel, untertitel, pfad = [] } = Astro.props;
+---
+
+<div class="seitenkopf">
+  <div class="container">
+    <nav class="pfad" aria-label="Sie sind hier">
+      <a href="/">Startseite</a>
+      {pfad.map((p) => <> › <a href={p.link}>{p.titel}</a></>)}
+    </nav>
+    <h1>{titel}</h1>
+    {untertitel && <p>{untertitel}</p>}
+    <slot />
+  </div>
+</div>

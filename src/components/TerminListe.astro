@@ -1,0 +1,65 @@
+---
+import { alleTermine, isoTag, zeitraum } from '../lib/inhalte';
+
+interface Props { modus?: 'kommend' | 'alle'; anzahl?: number; }
+const { modus = 'alle', anzahl = 0 } = Astro.props;
+const termine = await alleTermine();
+const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC' });
+---
+
+<div class="terminliste" data-modus={modus} data-anzahl={anzahl}>
+  <ul class="termine" data-kommend>
+    {
+      termine.map((t) => (
+        <li class="termin" data-bis={isoTag(t.data.ende ?? t.data.datum)}>
+          <div class="termin-tag">
+            <b>{t.data.datum.getUTCDate()}</b>
+            <span>{monat.format(t.data.datum).replace('.', '')} {String(t.data.datum.getUTCFullYear()).slice(2)}</span>
+          </div>
+          <div>
+            <h3>{t.data.link ? <a href={t.data.link}>{t.data.titel}</a> : t.data.titel}</h3>
+            <p>
+              {zeitraum(t.data.datum, t.data.ende)}
+              {t.data.uhrzeit && ` · ${t.data.uhrzeit}`}
+              {t.data.ort && ` · ${t.data.ort}`}
+            </p>
+            {t.data.beschreibung && <p>{t.data.beschreibung}</p>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="leer" data-leer hidden>Zurzeit sind keine kommenden Termine eingetragen.</p>
+  {
+    modus === 'alle' && (
+      <details class="vergangen" data-vergangen-box hidden>
+        <summary>Vergangene Termine anzeigen</summary>
+        <ul class="termine" data-vergangen />
+      </details>
+    )
+  }
+</div>
+
+<script>
+  // Welche Termine "kommend" sind, entscheidet das Datum des Besuchers –
+  // so stimmt die Liste auch ohne tägliche Neuveröffentlichung.
+  const heute = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
+  document.querySelectorAll<HTMLElement>('.terminliste').forEach((box) => {
+    const kommend = box.querySelector<HTMLElement>('[data-kommend]')!;
+    const vergangen = box.querySelector<HTMLElement>('[data-vergangen]');
+    const anzahl = Number(box.dataset.anzahl) || Infinity;
+    let n = 0;
+    const alt: HTMLElement[] = [];
+    kommend.querySelectorAll<HTMLElement>('.termin').forEach((t) => {
+      if (t.dataset.bis! < heute) alt.push(t);
+      else if (++n > anzahl) t.remove();
+    });
+    alt.reverse().forEach((t) => {
+      t.classList.add('vorbei');
+      if (vergangen) vergangen.append(t);
+      else t.remove();
+    });
+    if (n === 0) box.querySelector<HTMLElement>('[data-leer]')!.hidden = false;
+    if (vergangen && alt.length) box.querySelector<HTMLElement>('[data-vergangen-box]')!.hidden = false;
+  });
+</script>

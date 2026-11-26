@@ -1,0 +1,9 @@
+{
+  "einleitung": "Wichtige Unterlagen des Vereins zum Herunterladen.",
+  "dateien": [
+    { "titel": "Flugplatzordnung", "beschreibung": "Stand April 2023", "datei": "/dateien/flugplatzordnung-fmcd-2023-april.pdf" },
+    { "titel": "Meldekarte (Flugbetrieb ohne Flugleiter)", "beschreibung": "Stand April 2023", "datei": "/dateien/meldekarte-ohne-flugleiter-fmcd-2023-april-v2-8.pdf" },
+    { "titel": "Aufnahmeantrag", "beschreibung": "Mitglied werden – Stand 2023", "datei": "/dateien/aufnahmeantrag-2023.pdf" },
+    { "titel": "Gebührenordnung", "beschreibung": "Stand 2009", "datei": "/dateien/gebuehrenordnung-2009.pdf" }
+  ]
+}

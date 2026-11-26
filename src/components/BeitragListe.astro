@@ -1,0 +1,27 @@
+---
+import BeitragKarte from './BeitragKarte.astro';
+import { alleBeitraege, kategorieUrl, type Beitrag } from '../lib/inhalte';
+import { KATEGORIEN } from '../content.config';
+
+interface Props { beitraege: Beitrag[]; aktiv?: string; zurueck?: string; weiter?: string; }
+const { beitraege, aktiv, zurueck, weiter } = Astro.props;
+const vorhanden = new Set((await alleBeitraege()).flatMap((b) => b.data.kategorien));
+const kategorien = [...KATEGORIEN.filter((k) => vorhanden.has(k)), ...[...vorhanden].filter((k) => !KATEGORIEN.includes(k as any)).sort()];
+---
+
+<nav class="filter" aria-label="Kategorien">
+  <a href="/aktuelles/" aria-current={!aktiv ? 'page' : undefined}>Alle</a>
+  {kategorien.map((k) => <a href={kategorieUrl(k)} aria-current={aktiv === k ? 'page' : undefined}>{k}</a>)}
+</nav>
+{beitraege.length === 0 && <p class="leer">Hier gibt es noch keine Beiträge.</p>}
+<div class="karten">
+  {beitraege.map((b) => <BeitragKarte beitrag={b} />)}
+</div>
+{
+  (zurueck || weiter) && (
+    <nav class="blaettern" aria-label="Seiten">
+      <span>{zurueck && <a class="knopf hell" href={zurueck}>← Neuere Beiträge</a>}</span>
+      <span>{weiter && <a class="knopf hell" href={weiter}>Ältere Beiträge →</a>}</span>
+    </nav>
+  )
+}

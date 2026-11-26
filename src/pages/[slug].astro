@@ -1,0 +1,48 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import Seitenkopf from '../components/Seitenkopf.astro';
+import Galerie from '../components/Galerie.astro';
+import Kontaktformular from '../components/Kontaktformular.astro';
+import Karte from '../components/Karte.astro';
+import TerminListe from '../components/TerminListe.astro';
+import Wetter from '../components/Wetter.astro';
+import downloads from '../data/downloads.json';
+
+export const getStaticPaths = (async () =>
+  (await getCollection('seiten')).map((seite) => ({ params: { slug: seite.id }, props: { seite } }))) satisfies GetStaticPaths;
+const { seite } = Astro.props;
+const { Content } = await render(seite);
+const art = seite.id;
+const endung = (datei: string) => (datei.split('.').pop() ?? '').slice(0, 4);
+---
+
+<Basis titel={seite.data.titel} beschreibung={seite.data.untertitel}>
+  <Seitenkopf titel={seite.data.titel} untertitel={seite.data.untertitel} />
+  <section class="abschnitt">
+    <div class={art === 'wetter' || art === 'termine' ? 'container' : 'schmal'}>
+      {art === 'downloads' && downloads.einleitung && <p>{downloads.einleitung}</p>}
+      <div class="prose"><Content /></div>
+      {art === 'kontakt' && <div class="box"><Kontaktformular /></div>}
+      {art === 'anfahrt' && <Karte />}
+      {art === 'termine' && <TerminListe modus="alle" />}
+      {art === 'wetter' && <div class="box"><Wetter ausfuehrlich /></div>}
+      {
+        art === 'downloads' && (
+          <ul class="downloads">
+            {downloads.dateien.map((d) => (
+              <li>
+                <a href={d.datei}>
+                  <span class="typ">{endung(d.datei)}</span>
+                  <span><strong>{d.titel}</strong>{d.beschreibung && <small>{d.beschreibung}</small>}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <Galerie bilder={seite.data.bilder} titel={seite.data.titel} />
+    </div>
+  </section>
+</Basis>

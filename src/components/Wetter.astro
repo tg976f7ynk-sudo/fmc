@@ -1,0 +1,93 @@
+---
+interface Props { ausfuehrlich?: boolean; }
+const { ausfuehrlich = false } = Astro.props;
+---
+
+<div class="wetter" data-ausfuehrlich={ausfuehrlich ? '1' : ''}>
+  <p class="leer" data-status>Wetterdaten werden geladen …</p>
+  <div data-inhalt hidden>
+    <div class="wetter-jetzt">
+      <span class="wetter-temp" data-temp></span>
+      <div>
+        <strong data-lage></strong><br />
+        <span class="ampel" data-ampel></span>
+      </div>
+    </div>
+    <dl class="wetter-werte">
+      <div><dt>Wind</dt><dd data-wind></dd></div>
+      <div><dt>Böen</dt><dd data-boeen></dd></div>
+      <div><dt>Niederschlag</dt><dd data-regen></dd></div>
+      <div><dt>Bewölkung</dt><dd data-wolken></dd></div>
+    </dl>
+    <div class="wetter-stunden" data-stunden aria-label="Vorhersage für die nächsten Stunden"></div>
+    {ausfuehrlich && <table class="wetter-tage"><thead><tr><th>Tag</th><th>Wetter</th><th>Temperatur</th><th>Wind / Böen</th><th>Regen</th></tr></thead><tbody data-tage></tbody></table>}
+    <p class="quelle">Vorhersage für den Flugplatz · Quelle: <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a> · Stand <span data-stand></span> Uhr. Maßgeblich bleibt die Lage vor Ort.</p>
+  </div>
+</div>
+
+<script>
+  const LAGE: Record<number, string> = {
+    0: 'Klar', 1: 'Überwiegend klar', 2: 'Teils bewölkt', 3: 'Bedeckt', 45: 'Nebel', 48: 'Reifnebel',
+    51: 'Leichter Niesel', 53: 'Niesel', 55: 'Starker Niesel', 56: 'Gefrierender Niesel', 57: 'Gefrierender Niesel',
+    61: 'Leichter Regen', 63: 'Regen', 65: 'Starker Regen', 66: 'Gefrierender Regen', 67: 'Gefrierender Regen',
+    71: 'Leichter Schneefall', 73: 'Schneefall', 75: 'Starker Schneefall', 77: 'Schneegriesel',
+    80: 'Leichte Schauer', 81: 'Schauer', 82: 'Starke Schauer', 85: 'Schneeschauer', 86: 'Starke Schneeschauer',
+    95: 'Gewitter', 96: 'Gewitter mit Hagel', 99: 'Gewitter mit Hagel',
+  };
+  const RICHTUNG = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'];
+  const richtung = (grad: number) => RICHTUNG[Math.round(grad / 45) % 8];
+  // Pfeil zeigt, wohin der Wind weht (Meteorologische Richtung = woher)
+  const pfeil = (grad: number) =>
+    `<svg class="windpfeil" viewBox="0 0 24 24" style="transform:rotate(${grad + 180}deg)" aria-hidden="true"><path d="M12 2 5 20l7-4 7 4z" fill="currentColor"/></svg>`;
+  const rund = (n: number) => Math.round(n);
+
+  document.querySelectorAll<HTMLElement>('.wetter').forEach(async (box) => {
+    const q = (s: string) => box.querySelector<HTMLElement>(`[data-${s}]`)!;
+    try {
+      const antwort = await fetch('/api/wetter');
+      if (!antwort.ok) throw new Error(String(antwort.status));
+      const w = await antwort.json();
+      const j = w.current;
+      q('temp').textContent = `${rund(j.temperature_2m)} °C`;
+      q('lage').textContent = LAGE[j.weather_code] ?? '';
+      q('wind').innerHTML = `${pfeil(j.wind_direction_10m)}${rund(j.wind_speed_10m)} km/h aus ${richtung(j.wind_direction_10m)}`;
+      q('boeen').textContent = `${rund(j.wind_gusts_10m)} km/h`;
+      q('regen').textContent = `${j.precipitation.toLocaleString('de-DE')} mm`;
+      q('wolken').textContent = `${rund(j.cloud_cover)} %`;
+      const ampel = q('ampel');
+      const boe = j.wind_gusts_10m;
+      const nass = j.precipitation > 0.1 || j.weather_code >= 51;
+      const [farbe, text] =
+        boe >= 40 || j.weather_code >= 95 ? ['#d64533', 'Stürmisch'] : boe >= 25 || nass ? ['#e6a100', nass ? 'Nass oder böig' : 'Böiger Wind'] : ['#2e9e5b', 'Ruhige Bedingungen'];
+      ampel.style.setProperty('--farbe', farbe);
+      ampel.textContent = text;
+      q('stand').textContent = new Date(j.time).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+      const jetzt = j.time.slice(0, 13);
+      const start = Math.max(0, w.hourly.time.findIndex((t: string) => t.slice(0, 13) >= jetzt));
+      const anzahl = box.dataset.ausfuehrlich ? 24 : 8;
+      q('stunden').innerHTML = w.hourly.time
+        .slice(start + 1, start + 1 + anzahl)
+        .map((t: string, k: number) => {
+          const i = start + 1 + k;
+          return `<div><span>${t.slice(11, 16)}</span><b>${rund(w.hourly.temperature_2m[i])}°</b>${pfeil(w.hourly.wind_direction_10m[i])}${rund(w.hourly.wind_speed_10m[i])}<br><small>Böen ${rund(w.hourly.wind_gusts_10m[i])}</small></div>`;
+        })
+        .join('');
+
+      const tage = box.querySelector<HTMLElement>('[data-tage]');
+      if (tage) {
+        const d = w.daily;
+        tage.innerHTML = d.time
+          .map((t: string, i: number) => {
+            const tag = new Date(t + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' });
+            return `<tr><td>${tag}</td><td>${LAGE[d.weather_code[i]] ?? ''}</td><td>${rund(d.temperature_2m_min[i])}° / ${rund(d.temperature_2m_max[i])}°</td><td>${pfeil(d.wind_direction_10m_dominant[i])}${rund(d.wind_speed_10m_max[i])} / ${rund(d.wind_gusts_10m_max[i])} km/h</td><td>${d.precipitation_sum[i].toLocaleString('de-DE')} mm</td></tr>`;
+          })
+          .join('');
+      }
+      q('status').hidden = true;
+      q('inhalt').hidden = false;
+    } catch {
+      q('status').textContent = 'Die Wetterdaten sind im Moment nicht verfügbar.';
+    }
+  });
+</script>

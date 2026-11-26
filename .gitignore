@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars
+# wird beim Bauen aus node_modules kopiert (scripts/cms-kopieren.mjs)
+public/admin/sveltia-cms.js
+public/admin/chunks/
+.DS_Store

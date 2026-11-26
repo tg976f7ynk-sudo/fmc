@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Basis from '../../../layouts/Basis.astro';
+import Seitenkopf from '../../../components/Seitenkopf.astro';
+import BeitragListe from '../../../components/BeitragListe.astro';
+import { alleBeitraege, slugify } from '../../../lib/inhalte';
+import { KATEGORIEN } from '../../../content.config';
+
+export const getStaticPaths = (async () => {
+  const beitraege = await alleBeitraege();
+  const namen = new Set<string>([...KATEGORIEN, ...beitraege.flatMap((b) => b.data.kategorien)]);
+  return [...namen].map((name) => ({
+    params: { kategorie: slugify(name) },
+    props: { name, beitraege: beitraege.filter((b) => b.data.kategorien.includes(name)) },
+  }));
+}) satisfies GetStaticPaths;
+const { name, beitraege } = Astro.props;
+---
+
+<Basis titel={name} beschreibung={`Beiträge der Kategorie „${name}“ des FMC Dietzenbach.`}>
+  <Seitenkopf titel={name} pfad={[{ titel: 'Aktuelles', link: '/aktuelles/' }]} />
+  <section class="abschnitt">
+    <div class="container">
+      <BeitragListe beitraege={beitraege} aktiv={name} />
+    </div>
+  </section>
+</Basis>

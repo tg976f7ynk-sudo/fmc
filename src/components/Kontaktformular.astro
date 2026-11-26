@@ -1,0 +1,58 @@
+---
+import seite from '../data/einstellungen.json';
+---
+
+<form class="formular" id="kontaktformular" action="/api/kontakt" method="post" novalidate>
+  <label>Ihr Name *<input type="text" name="name" required autocomplete="name" maxlength="120" /></label>
+  <label>Ihre E-Mail-Adresse *<input type="email" name="email" required autocomplete="email" maxlength="200" /></label>
+  <label>Betreff<input type="text" name="betreff" maxlength="200" /></label>
+  <label>Ihre Nachricht *<textarea name="nachricht" rows="8" required maxlength="5000"></textarea></label>
+  <label class="falle" aria-hidden="true">Bitte leer lassen<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+  <label class="einwilligung">
+    <input type="checkbox" name="einwilligung" required />
+    <span>Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verwendet werden. Näheres in der <a href="/datenschutz/">Datenschutzerklärung</a>.</span>
+  </label>
+  <div><button class="knopf" type="submit">Nachricht senden</button></div>
+  <p class="hinweis" data-meldung role="status" hidden></p>
+  <p class="quelle">Sie erreichen uns auch direkt per E-Mail: <a href={`mailto:${seite.email}`}>{seite.email}</a></p>
+</form>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#kontaktformular');
+  const geladen = Date.now();
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const meldung = form.querySelector<HTMLElement>('[data-meldung]')!;
+    const zeige = (text: string, gut: boolean) => {
+      meldung.textContent = text;
+      meldung.className = `hinweis ${gut ? 'gut' : 'schlecht'}`;
+      meldung.hidden = false;
+    };
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const knopf = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    knopf.disabled = true;
+    knopf.textContent = 'Wird gesendet …';
+    try {
+      const daten = Object.fromEntries(new FormData(form));
+      const antwort = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ...daten, dauer: Date.now() - geladen }),
+      });
+      const ergebnis = await antwort.json().catch(() => ({}));
+      if (antwort.ok && ergebnis.ok) {
+        form.reset();
+        zeige('Vielen Dank! Ihre Nachricht wurde gesendet. Wir melden uns so bald wie möglich.', true);
+      } else {
+        zeige(ergebnis.fehler || 'Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.', false);
+      }
+    } catch {
+      zeige('Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.', false);
+    }
+    knopf.disabled = false;
+    knopf.textContent = 'Nachricht senden';
+  });
+</script>

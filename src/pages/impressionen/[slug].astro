@@ -1,0 +1,25 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+import Galerie from '../../components/Galerie.astro';
+
+export const getStaticPaths = (async () =>
+  (await getCollection('galerien')).map((galerie) => ({ params: { slug: galerie.id }, props: { galerie } }))) satisfies GetStaticPaths;
+const { galerie } = Astro.props;
+const d = galerie.data;
+const { Content } = await render(galerie);
+const titel = `${d.titel} ${d.jahr}`;
+---
+
+<Basis titel={titel} beschreibung={`Bildergalerie: ${titel} – ${d.bilder.length} Bilder.`} bild={d.bilder[0]?.src}>
+  <Seitenkopf titel={titel} untertitel={`${d.bilder.length} ${d.bilder.length === 1 ? 'Bild' : 'Bilder'} – zum Vergrößern antippen.`} pfad={[{ titel: 'Impressionen', link: '/impressionen/' }]} />
+  <section class="abschnitt">
+    <div class="container">
+      <div class="prose schmal" style="margin-inline:0"><Content /></div>
+      <Galerie bilder={d.bilder} titel={titel} />
+      <p><a class="knopf hell" href={`/impressionen/#${d.jahr}`}>← Alle Galerien</a></p>
+    </div>
+  </section>
+</Basis>

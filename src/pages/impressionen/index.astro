@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+
+const galerien = (await getCollection('galerien')).filter((g) => g.data.bilder.length > 0);
+const jahre = [...new Set(galerien.map((g) => g.data.jahr))].sort((a, b) => b - a);
+const zeit = (g: (typeof galerien)[number]) => g.data.datum?.valueOf() ?? 0;
+---
+
+<Basis titel="Impressionen" beschreibung="Bildergalerien von Veranstaltungen des FMC Dietzenbach: Wasserflugtreffen, Doppeldeckertreffen, Heli-Treffen und mehr.">
+  <Seitenkopf titel="Impressionen" untertitel="Bilder von unseren Treffen, Wettbewerben und Flugtagen.">
+    <nav class="filter" style="margin:1rem 0 0" aria-label="Jahre">
+      {jahre.map((j) => <a href={`#${j}`}>{j}</a>)}
+      <a href="/videos/">Videos</a>
+    </nav>
+  </Seitenkopf>
+  <section class="abschnitt">
+    <div class="container">
+      {
+        jahre.map((jahr) => (
+          <>
+            <h2 class="jahr" id={String(jahr)}>{jahr}</h2>
+            <div class="karten">
+              {galerien
+                .filter((g) => g.data.jahr === jahr)
+                .sort((a, b) => zeit(b) - zeit(a) || a.data.titel.localeCompare(b.data.titel, 'de'))
+                .map((g) => (
+                  <article class="karte">
+                    <div class="karte-bild">
+                      <Image src={g.data.bilder[0]} alt="" width={640} height={400} fit="cover" layout="fixed" quality={70} loading="lazy" />
+                    </div>
+                    <span class="anzahl-bilder">{g.data.bilder.length} {g.data.bilder.length === 1 ? 'Bild' : 'Bilder'}</span>
+                    <div class="karte-text">
+                      <h3><a href={`/impressionen/${g.id}/`}>{g.data.titel} {jahr}</a></h3>
+                    </div>
+                  </article>
+                ))}
+            </div>
+          </>
+        ))
+      }
+    </div>
+  </section>
+</Basis>

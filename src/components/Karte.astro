@@ -1,0 +1,30 @@
+---
+import seite from '../data/einstellungen.json';
+const { breite, laenge } = seite.flugplatz;
+const d = 0.012;
+const box = [laenge - d * 1.7, breite - d, laenge + d * 1.7, breite + d].map((n) => n.toFixed(5)).join('%2C');
+const einbetten = `https://www.openstreetmap.org/export/embed.html?bbox=${box}&layer=mapnik&marker=${breite}%2C${laenge}`;
+---
+
+<div class="karte-osm" data-karte={einbetten}>
+  <div>
+    <p><strong>Karte von OpenStreetMap</strong><br />Beim Laden der Karte werden Daten an OpenStreetMap übertragen.</p>
+    <button class="knopf" type="button">Karte anzeigen</button>
+  </div>
+</div>
+<div class="knoepfe" style="margin-top:1rem">
+  <a class="knopf" href={`https://www.google.com/maps/dir/?api=1&destination=${breite},${laenge}`} rel="noopener">Route planen (Google Maps)</a>
+  <a class="knopf hell" href={`https://www.openstreetmap.org/?mlat=${breite}&mlon=${laenge}#map=16/${breite}/${laenge}`} rel="noopener">In OpenStreetMap öffnen</a>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.karte-osm').forEach((k) => {
+    k.querySelector('button')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = k.dataset.karte!;
+      f.title = 'Karte: Lage des Modellflugplatzes';
+      f.loading = 'lazy';
+      k.replaceChildren(f);
+    });
+  });
+</script>

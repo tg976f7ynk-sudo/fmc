@@ -1,0 +1,51 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+import Galerie from '../../components/Galerie.astro';
+import { alleBeitraege, beitragSlug, beitragUrl, datumLang, isoTag, kategorieUrl, kurztext } from '../../lib/inhalte';
+
+export const getStaticPaths = (async () => {
+  const beitraege = await alleBeitraege();
+  return beitraege.map((beitrag, i) => ({
+    params: { slug: beitragSlug(beitrag) },
+    props: { beitrag, neuer: beitraege[i - 1], aelter: beitraege[i + 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { beitrag, neuer, aelter } = Astro.props;
+const d = beitrag.data;
+const { Content } = await render(beitrag);
+// Titelbild oben nur zeigen, wenn es nicht ohnehin im Text vorkommt
+const dateiname = d.titelbild?.src.split('/').pop()?.split('?')[0].replace(/\.[a-z0-9_-]{6,}\.(\w+)$/i, '.$1') ?? '';
+const stamm = dateiname.replace(/\.\w+$/, '');
+const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
+---
+
+<Basis titel={d.titel} beschreibung={kurztext(beitrag, 155)} bild={d.titelbild?.src} artikel>
+  <Seitenkopf titel={d.titel} pfad={[{ titel: 'Aktuelles', link: '/aktuelles/' }]}>
+    <div class="meta" style="margin-top:.6rem">
+      <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
+      {d.kategorien.map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
+    </div>
+  </Seitenkopf>
+  <article class="abschnitt">
+    <div class="schmal">
+      {
+        d.titelbild && !imText && (
+          <div class="titelbild">
+            <Image src={d.titelbild} alt="" widths={[480, 800, 1200, 1600]} sizes="(min-width: 800px) 780px, 100vw" loading="eager" />
+          </div>
+        )
+      }
+      <div class="prose"><Content /></div>
+      <Galerie bilder={d.bilder} titel={d.titel} />
+      <nav class="weiter" aria-label="Weitere Beiträge">
+        <span>{aelter && <a href={beitragUrl(aelter)}><small>← Älterer Beitrag</small>{aelter.data.titel}</a>}</span>
+        <span class="rechts">{neuer && <a href={beitragUrl(neuer)}><small>Neuerer Beitrag →</small>{neuer.data.titel}</a>}</span>
+      </nav>
+    </div>
+  </article>
+</Basis>

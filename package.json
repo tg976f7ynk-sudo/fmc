@@ -1,0 +1,26 @@
+{
+  "name": "fmc-dietzenbach-website",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/cms-kopieren.mjs && astro dev",
+    "build": "node scripts/cms-kopieren.mjs && astro build",
+    "preview": "wrangler pages dev dist",
+    "vorschau": "wrangler pages dev dist"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.10",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.6",
+    "@sveltia/cms": "^0.273.1",
+    "astro": "^7.4.13",
+    "sharp": "^0.35.5"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "wrangler": "^4.168.0"
+  }
+}

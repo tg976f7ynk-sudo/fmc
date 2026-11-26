@@ -3,6 +3,8 @@
  *  1. Bilder ohne Pfad ("foto.jpg") liegen neben dem Beitrag -> "./foto.jpg"
  *  2. Eine Zeile, die nur einen YouTube-Link enthält, wird zum Video (lädt erst nach Klick)
  *  3. Mehrere Bilder direkt hintereinander werden zu einer Bilderreihe
+ *  4. Ein einfacher Zeilenumbruch im Text bleibt ein Zeilenumbruch
+ *     (wie im Editor des Redaktionssystems zu sehen)
  */
 const istRelativ = (url) => !/^(\.{1,2}\/|\/|[a-z][a-z0-9+.-]*:|#)/i.test(url);
 
@@ -23,8 +25,29 @@ function besuche(node, fn) {
   if (node.children) node.children.forEach((c) => besuche(c, fn));
 }
 
+function zeilenumbrueche(node) {
+  if (!node.children) return;
+  if (node.type === 'code' || node.type === 'inlineCode' || node.type === 'html') return;
+  const neu = [];
+  for (const kind of node.children) {
+    if (kind.type === 'text' && kind.value.includes('\n')) {
+      kind.value.split('\n').forEach((teil, i) => {
+        if (i > 0) neu.push({ type: 'break' });
+        if (teil) neu.push({ type: 'text', value: i > 0 ? teil.replace(/^[ \t]+/, '') : teil });
+      });
+    } else {
+      zeilenumbrueche(kind);
+      neu.push(kind);
+    }
+  }
+  node.children = neu;
+}
+
 export function remarkFmc() {
   return (tree) => {
+    // 4. einfache Zeilenumbrüche
+    zeilenumbrueche(tree);
+
     // 1. relative Bildpfade
     besuche(tree, (node) => {
       if (node.type === 'image' && node.url && istRelativ(node.url)) node.url = './' + node.url;

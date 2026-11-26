@@ -3,7 +3,14 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 // Bilder liegen direkt neben dem jeweiligen Eintrag ("foto.jpg" -> "./foto.jpg")
-const neben = (v: unknown) => (typeof v === 'string' && v && !/^(\.{1,2}\/|\/|https?:)/.test(v) ? './' + v : v);
+// Leere Felder aus dem Redaktionssystem ('' oder null) gelten als „nicht ausgefüllt“.
+const neben = (v: unknown) => {
+  if (v === '' || v === null) return undefined;
+  return typeof v === 'string' && !/^(\.{1,2}\/|\/|https?:)/.test(v) ? './' + v : v;
+};
+const leerZuUndefined = (v: unknown) => (v === '' || v === null ? undefined : v);
+const bildliste = (image: () => any) =>
+  z.preprocess((v) => (Array.isArray(v) ? v.filter((x) => x !== '' && x !== null) : v ?? []), z.array(z.preprocess(neben, image())).default([]));
 const ordnerId = ({ entry }: { entry: string }) => entry.split('/')[0];
 
 export const KATEGORIEN = ['Aktuelles', 'Veranstaltungen', 'Verein', 'Baubericht', 'Kruschelkiste', 'Bembel Crawler'] as const;
@@ -15,9 +22,9 @@ const beitraege = defineCollection({
       titel: z.string(),
       datum: z.coerce.date(),
       kategorien: z.array(z.string()).default(['Aktuelles']),
-      titelbild: z.preprocess(neben, image()).optional(),
-      kurztext: z.string().optional(),
-      bilder: z.array(z.preprocess(neben, image())).default([]),
+      titelbild: z.preprocess(neben, image().optional()),
+      kurztext: z.preprocess(leerZuUndefined, z.string().optional()),
+      bilder: bildliste(image),
       entwurf: z.boolean().default(false),
     }),
 });
@@ -27,8 +34,8 @@ const seiten = defineCollection({
   schema: ({ image }) =>
     z.object({
       titel: z.string(),
-      untertitel: z.string().optional(),
-      bilder: z.array(z.preprocess(neben, image())).default([]),
+      untertitel: z.preprocess(leerZuUndefined, z.string().optional()),
+      bilder: bildliste(image),
     }),
 });
 
@@ -38,8 +45,8 @@ const galerien = defineCollection({
     z.object({
       titel: z.string(),
       jahr: z.coerce.number(),
-      datum: z.coerce.date().optional(),
-      bilder: z.array(z.preprocess(neben, image())).default([]),
+      datum: z.preprocess(leerZuUndefined, z.coerce.date().optional()),
+      bilder: bildliste(image),
     }),
 });
 
@@ -48,7 +55,7 @@ const termine = defineCollection({
   schema: z.object({
     titel: z.string(),
     datum: z.coerce.date(),
-    ende: z.coerce.date().optional().nullable(),
+    ende: z.preprocess(leerZuUndefined, z.coerce.date().optional().nullable()),
     uhrzeit: z.string().optional().nullable(),
     ort: z.string().optional().nullable(),
     beschreibung: z.string().optional().nullable(),

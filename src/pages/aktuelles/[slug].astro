@@ -19,7 +19,7 @@ const { beitrag, neuer, aelter } = Astro.props;
 const d = beitrag.data;
 const { Content } = await render(beitrag);
 // Titelbild oben nur zeigen, wenn es nicht ohnehin im Text vorkommt
-const dateiname = d.titelbild?.src.split('/').pop()?.split('?')[0].replace(/\.[a-z0-9_-]{6,}\.(\w+)$/i, '.$1') ?? '';
+const dateiname = d.titelbild?.src?.split('/').pop()?.split('?')[0].replace(/\.[a-z0-9_-]{6,}\.(\w+)$/i, '.$1') ?? '';
 const stamm = dateiname.replace(/\.\w+$/, '');
 const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
 ---

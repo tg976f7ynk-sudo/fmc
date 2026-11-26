@@ -14,7 +14,7 @@ const { ausfuehrlich = false } = Astro.props;
       </div>
     </div>
     <dl class="wetter-werte">
-      <div><dt>Wind</dt><dd data-wind></dd></div>
+      <div><dt>Wind aus</dt><dd data-wind></dd></div>
       <div><dt>Böen</dt><dd data-boeen></dd></div>
       <div><dt>Niederschlag</dt><dd data-regen></dd></div>
       <div><dt>Bewölkung</dt><dd data-wolken></dd></div>
@@ -50,7 +50,7 @@ const { ausfuehrlich = false } = Astro.props;
       const j = w.current;
       q('temp').textContent = `${rund(j.temperature_2m)} °C`;
       q('lage').textContent = LAGE[j.weather_code] ?? '';
-      q('wind').innerHTML = `${pfeil(j.wind_direction_10m)}${rund(j.wind_speed_10m)} km/h aus ${richtung(j.wind_direction_10m)}`;
+      q('wind').innerHTML = `${pfeil(j.wind_direction_10m)}${rund(j.wind_speed_10m)} km/h ${richtung(j.wind_direction_10m)}`;
       q('boeen').textContent = `${rund(j.wind_gusts_10m)} km/h`;
       q('regen').textContent = `${j.precipitation.toLocaleString('de-DE')} mm`;
       q('wolken').textContent = `${rund(j.cloud_cover)} %`;

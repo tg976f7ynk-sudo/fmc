@@ -92,18 +92,22 @@ if (feinerZeiger && !ruhig) {
 }
 
 // ---------- Startbildschirm: Video, Uhr, Live-Telemetrie, Bewegung anhalten
+// Kein Video bei „Bewegung reduzieren“, Datensparmodus oder langsamer Verbindung.
 const buehne = document.querySelector<HTMLElement>('.buehne');
 if (buehne) {
   const verbindung = (navigator as any).connection;
   const sparen = verbindung?.saveData || /(^|-)2g$/.test(verbindung?.effectiveType ?? '');
   let video: HTMLVideoElement | null = null;
-  if (!ruhig && !sparen && matchMedia('(min-width: 760px)').matches && buehne.dataset.video) {
+  // Handy im Hochformat bekommt die schmale, kleinere Fassung (ca. 1 MB statt 2,7 MB)
+  const hochformat = matchMedia('(max-width: 759px) and (orientation: portrait)').matches;
+  const quelle = hochformat ? buehne.dataset.videoHoch : buehne.dataset.video;
+  if (!ruhig && !sparen && quelle) {
     video = document.createElement('video');
     Object.assign(video, { muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto' });
     video.setAttribute('muted', '');
     video.setAttribute('aria-hidden', 'true');
     video.className = 'buehne-video';
-    video.src = buehne.dataset.video;
+    video.src = quelle;
     video.addEventListener('playing', () => buehne.classList.add('video-laeuft'), { once: true });
     buehne.prepend(video);
     // Video nur abspielen, solange es zu sehen ist

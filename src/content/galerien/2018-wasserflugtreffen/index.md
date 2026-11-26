@@ -1,0 +1,37 @@
+---
+titel: "Wasserflugtreffen"
+jahr: 2018
+bilder:
+  - "mic-6769.jpg"
+  - "mic-6796.jpg"
+  - "mic-6819.jpg"
+  - "mic-6774.jpg"
+  - "mic-6808.jpg"
+  - "mic-6828.jpg"
+  - "mic-6821.jpg"
+  - "mic-6963.jpg"
+  - "mic-7046.jpg"
+  - "mic-6987.jpg"
+  - "mic-7118.jpg"
+  - "mic-7055.jpg"
+  - "mic-7170.jpg"
+  - "mic-7092.jpg"
+  - "mic-7172.jpg"
+  - "mic-7217.jpg"
+  - "mic-7260.jpg"
+  - "mic-7288.jpg"
+  - "mic-7287.jpg"
+  - "mic-7290.jpg"
+  - "mic-7297.jpg"
+  - "mic-7299.jpg"
+  - "mic-7230.jpg"
+  - "mic-7603.jpg"
+  - "mic-7604.jpg"
+  - "mic-7644.jpg"
+  - "mic-7693.jpg"
+  - "mic-7822.jpg"
+  - "mic-7894.jpg"
+  - "mic-7916.jpg"
+---
+
+

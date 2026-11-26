@@ -351,3 +351,212 @@ details.vergangen .termine { background: #05080e; border: 1px solid var(--linie)
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 @media print { .kopf, .fuss, .lb, .knoepfe, .design-hinweis { display: none !important; } body { background: #fff; color: #000; } h1, h2, h3 { color: #000; } }
+
+/* ==========================================================================
+   Bewegung & Live-Elemente
+   ========================================================================== */
+
+/* Seitenwechsel als weiche Überblendung (Browser ohne Unterstützung wechseln normal) */
+@view-transition { navigation: auto; }
+.kopf { view-transition-name: kopf; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.28s; }
+
+/* ---------- Startbildschirm ---------- */
+.buehne { min-height: max(620px, min(calc(100svh - var(--kopf) - 34px), 980px)); }
+.buehne .buehne-bild, .buehne-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.buehne-video { opacity: 0; transition: opacity 1.2s ease; }
+.buehne.video-laeuft .buehne-video { opacity: 1; }
+.buehne::after { background:
+  linear-gradient(180deg, rgba(7, 13, 23, 0.55) 0%, rgba(7, 13, 23, 0.15) 30%, rgba(7, 13, 23, 0.45) 62%, rgba(7, 13, 23, 0.97) 100%),
+  radial-gradient(ellipse at 20% 80%, rgba(7, 13, 23, 0.6), transparent 60%); }
+.buehne::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.35;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px); mix-blend-mode: overlay; }
+.buehne-innen { padding-bottom: 7.5rem; }
+
+.titel-anim .wort { display: inline-block; margin-right: 0.22em; }
+.titel-anim .wort:nth-child(2) { margin-right: 0.22em; }
+.titel-anim .wort:nth-child(3) { display: block; }
+.titel-anim .akzent { color: var(--signal); }
+
+/* HUD wie im Cockpit */
+.hud { position: absolute; inset: calc(var(--kopf) * 0.2) 1.2rem 5.5rem; pointer-events: none; z-index: 0; }
+.hud-ecke { position: absolute; width: 38px; height: 38px; border: 0 solid rgba(255, 210, 31, 0.7); }
+.hud-ecke.lo { left: 0; top: 0; border-left-width: 2px; border-top-width: 2px; }
+.hud-ecke.ro { right: 0; top: 0; border-right-width: 2px; border-top-width: 2px; }
+.hud-ecke.lu { left: 0; bottom: 0; border-left-width: 2px; border-bottom-width: 2px; }
+.hud-ecke.ru { right: 0; bottom: 0; border-right-width: 2px; border-bottom-width: 2px; }
+.hud-leiter { position: absolute; right: 2.2rem; top: 50%; transform: translateY(-50%); display: grid; gap: 1.1rem; font-family: var(--mono); font-size: 0.68rem; color: rgba(255, 255, 255, 0.55); text-align: right; }
+.hud-leiter span { display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end; }
+.hud-leiter span::after { content: ''; width: 26px; height: 1px; background: currentColor; }
+.hud-leiter .null { color: var(--gelb); }
+.hud-leiter .null::after { width: 54px; height: 2px; }
+.hud-kurs { position: absolute; top: 1.2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 2.4rem; font-family: var(--mono); font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); padding-top: 0.6rem;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) top / 100% 1px no-repeat; }
+.hud-kurs span:nth-child(2), .hud-kurs span:nth-child(5) { color: var(--gelb); }
+@media (max-width: 760px) { .hud-leiter, .hud-kurs { display: none; } .hud { inset: 0.6rem 0.6rem 6.5rem; } .hud-ecke { width: 22px; height: 22px; } }
+
+/* Modellflugzeug mit Kondensstreifen */
+.flugbahn { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.flieger { position: absolute; left: 0; top: 0; width: clamp(54px, 6vw, 90px); filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); offset-rotate: auto; opacity: 0;
+  animation: flug 18s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s infinite; }
+@keyframes flug {
+  0% { transform: translate(-12vw, 34vh) rotate(-14deg) scale(0.7); opacity: 0; }
+  6% { opacity: 1; }
+  30% { transform: translate(30vw, 14vh) rotate(-6deg) scale(0.9); }
+  55% { transform: translate(62vw, 20vh) rotate(8deg) scale(1); }
+  80% { transform: translate(90vw, 8vh) rotate(-10deg) scale(0.85); opacity: 1; }
+  92%, 100% { transform: translate(115vw, 2vh) rotate(-16deg) scale(0.7); opacity: 0; }
+}
+
+/* Telemetrie-Leiste */
+.telemetrie { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(5, 8, 14, 0.78); border-top: 1px solid rgba(255, 210, 31, 0.25); backdrop-filter: blur(6px); }
+.telemetrie-innen { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.8rem; padding: 0.75rem 0; font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leise); }
+.telemetrie b { color: var(--gelb); font-weight: 500; margin-left: 0.4rem; font-variant-numeric: tabular-nums; }
+.tele-live { display: inline-flex; align-items: center; gap: 0.5rem; color: #fff; }
+.tele-live i { width: 8px; height: 8px; border-radius: 50%; background: var(--leise); }
+.telemetrie.live .tele-live i { background: var(--gruen); box-shadow: 0 0 0 0 rgba(53, 208, 127, 0.6); animation: puls 1.8s infinite; }
+.telemetrie.offline .tele-live { color: var(--leise); }
+@keyframes puls { to { box-shadow: 0 0 0 10px rgba(53, 208, 127, 0); } }
+.bewegung { margin-left: auto; display: inline-flex; align-items: center; gap: 0.5rem; background: none; border: 1px solid var(--linie); color: var(--text); font: inherit; letter-spacing: inherit; text-transform: inherit; padding: 0.35rem 0.7rem; cursor: pointer; }
+.bewegung:hover { border-color: var(--gelb); color: #fff; }
+.bewegung i { width: 9px; height: 10px; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
+.bewegung[aria-pressed='true'] i { width: 0; height: 0; border: 0; border-left: 9px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+@media (max-width: 760px) { .telemetrie-innen { gap: 0.3rem 1rem; font-size: 0.66rem; } .bewegung { margin-left: 0; } }
+
+/* Alle Bewegung anhalten (Knopf im Startbildschirm) */
+.bewegung-aus *, .bewegung-aus *::before, .bewegung-aus *::after { animation-play-state: paused !important; }
+
+/* ---------- Laufband ---------- */
+.ticker { display: flex; align-items: stretch; background: var(--signal); color: #fff; overflow: hidden; border-bottom: 1px solid #000; }
+.ticker-marke { flex: none; display: flex; align-items: center; padding: 0 1rem; background: #000; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--signal); }
+.ticker-fenster { overflow: hidden; flex: 1; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.ticker-band { display: flex; width: max-content; list-style: none; margin: 0; padding: 0; animation: laufen 60s linear infinite; }
+.ticker:hover .ticker-band, .ticker:focus-within .ticker-band { animation-play-state: paused; }
+.ticker-band li { padding: 0.75rem 0; white-space: nowrap; }
+.ticker-band li::after { content: '+++'; margin: 0 1.4rem; opacity: 0.6; font-family: var(--mono); font-size: 0.8rem; }
+.ticker-band a { color: #fff; text-decoration: none; font-family: var(--titel); font-weight: 600; font-size: 1.12rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.ticker-band a:hover { color: #000; }
+@keyframes laufen { to { transform: translateX(-50%); } }
+
+/* ---------- Kennzahlen auf Bauplan-Raster ---------- */
+.bauplan { background:
+  linear-gradient(rgba(90, 169, 255, 0.07) 1px, transparent 1px) 0 0 / 32px 32px,
+  linear-gradient(90deg, rgba(90, 169, 255, 0.07) 1px, transparent 1px) 0 0 / 32px 32px,
+  linear-gradient(rgba(90, 169, 255, 0.04) 1px, transparent 1px) 0 0 / 8px 8px,
+  linear-gradient(90deg, rgba(90, 169, 255, 0.04) 1px, transparent 1px) 0 0 / 8px 8px,
+  #0a1830; border-bottom: 1px solid var(--linie); padding-block: clamp(2.5rem, 6vw, 4rem); }
+.zahlen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(90, 169, 255, 0.25); border: 1px solid rgba(90, 169, 255, 0.25); }
+.zahl { background: rgba(10, 24, 48, 0.92); padding: clamp(1.2rem, 3vw, 2rem); display: flex; flex-direction: column; gap: 0.4rem; position: relative; }
+.zahl::before { content: ''; position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-left: 2px solid var(--himmel); border-top: 2px solid var(--himmel); }
+.zahl-wert { font-family: var(--titel); font-weight: 700; font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 0.9; color: #fff; font-variant-numeric: tabular-nums; }
+.zahl-text { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--himmel); }
+@media (max-width: 760px) { .zahlen { grid-template-columns: repeat(2, 1fr); } }
+
+/* ---------- Aufmacher ---------- */
+.neu { background: var(--signal); color: #fff; padding: 0.1rem 0.45rem; }
+
+/* ---------- Was wir fliegen ---------- */
+.flotte { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; perspective: 1200px; }
+@media (max-width: 1100px) { .flotte { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .flotte { grid-template-columns: 1fr; gap: 0.9rem; } }
+.flotte-innen { --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%; position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid var(--linie); text-decoration: none; color: #fff; background: var(--flaeche);
+  transform: rotateX(var(--rx)) rotateY(var(--ry)); transform-style: preserve-3d; transition: transform 0.25s ease-out, border-color 0.25s; }
+@media (max-width: 560px) { .flotte-innen { aspect-ratio: 16 / 10; } }
+.flotte-innen:hover { border-color: var(--signal); }
+.flotte-innen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease, filter 0.6s; filter: saturate(0.8) brightness(0.85); }
+.flotte-innen:hover img { transform: scale(1.08); filter: saturate(1.15) brightness(1); }
+.flotte-innen::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(5, 8, 14, 0.95)); }
+.flotte-code { position: absolute; top: 0.9rem; left: 0.9rem; z-index: 1; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--gelb); background: rgba(5, 8, 14, 0.7); padding: 0.25rem 0.5rem; }
+.flotte-text { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; z-index: 1; transform: translateZ(30px); }
+.flotte-text strong { display: block; font-family: var(--titel); font-size: 1.9rem; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1; }
+.flotte-text span { display: block; font-size: 0.95rem; color: #c4d0de; margin-top: 0.35rem; max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.4s, opacity 0.4s; }
+.flotte-innen:hover .flotte-text span, .flotte-innen:focus-visible .flotte-text span { max-height: 4.5em; opacity: 1; }
+@media (hover: none) { .flotte-text span { max-height: none; opacity: 1; } }
+.flotte-glanz { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 0.3s; background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, 0.18), transparent 45%); }
+.flotte-innen:hover .flotte-glanz { opacity: 1; }
+
+/* ---------- Abflugtafel: Zeilen klappen herunter ---------- */
+.tafel.klappt [data-kommend] .termin { animation: klappe 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 0.08s); transform-origin: top; }
+@keyframes klappe { from { transform: perspective(600px) rotateX(-80deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.termin-datum, .termin-zeit, .termin-status { font-variant-numeric: tabular-nums; }
+
+/* ---------- Filmstreifen ---------- */
+.archiv { padding-bottom: clamp(2.5rem, 6vw, 4rem); }
+.archiv-oben { border-bottom: 1px solid var(--linie); padding: 1.2rem 0; background: var(--nacht); }
+.filmstreifen { display: grid; gap: 8px; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.film-reihe { overflow: hidden; }
+.film-band { display: flex; gap: 8px; width: max-content; list-style: none; margin: 0; padding: 0; animation: laufen 120s linear infinite; }
+.film-reihe.rueckwaerts .film-band { animation-direction: reverse; animation-duration: 140s; }
+.filmstreifen:hover .film-band, .filmstreifen:focus-within .film-band { animation-play-state: paused; }
+.film-band a { position: relative; display: block; width: clamp(200px, 22vw, 330px); aspect-ratio: 3 / 2; overflow: hidden; background: var(--flaeche); }
+.film-band img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6) brightness(0.8); transition: filter 0.4s, transform 0.4s; }
+.film-band a:hover img, .film-band a:focus-visible img { filter: none; transform: scale(1.05); }
+.film-band span { position: absolute; left: 0; bottom: 0; right: 0; padding: 1.2rem 0.6rem 0.45rem; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; background: linear-gradient(transparent, rgba(0, 0, 0, 0.85)); color: var(--gelb); opacity: 0; transition: opacity 0.3s; }
+.film-band a:hover span, .film-band a:focus-visible span { opacity: 1; }
+
+/* ---------- Instrumente (Wetter) ---------- */
+.instrumente { display: grid; grid-template-columns: 170px 1fr; gap: 1.4rem; align-items: center; padding-bottom: 1.2rem; border-bottom: 1px dashed var(--linie); }
+@media (max-width: 480px) { .instrumente { grid-template-columns: 1fr; justify-items: center; } .instrumente-rechts { width: 100%; } }
+.instrumente .wetter-jetzt { border-bottom: 0; padding-bottom: 0.8rem; }
+.kompass { margin: 0; text-align: center; }
+.kompass svg { width: 170px; height: 170px; display: block; }
+.kompass figcaption { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--leise); margin-top: 0.3rem; }
+.kompass figcaption span { color: var(--gelb); }
+.kompass-ring { fill: #05080e; stroke: var(--linie); stroke-width: 2; }
+.strich { stroke: rgba(255, 255, 255, 0.35); stroke-width: 1; }
+.strich.lang { stroke: rgba(255, 255, 255, 0.7); stroke-width: 2; }
+.himmelsrichtung { fill: var(--leise); font-family: var(--titel); font-weight: 700; font-size: 15px; text-anchor: middle; dominant-baseline: middle; }
+.nadel { --grad: 0deg; transform: rotate(var(--grad)); transform-origin: 100px 100px; transform-box: view-box; transition: transform 1.6s cubic-bezier(0.3, 1.4, 0.5, 1); }
+.nadel-spitze { fill: var(--signal); }
+.nadel-ende { fill: rgba(255, 255, 255, 0.35); }
+.kompass-mitte { fill: var(--nacht); stroke: var(--linie); }
+.kompass-wert { fill: #fff; font-family: var(--titel); font-weight: 700; font-size: 26px; text-anchor: middle; dominant-baseline: middle; }
+.kompass-einheit { fill: var(--leise); font-family: var(--mono); font-size: 8px; text-anchor: middle; letter-spacing: 1px; }
+.boeenmesser-kopf { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--leise); margin-bottom: 0.45rem; }
+.boeenmesser-kopf b { color: var(--gelb); font-weight: 500; font-size: 0.95rem; letter-spacing: 0.04em; }
+.boeenmesser-skala { position: relative; height: 12px; background: linear-gradient(90deg, var(--gruen) 0 41.6%, #ffb020 41.6% 66.6%, #ff5a4f 66.6% 100%); opacity: 0.9; }
+.boeenmesser-skala::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(5, 8, 14, 0.8) calc(10% - 1px) 10%); }
+.boeenmesser-marke { --wert: 0%; position: absolute; top: -6px; bottom: -6px; left: var(--wert); width: 3px; background: #fff; box-shadow: 0 0 10px #fff; z-index: 1; transition: left 1.6s cubic-bezier(0.3, 1.3, 0.5, 1); }
+.boeenmesser-zahlen { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.62rem; color: var(--leise); margin-top: 0.35rem; }
+.wetter-werte { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 480px) { .wetter-werte { grid-template-columns: repeat(2, 1fr); } }
+
+/* ---------- Lesefortschritt (Beiträge) ---------- */
+.lesefortschritt { display: none; }
+@supports (animation-timeline: scroll()) {
+  .lesefortschritt { display: block; position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; background: linear-gradient(90deg, var(--signal), var(--gelb)); transform-origin: left; transform: scaleX(0);
+    animation: fortschritt linear both; animation-timeline: scroll(root); }
+  @keyframes fortschritt { to { transform: scaleX(1); } }
+}
+
+/* ---------- Notlandung (404) ---------- */
+.notlandung { position: relative; min-height: 70vh; display: flex; align-items: center; overflow: hidden; padding: 5rem 0; background:
+  linear-gradient(rgba(90, 169, 255, 0.06) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(90deg, rgba(90, 169, 255, 0.06) 1px, transparent 1px) 0 0 / 40px 40px, var(--nacht); }
+.notlandung h1 { font-size: clamp(4rem, 14vw, 10rem); line-height: 0.85; }
+.notlandung p { color: var(--leise); font-size: 1.2rem; max-width: 40ch; }
+.notlandung-flieger { position: absolute; right: 8%; top: 22%; width: clamp(90px, 14vw, 190px); transform: rotate(28deg); animation: trudeln 4s ease-in-out infinite; }
+@keyframes trudeln { 50% { transform: rotate(18deg) translate(-12px, 10px); } }
+
+/* ---------- Scroll-Animationen (nur moderne Browser, nur ohne „Bewegung reduzieren“) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .titel-anim .wort { animation: aufsteigen 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(0.15s + var(--i) * 0.12s); }
+  .buehne-innen .koordinaten, .buehne-innen p, .buehne-innen .knoepfe { animation: aufsteigen 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.55s both; }
+  .hud-ecke { animation: einrasten 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes aufsteigen { from { opacity: 0; transform: translateY(0.6em); } }
+  @keyframes einrasten { from { opacity: 0; transform: scale(1.6); } }
+
+  @supports (animation-timeline: view()) {
+    .reveal { animation: auftauchen linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+    @keyframes auftauchen { from { opacity: 0; transform: translateY(48px); } }
+    .flotte .reveal:nth-child(even) { animation-range: entry 10% entry 70%; }
+    .buehne .buehne-bild, .buehne-video { animation: parallaxe linear both; animation-timeline: scroll(root); animation-range: 0 100vh; }
+    @keyframes parallaxe { to { transform: translateY(18%) scale(1.08); } }
+    .beitragskopf > img { animation: parallaxe linear both; animation-timeline: scroll(root); animation-range: 0 80vh; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flieger, .flugbahn { display: none; }
+  .ticker-band, .film-band { animation: none; }
+  .ticker-fenster, .film-reihe { overflow-x: auto; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}

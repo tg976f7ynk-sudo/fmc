@@ -1,0 +1,28 @@
+---
+// Kennzahlen, die beim Hereinscrollen hochzählen.
+import { getCollection } from 'astro:content';
+import { alleBeitraege } from '../lib/inhalte';
+
+const galerien = await getCollection('galerien');
+const fotos = galerien.reduce((n, g) => n + g.data.bilder.length, 0);
+const beitraege = (await alleBeitraege()).length;
+const jahre = new Date().getFullYear() - 1971;
+const zahlen = [
+  { wert: 1971, text: 'Gründungsjahr', roh: true },
+  { wert: jahre, text: 'Jahre Modellflug' },
+  { wert: fotos, text: 'Fotos im Archiv' },
+  { wert: beitraege, text: 'Berichte & Neuigkeiten' },
+];
+const format = (n: number, roh?: boolean) => (roh ? String(n) : n.toLocaleString('de-DE'));
+---
+
+<div class="zahlen">
+  {
+    zahlen.map((z) => (
+      <div class="zahl reveal">
+        <span class="zahl-wert" data-zahl={z.wert} data-roh={z.roh ? '1' : undefined}>{format(z.wert, z.roh)}</span>
+        <span class="zahl-text">{z.text}</span>
+      </div>
+    ))
+  }
+</div>

@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Basis from '../../layouts/Basis.astro';
 import Seitenkopf from '../../components/Seitenkopf.astro';
+import Filmstreifen from '../../components/Filmstreifen.astro';
 
 const galerien = (await getCollection('galerien')).filter((g) => g.data.bilder.length > 0);
 const jahre = [...new Set(galerien.map((g) => g.data.jahr))].sort((a, b) => b - a);
@@ -16,6 +17,7 @@ const zeit = (g: (typeof galerien)[number]) => g.data.datum?.valueOf() ?? 0;
       <a href="/videos/">Videos</a>
     </nav>
   </Seitenkopf>
+  <div class="archiv-oben"><Filmstreifen /></div>
   <section class="abschnitt">
     <div class="container">
       {
@@ -27,7 +29,7 @@ const zeit = (g: (typeof galerien)[number]) => g.data.datum?.valueOf() ?? 0;
                 .filter((g) => g.data.jahr === jahr)
                 .sort((a, b) => zeit(b) - zeit(a) || a.data.titel.localeCompare(b.data.titel, 'de'))
                 .map((g) => (
-                  <article class="karte">
+                  <article class="karte reveal">
                     <div class="karte-bild">
                       <Image src={g.data.bilder[0]} alt="" width={640} height={400} fit="cover" layout="fixed" quality={70} loading="lazy" />
                     </div>

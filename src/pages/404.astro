@@ -1,15 +1,22 @@
 ---
 import Basis from '../layouts/Basis.astro';
-import Seitenkopf from '../components/Seitenkopf.astro';
 ---
 
-<Basis titel="Seite nicht gefunden">
-  <Seitenkopf titel="Seite nicht gefunden" untertitel="Diese Adresse gibt es bei uns leider nicht (mehr)." />
-  <section class="abschnitt">
-    <div class="schmal knoepfe">
-      <a class="knopf" href="/">Zur Startseite</a>
-      <a class="knopf hell" href="/aktuelles/">Aktuelles</a>
-      <a class="knopf hell" href="/kontakt/">Kontakt</a>
+<Basis titel="Notlandung">
+  <section class="notlandung">
+    <div class="container">
+      <span class="kicker">Fehler 404 · Ziel unbekannt</span>
+      <h1>Notlandung</h1>
+      <p>Diese Seite gibt es bei uns nicht (mehr). Kein Grund zur Sorge – das Modell ist heil geblieben.</p>
+      <div class="knoepfe">
+        <a class="knopf" href="/">Zurück zur Startbahn</a>
+        <a class="knopf umriss" href="/aktuelles/">Aktuelles</a>
+      </div>
     </div>
+    <svg class="notlandung-flieger" viewBox="0 0 120 60" aria-hidden="true">
+      <path d="M118 30c0-2.2-6-4-16-4H24l-9-12h-6l4 12H6l-2 4 2 4h7l-4 12h6l9-12h78c10 0 16-1.8 16-4z" fill="#f4f7fb" />
+      <path d="M74 26 52 3h-9l12 23zm0 8L52 57h-9l12-23z" fill="#f4f7fb" />
+      <path d="M24 26h40v8H24z" fill="#ff6a2b" />
+    </svg>
   </section>
 </Basis>

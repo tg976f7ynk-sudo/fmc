@@ -1,0 +1,39 @@
+---
+// Zwei endlos laufende Bildreihen aus dem Fotoarchiv (gegenläufig).
+import { getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+const galerien = (await getCollection('galerien')).filter((g) => g.data.bilder.length > 2);
+// Aus jeder Galerie gleichmäßig verteilte Bilder nehmen, damit alle Jahre vorkommen
+const auswahl: { bild: any; link: string; titel: string }[] = [];
+for (let runde = 0; auswahl.length < 28 && runde < 6; runde++) {
+  for (const g of galerien) {
+    const schritt = Math.max(1, Math.floor(g.data.bilder.length / 6));
+    const bild = g.data.bilder[(runde * schritt + 2) % g.data.bilder.length];
+    if (bild && auswahl.length < 28) auswahl.push({ bild, link: `/impressionen/${g.id}/`, titel: `${g.data.titel} ${g.data.jahr}` });
+  }
+}
+const bilder = await Promise.all(
+  auswahl.map(async (a) => ({ ...a, klein: await getImage({ src: a.bild, width: 330, height: 220, fit: 'cover', format: 'webp', quality: 55, layout: 'none' }) })),
+);
+const reihen = [bilder.filter((_, i) => i % 2 === 0), bilder.filter((_, i) => i % 2 === 1)];
+---
+
+<div class="filmstreifen" aria-label="Bilder aus dem Archiv">
+  {
+    reihen.map((reihe, r) => (
+      <div class:list={['film-reihe', { rueckwaerts: r === 1 }]}>
+        <ul class="film-band">
+          {[...reihe, ...reihe].map((b, i) => (
+            <li aria-hidden={i >= reihe.length ? 'true' : undefined}>
+              <a href={b.link} tabindex={i >= reihe.length ? -1 : undefined}>
+                <img src={b.klein.src} width="330" height="220" alt={b.titel} decoding="async" fetchpriority="low" />
+                <span>{b.titel}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</div>

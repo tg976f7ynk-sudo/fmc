@@ -88,6 +88,7 @@ const jahr = new Date().getFullYear();
       </div>
     </header>
 
+    {artikel && <div class="lesefortschritt" aria-hidden="true" />}
     <main id="inhalt">
       <slot />
     </main>
@@ -135,6 +136,7 @@ const jahr = new Date().getFullYear();
     </div>
 
     <script>
+      import '../scripts/dynamik';
       // ---- Menü (mobil)
       const knopf = document.querySelector<HTMLButtonElement>('.menue-knopf');
       const nav = document.querySelector<HTMLElement>('.nav');

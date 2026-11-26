@@ -1,0 +1,41 @@
+---
+// „Was wir fliegen“: Kacheln mit Foto, die beim Darüberfahren kippen.
+import { Image } from 'astro:assets';
+import wasserflug from '../assets/flotte/wasserflug.jpg';
+import jets from '../assets/flotte/jets.jpg';
+import heli from '../assets/flotte/heli.jpg';
+import doppeldecker from '../assets/flotte/doppeldecker.jpg';
+import werkstatt from '../assets/flotte/werkstatt.jpg';
+import druck from '../assets/flotte/druck.jpg';
+import crawler from '../assets/flotte/crawler.jpg';
+import nacht from '../assets/flotte/nacht.jpg';
+
+const kacheln = [
+  { titel: 'Wasserflug', text: 'Start und Landung auf dem Badesee Nieder-Roden', bild: wasserflug, link: '/impressionen/2019-wasserflugtreffen/', code: 'WF' },
+  { titel: 'Jets & Impeller', text: 'Turbinen- und EDF-Modelle beim Staubsaugertreffen', bild: jets, link: '/aktuelles/das-war-unser-1-staubsaugertreffen/', code: 'JT' },
+  { titel: 'Hubschrauber', text: 'Scale-Helis und 3D-Kunstflug', bild: heli, link: '/impressionen/2015-rc-heli-treffen/', code: 'HC' },
+  { titel: 'Doppeldecker', text: 'Oldtimer mit Sternmotor und Spanndrähten', bild: doppeldecker, link: '/impressionen/2015-doppeldeckertreffen/', code: 'DD' },
+  { titel: 'Werkstatt', text: 'Großmodelle wie Spruce Goose, Do X und Ford Trimotor', bild: werkstatt, link: '/aktuelles/kategorie/baubericht/', code: 'WS' },
+  { titel: '3D-Druck', text: 'Flugmodelle aus dem Drucker – bis zur DC-3', bild: druck, link: '/aktuelles/neues-aus-dem-drucker-dc-3/', code: '3D' },
+  { titel: 'Bembel Crawler', text: 'Geländewagen im Maßstab – auch durchs Wasser', bild: crawler, link: '/aktuelles/kategorie/bembel-crawler/', code: 'BC' },
+  { titel: 'Nachtflug', text: 'Mit LED-Beleuchtung in die Dunkelheit', bild: nacht, link: '/impressionen/2014-rc-heli-treffen/', code: 'NF' },
+];
+---
+
+<ul class="flotte">
+  {
+    kacheln.map((k, i) => (
+      <li class="flotte-kachel reveal">
+        <a href={k.link} class="flotte-innen" data-kippen>
+          <Image src={k.bild} alt="" widths={[360, 560, 720]} sizes="(min-width: 1100px) 300px, (min-width: 640px) 45vw, 90vw" quality={70} loading="lazy" />
+          <span class="flotte-code" aria-hidden="true">{String(i + 1).padStart(2, '0')} / {k.code}</span>
+          <span class="flotte-text">
+            <strong>{k.titel}</strong>
+            <span>{k.text}</span>
+          </span>
+          <span class="flotte-glanz" aria-hidden="true" />
+        </a>
+      </li>
+    ))
+  }
+</ul>

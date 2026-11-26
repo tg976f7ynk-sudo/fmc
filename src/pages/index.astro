@@ -4,40 +4,83 @@ import Basis from '../layouts/Basis.astro';
 import BeitragKarte from '../components/BeitragKarte.astro';
 import TerminListe from '../components/TerminListe.astro';
 import Wetter from '../components/Wetter.astro';
-import buehne from '../assets/buehne2.jpg';
+import Flotte from '../components/Flotte.astro';
+import Filmstreifen from '../components/Filmstreifen.astro';
+import Ticker from '../components/Ticker.astro';
+import Zahlen from '../components/Zahlen.astro';
+import buehne from '../assets/wasserflug-poster.jpg';
 import seite from '../data/einstellungen.json';
 import { alleBeitraege, beitragUrl, datumLang, isoTag, kategorieUrl, kurztext } from '../lib/inhalte';
 
 const alle = await alleBeitraege();
 const [aufmacher, ...weitere] = alle;
 const liste = weitere.slice(0, 6);
+const woerter = ['Modellflug', 'in', 'Dietzenbach'];
 ---
 
 <Basis>
-  <section class="buehne">
-    <Image src={buehne} alt="" widths={[640, 1024, 1600, 2000]} sizes="100vw" layout="full-width" loading="eager" fetchpriority="high" quality={70} />
+  <section class="buehne" data-video="/video/wasserflug.mp4">
+    <Image class="buehne-bild" src={buehne} alt="" widths={[640, 1024, 1600]} sizes="100vw" layout="full-width" loading="eager" fetchpriority="high" quality={70} />
+
+    <div class="hud" aria-hidden="true">
+      <span class="hud-ecke lo"></span><span class="hud-ecke ro"></span><span class="hud-ecke lu"></span><span class="hud-ecke ru"></span>
+      <div class="hud-leiter"><span>+10</span><span>+5</span><span class="null">0</span><span>-5</span><span>-10</span></div>
+      <div class="hud-kurs"><span>330</span><span>N</span><span>030</span><span>060</span><span>O</span><span>120</span></div>
+    </div>
+
+    <div class="flugbahn" aria-hidden="true">
+      <svg class="flieger" viewBox="0 0 120 60">
+        <path d="M118 30c0-2.2-6-4-16-4H24l-9-12h-6l4 12H6l-2 4 2 4h7l-4 12h6l9-12h78c10 0 16-1.8 16-4z" fill="#f4f7fb" />
+        <path d="M74 26 52 3h-9l12 23zm0 8L52 57h-9l12-23z" fill="#f4f7fb" />
+        <path d="M86 27h22c4 .6 6 1.8 6 3s-2 2.4-6 3H86z" fill="#5aa9ff" />
+        <path d="M24 26h40v8H24z" fill="#ff6a2b" />
+      </svg>
+    </div>
+
     <div class="container">
       <div class="buehne-innen">
-        <div class="koordinaten"><span>N 50°00′44″</span><span>E 8°47′57″</span><span>Seit 1971</span></div>
-        <h1>Modellflug <em>in</em><br />Dietzenbach</h1>
-        <p>{seite.name}: Motor-, Segel-, Jet-, Hubschrauber- und Wasserflugmodelle. Gäste und Nachwuchspiloten sind willkommen.</p>
+        <div class="koordinaten"><span>N 50°00′44″</span><span>E 8°47′57″</span><span>ELEV 139 M</span><span>Seit 1971</span></div>
+        <h1 class="titel-anim">
+          {woerter.map((w, i) => <span class:list={['wort', { akzent: w === 'in' }]} style={`--i:${i}`}>{w}</span>)}
+        </h1>
+        <p>{seite.name}: Motor-, Segel-, Jet-, Hubschrauber- und Wasserflugmodelle – vom Kleinmodell bis zum Großmodell aus der eigenen Werkstatt.</p>
         <div class="knoepfe">
           <a class="knopf" href="/gastpiloten/">Als Gast fliegen</a>
           <a class="knopf umriss" href="/ueber-uns/">Der Verein</a>
         </div>
       </div>
     </div>
+
+    <div class="telemetrie" data-telemetrie>
+      <div class="container telemetrie-innen">
+        <span class="tele-live"><i></i>Live am Platz</span>
+        <span>Wind <b data-t="wind">– – –</b></span>
+        <span>Böen <b data-t="boeen">– – –</b></span>
+        <span>Temp <b data-t="temp">– –</b></span>
+        <span>QNH <b data-t="qnh">– – – –</b></span>
+        <span>LT <b data-uhr>--:--:--</b></span>
+        <button type="button" class="bewegung" data-bewegung aria-pressed="false"><i aria-hidden="true"></i><span>Bewegung aus</span></button>
+      </div>
+    </div>
+  </section>
+
+  <Ticker />
+
+  <section class="abschnitt bauplan">
+    <div class="container">
+      <Zahlen />
+    </div>
   </section>
 
   <section class="abschnitt">
     <div class="container">
-      <div class="abschnitt-kopf">
+      <div class="abschnitt-kopf reveal">
         <div><span class="kicker">Logbuch</span><h2>Aktuelles</h2></div>
         <a class="mehr" href="/aktuelles/">Alle Beiträge</a>
       </div>
       {
         aufmacher && (
-          <article class:list={['aufmacher', { 'ohne-bild': !aufmacher.data.titelbild }]}>
+          <article class:list={['aufmacher', 'reveal', { 'ohne-bild': !aufmacher.data.titelbild }]}>
             {aufmacher.data.titelbild && (
               <div class="aufmacher-bild">
                 <Image src={aufmacher.data.titelbild} alt="" widths={[640, 960, 1280]} sizes="(min-width: 820px) 60vw, 100vw" quality={72} />
@@ -45,6 +88,7 @@ const liste = weitere.slice(0, 6);
             )}
             <div class="aufmacher-text">
               <div class="meta">
+                <span class="neu">Neu</span>
                 <time datetime={isoTag(aufmacher.data.datum)}>{datumLang(aufmacher.data.datum)}</time>
                 {aufmacher.data.kategorien.slice(0, 2).map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
               </div>
@@ -62,7 +106,17 @@ const liste = weitere.slice(0, 6);
 
   <section class="abschnitt weiss">
     <div class="container">
-      <div class="abschnitt-kopf">
+      <div class="abschnitt-kopf reveal">
+        <div><span class="kicker">Hangar</span><h2>Was wir fliegen</h2></div>
+        <a class="mehr" href="/impressionen/">Alle Bilder</a>
+      </div>
+      <Flotte />
+    </div>
+  </section>
+
+  <section class="abschnitt">
+    <div class="container">
+      <div class="abschnitt-kopf reveal">
         <div><span class="kicker">Abflüge</span><h2>Nächste Termine</h2></div>
         <a class="mehr" href="/termine/">Alle Termine</a>
       </div>
@@ -70,26 +124,36 @@ const liste = weitere.slice(0, 6);
     </div>
   </section>
 
+  <section class="abschnitt weiss archiv">
+    <div class="container">
+      <div class="abschnitt-kopf reveal">
+        <div><span class="kicker">Archiv seit 2014</span><h2>Aus dem Fotoarchiv</h2></div>
+        <a class="mehr" href="/impressionen/">Zu den Galerien</a>
+      </div>
+    </div>
+    <Filmstreifen />
+  </section>
+
   <section class="abschnitt">
     <div class="container zwei-spalten">
       <div>
-        <div class="abschnitt-kopf">
-          <div><span class="kicker">Lage am Platz</span><h2>Wetter</h2></div>
+        <div class="abschnitt-kopf reveal">
+          <div><span class="kicker">Instrumente</span><h2>Wetter am Platz</h2></div>
           <a class="mehr" href="/wetter/">Vorhersage</a>
         </div>
-        <div class="box"><Wetter /></div>
+        <div class="box reveal"><Wetter /></div>
       </div>
       <div>
-        <div class="abschnitt-kopf">
+        <div class="abschnitt-kopf reveal">
           <div><span class="kicker">Ziele</span><h2>Schnell gefunden</h2></div>
         </div>
         <ul class="ziele">
-          <li><a href="/gastpiloten/"><div><strong>Gastpiloten</strong><span>Was Gäste vor dem ersten Flug wissen müssen</span></div></a></li>
-          <li><a href="/anfahrt/"><div><strong>Anfahrt</strong><span>So finden Sie unseren Flugplatz</span></div></a></li>
-          <li><a href="/jugend/"><div><strong>Jugend</strong><span>Modellbau und Fliegen lernen im Verein</span></div></a></li>
-          <li><a href="/impressionen/"><div><strong>Impressionen</strong><span>Bilder und Videos unserer Veranstaltungen</span></div></a></li>
-          <li><a href="/downloads/"><div><strong>Downloads</strong><span>Flugplatzordnung, Aufnahmeantrag und mehr</span></div></a></li>
-          <li><a href="/kontakt/"><div><strong>Kontakt</strong><span>Fragen? Schreiben Sie uns</span></div></a></li>
+          <li class="reveal"><a href="/gastpiloten/"><div><strong>Gastpiloten</strong><span>Was Gäste vor dem ersten Flug wissen müssen</span></div></a></li>
+          <li class="reveal"><a href="/anfahrt/"><div><strong>Anfahrt</strong><span>So finden Sie unseren Flugplatz</span></div></a></li>
+          <li class="reveal"><a href="/jugend/"><div><strong>Jugend</strong><span>Modellbau und Fliegen lernen im Verein</span></div></a></li>
+          <li class="reveal"><a href="/impressionen/"><div><strong>Impressionen</strong><span>Bilder und Videos unserer Veranstaltungen</span></div></a></li>
+          <li class="reveal"><a href="/downloads/"><div><strong>Downloads</strong><span>Flugplatzordnung, Aufnahmeantrag und mehr</span></div></a></li>
+          <li class="reveal"><a href="/kontakt/"><div><strong>Kontakt</strong><span>Fragen? Schreiben Sie uns</span></div></a></li>
         </ul>
       </div>
     </div>

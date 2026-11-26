@@ -6,9 +6,9 @@ export async function onRequestGet() {
   const { breite, laenge } = seite.flugplatz;
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${breite}&longitude=${laenge}` +
-    '&current=temperature_2m,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m' +
+    '&current=temperature_2m,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,visibility' +
     '&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m' +
-    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant' +
+    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,sunrise,sunset' +
     '&timezone=Europe%2FBerlin&forecast_days=5&wind_speed_unit=kmh';
   try {
     const antwort = await fetch(url, { cf: { cacheTtl: 600, cacheEverything: true } });

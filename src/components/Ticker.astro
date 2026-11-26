@@ -1,0 +1,23 @@
+---
+// Laufband mit den neuesten Beiträgen.
+import { alleBeitraege, beitragUrl } from '../lib/inhalte';
+const beitraege = (await alleBeitraege()).slice(0, 7);
+const eintraege = [
+  ...beitraege.map((b) => ({ text: b.data.titel, link: beitragUrl(b) })),
+  { text: 'Gastpiloten willkommen – nur mit Flugleiter', link: '/gastpiloten/' },
+  { text: 'N 50°00′44″ · E 8°47′57″ · Dietzenbach', link: '/anfahrt/' },
+];
+---
+
+<div class="ticker">
+  <span class="ticker-marke">Live</span>
+  <div class="ticker-fenster">
+    <ul class="ticker-band">
+      {[...eintraege, ...eintraege].map((e, i) => (
+        <li aria-hidden={i >= eintraege.length ? 'true' : undefined}>
+          <a href={e.link} tabindex={i >= eintraege.length ? -1 : undefined}>{e.text}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

@@ -1,35 +1,35 @@
 ---
-import { alleTermine, isoTag, zeitraum } from '../lib/inhalte';
+import { alleTermine, isoTag } from '../lib/inhalte';
 
 interface Props { modus?: 'kommend' | 'alle'; anzahl?: number; }
 const { modus = 'alle', anzahl = 0 } = Astro.props;
 const termine = await alleTermine();
-const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC' });
+const tag = new Intl.DateTimeFormat('de-DE', { weekday: 'short', timeZone: 'UTC' });
+const kurz = (d: Date) => `${tag.format(d).replace('.', '').toUpperCase()} ${String(d.getUTCDate()).padStart(2, '0')}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCFullYear()).slice(2)}`;
+const bisText = (von: Date, bis?: Date | null) => (bis && isoTag(bis) > isoTag(von) ? `bis ${String(bis.getUTCDate()).padStart(2, '0')}.${String(bis.getUTCMonth() + 1).padStart(2, '0')}.` : '');
 ---
 
 <div class="terminliste" data-modus={modus} data-anzahl={anzahl}>
-  <ul class="termine" data-kommend>
-    {
-      termine.map((t) => (
-        <li class="termin" data-bis={isoTag(t.data.ende ?? t.data.datum)}>
-          <div class="termin-tag">
-            <b>{t.data.datum.getUTCDate()}</b>
-            <span>{monat.format(t.data.datum).replace('.', '')} {String(t.data.datum.getUTCFullYear()).slice(2)}</span>
-          </div>
-          <div>
-            <h3>{t.data.link ? <a href={t.data.link}>{t.data.titel}</a> : t.data.titel}</h3>
-            <p>
-              {zeitraum(t.data.datum, t.data.ende)}
-              {t.data.uhrzeit && ` · ${t.data.uhrzeit}`}
-              {t.data.ort && ` · ${t.data.ort}`}
-            </p>
-            {t.data.beschreibung && <p>{t.data.beschreibung}</p>}
-          </div>
-        </li>
-      ))
-    }
-  </ul>
-  <p class="leer" data-leer hidden>Zurzeit sind keine kommenden Termine eingetragen.</p>
+  <div class="tafel">
+    <div class="tafel-kopf" aria-hidden="true"><span>Datum</span><span>Zeit</span><span>Veranstaltung</span><span>Ort</span><span style="text-align:right">Status</span></div>
+    <ul class="termine" data-kommend>
+      {
+        termine.map((t) => (
+          <li class="termin" data-von={isoTag(t.data.datum)} data-bis={isoTag(t.data.ende ?? t.data.datum)}>
+            <span class="termin-datum">{kurz(t.data.datum)}</span>
+            <span class="termin-zeit">{[bisText(t.data.datum, t.data.ende), t.data.uhrzeit].filter(Boolean).join(' · ')}</span>
+            <span class="termin-was">
+              {t.data.link ? <a href={t.data.link}>{t.data.titel}</a> : t.data.titel}
+              {t.data.beschreibung && <small>{t.data.beschreibung}</small>}
+            </span>
+            <span class="termin-ort">{t.data.ort}</span>
+            <span class="termin-status" data-status>Geplant</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="leer" data-leer hidden>Zurzeit sind keine kommenden Termine eingetragen.</p>
+  </div>
   {
     modus === 'alle' && (
       <details class="vergangen" data-vergangen-box hidden>
@@ -42,7 +42,7 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
 
 <script>
   // Welche Termine "kommend" sind, entscheidet das Datum des Besuchers –
-  // so stimmt die Liste auch ohne tägliche Neuveröffentlichung.
+  // so stimmt die Tafel auch ohne tägliche Neuveröffentlichung.
   const heute = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
   document.querySelectorAll<HTMLElement>('.terminliste').forEach((box) => {
     const kommend = box.querySelector<HTMLElement>('[data-kommend]')!;
@@ -51,8 +51,15 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
     let n = 0;
     const alt: HTMLElement[] = [];
     kommend.querySelectorAll<HTMLElement>('.termin').forEach((t) => {
-      if (t.dataset.bis! < heute) alt.push(t);
-      else if (++n > anzahl) t.remove();
+      const status = t.querySelector<HTMLElement>('[data-status]')!;
+      if (t.dataset.bis! < heute) {
+        status.textContent = 'Vorbei';
+        alt.push(t);
+      } else if (++n > anzahl) t.remove();
+      else if (t.dataset.von! <= heute) {
+        status.textContent = 'Heute';
+        status.classList.add('heute');
+      }
     });
     alt.reverse().forEach((t) => {
       t.classList.add('vorbei');

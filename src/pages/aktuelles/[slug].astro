@@ -18,28 +18,35 @@ export const getStaticPaths = (async () => {
 const { beitrag, neuer, aelter } = Astro.props;
 const d = beitrag.data;
 const { Content } = await render(beitrag);
-// Titelbild oben nur zeigen, wenn es nicht ohnehin im Text vorkommt
-const dateiname = d.titelbild?.src?.split('/').pop()?.split('?')[0].replace(/\.[a-z0-9_-]{6,}\.(\w+)$/i, '.$1') ?? '';
-const stamm = dateiname.replace(/\.\w+$/, '');
-const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
+// Dateiname des Titelbilds (ohne Kennung und Endung), um es im Text nicht doppelt zu zeigen
+const titelStamm = d.titelbild?.src?.split('/').pop()?.split('?')[0].replace(/\.[A-Za-z0-9_-]{6,}(_[A-Za-z0-9]+)?\.\w+$/, '') ?? '';
 ---
 
 <Basis titel={d.titel} beschreibung={kurztext(beitrag, 155)} bild={d.titelbild?.src} artikel>
-  <Seitenkopf titel={d.titel} pfad={[{ titel: 'Aktuelles', link: '/aktuelles/' }]}>
-    <div class="meta" style="margin-top:.6rem">
-      <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
-      {d.kategorien.map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
-    </div>
-  </Seitenkopf>
-  <article class="abschnitt">
-    <div class="schmal">
-      {
-        d.titelbild && !imText && (
-          <div class="titelbild">
-            <Image src={d.titelbild} alt="" widths={[480, 800, 1200, 1600]} sizes="(min-width: 800px) 780px, 100vw" loading="eager" />
+  {
+    d.titelbild ? (
+      <header class="beitragskopf">
+        <Image src={d.titelbild} alt="" widths={[640, 1024, 1600, 2000]} sizes="100vw" layout="full-width" loading="eager" quality={72} />
+        <div class="container">
+          <nav class="pfad" aria-label="Sie sind hier"><a href="/">Startseite</a> / <a href="/aktuelles/">Aktuelles</a></nav>
+          <h1>{d.titel}</h1>
+          <div class="meta">
+            <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
+            {d.kategorien.map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
           </div>
-        )
-      }
+        </div>
+      </header>
+    ) : (
+      <Seitenkopf titel={d.titel} pfad={[{ titel: 'Aktuelles', link: '/aktuelles/' }]}>
+        <div class="meta" style="margin-top:.8rem">
+          <time datetime={isoTag(d.datum)}>{datumLang(d.datum)}</time>
+          {d.kategorien.map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
+        </div>
+      </Seitenkopf>
+    )
+  }
+  <article class="abschnitt" data-titelbild={titelStamm}>
+    <div class="schmal">
       <div class="prose"><Content /></div>
       <Galerie bilder={d.bilder} titel={d.titel} />
       <nav class="weiter" aria-label="Weitere Beiträge">
@@ -49,3 +56,16 @@ const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
     </div>
   </article>
 </Basis>
+
+<script>
+  // Das Titelbild steht schon groß im Kopf – im Text nicht noch einmal zeigen.
+  document.querySelectorAll<HTMLElement>('article[data-titelbild]').forEach((artikel) => {
+    const stamm = artikel.dataset.titelbild;
+    if (!stamm) return;
+    const bild = [...artikel.querySelectorAll<HTMLImageElement>('.prose img')].find((i) => (i.currentSrc || i.src).includes(`/${stamm}.`));
+    if (!bild) return;
+    const huelle = bild.closest('.bild');
+    if (huelle) huelle.remove();
+    else bild.remove();
+  });
+</script>

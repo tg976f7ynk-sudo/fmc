@@ -7,7 +7,7 @@ const { titel, untertitel, pfad = [] } = Astro.props;
   <div class="container">
     <nav class="pfad" aria-label="Sie sind hier">
       <a href="/">Startseite</a>
-      {pfad.map((p) => <> › <a href={p.link}>{p.titel}</a></>)}
+      {pfad.map((p) => <> / <a href={p.link}>{p.titel}</a></>)}
     </nav>
     <h1>{titel}</h1>
     {untertitel && <p>{untertitel}</p>}

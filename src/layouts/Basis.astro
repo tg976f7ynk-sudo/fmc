@@ -4,6 +4,7 @@ import { getImage } from 'astro:assets';
 import logo from '../assets/logo.jpg';
 import seite from '../data/einstellungen.json';
 import nav from '../data/navigation.json';
+import technik from '../../site.config.mjs';
 
 interface Props {
   titel?: string;
@@ -32,7 +33,8 @@ const jahr = new Date().getFullYear();
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={`${seite.kurzname} – Aktuelles`} href="/rss.xml" />
-    <meta name="theme-color" content="#0b5cab" />
+    <meta name="theme-color" content="#070d17" />
+    <meta name="robots" content="noindex, nofollow" />
     <meta property="og:site_name" content={seite.name} />
     <meta property="og:title" content={titel ?? seite.name} />
     <meta property="og:description" content={beschreibung} />
@@ -43,13 +45,16 @@ const jahr = new Date().getFullYear();
   </head>
   <body>
     <a class="skip" href="#inhalt">Zum Inhalt springen</a>
+    <div class="design-hinweis">
+      Designvorschlag 2 · Inhalte wie auf der <a href={`${technik.vergleich}${pfad}`}>bisherigen Fassung</a>
+    </div>
     <header class="kopf">
       <div class="container kopf-innen">
         <a class="marke" href="/" aria-label={`${seite.name} – Startseite`}>
           <img src={logoKlein.src} width="52" height="52" alt="" />
           <span class="marke-text">
-            <strong>{seite.kurzname}</strong>
-            <span>Flug- und Modellbau Club e.V. · seit 1971</span>
+            <strong>FMCD</strong>
+            <span>Dietzenbach · seit 1971</span>
           </span>
         </a>
         <button class="menue-knopf" type="button" aria-expanded="false" aria-controls="hauptmenue">
@@ -89,6 +94,7 @@ const jahr = new Date().getFullYear();
 
     <footer class="fuss">
       <div class="container">
+        <p class="fuss-wort" aria-hidden="true">FMCD</p>
         <div class="fuss-raster">
           <div>
             <h2>{seite.name}</h2>
@@ -109,7 +115,7 @@ const jahr = new Date().getFullYear();
           <div>
             <h2>Rechtliches</h2>
             <ul>
-              {nav.fuss.map((p: any) => <li><a href={p.link}>{p.titel}</a></li>)}
+              {nav.fuss.map((p: any) => <li><a href={p.link === '/admin/' ? `${technik.vergleich}/admin/` : p.link}>{p.titel}</a></li>)}
             </ul>
           </div>
         </div>

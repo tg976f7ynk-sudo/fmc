@@ -4,23 +4,25 @@ import Basis from '../layouts/Basis.astro';
 import BeitragKarte from '../components/BeitragKarte.astro';
 import TerminListe from '../components/TerminListe.astro';
 import Wetter from '../components/Wetter.astro';
-import flugplatz from '../assets/flugplatz.jpg';
+import buehne from '../assets/buehne2.jpg';
 import seite from '../data/einstellungen.json';
-import { alleBeitraege } from '../lib/inhalte';
+import { alleBeitraege, beitragUrl, datumLang, isoTag, kategorieUrl, kurztext } from '../lib/inhalte';
 
-const beitraege = (await alleBeitraege()).slice(0, 6);
+const alle = await alleBeitraege();
+const [aufmacher, ...weitere] = alle;
+const liste = weitere.slice(0, 6);
 ---
 
 <Basis>
   <section class="buehne">
-    <Image src={flugplatz} alt="" widths={[640, 1024, 1600, 2000]} sizes="100vw" layout="full-width" loading="eager" fetchpriority="high" quality={70} />
+    <Image src={buehne} alt="" widths={[640, 1024, 1600, 2000]} sizes="100vw" layout="full-width" loading="eager" fetchpriority="high" quality={70} />
     <div class="container">
       <div class="buehne-innen">
-        <span class="seit">Seit 1971</span>
-        <h1>{seite.name}</h1>
-        <p>Modellflug mit Motor-, Segel-, Jet-, Hubschrauber- und Wasserflugmodellen – mitten im Rhein-Main-Gebiet. Gäste und Nachwuchspiloten sind herzlich willkommen.</p>
+        <div class="koordinaten"><span>N 50°00′44″</span><span>E 8°47′57″</span><span>Seit 1971</span></div>
+        <h1>Modellflug <em>in</em><br />Dietzenbach</h1>
+        <p>{seite.name}: Motor-, Segel-, Jet-, Hubschrauber- und Wasserflugmodelle. Gäste und Nachwuchspiloten sind willkommen.</p>
         <div class="knoepfe">
-          <a class="knopf gelb" href="/gastpiloten/">Als Gast fliegen</a>
+          <a class="knopf" href="/gastpiloten/">Als Gast fliegen</a>
           <a class="knopf umriss" href="/ueber-uns/">Der Verein</a>
         </div>
       </div>
@@ -30,44 +32,65 @@ const beitraege = (await alleBeitraege()).slice(0, 6);
   <section class="abschnitt">
     <div class="container">
       <div class="abschnitt-kopf">
-        <h2>Aktuelles</h2>
+        <div><span class="kicker">Logbuch</span><h2>Aktuelles</h2></div>
         <a class="mehr" href="/aktuelles/">Alle Beiträge</a>
       </div>
+      {
+        aufmacher && (
+          <article class:list={['aufmacher', { 'ohne-bild': !aufmacher.data.titelbild }]}>
+            {aufmacher.data.titelbild && (
+              <div class="aufmacher-bild">
+                <Image src={aufmacher.data.titelbild} alt="" widths={[640, 960, 1280]} sizes="(min-width: 820px) 60vw, 100vw" quality={72} />
+              </div>
+            )}
+            <div class="aufmacher-text">
+              <div class="meta">
+                <time datetime={isoTag(aufmacher.data.datum)}>{datumLang(aufmacher.data.datum)}</time>
+                {aufmacher.data.kategorien.slice(0, 2).map((k) => <a class="marke-kat" href={kategorieUrl(k)}>{k}</a>)}
+              </div>
+              <h3><a href={beitragUrl(aufmacher)}>{aufmacher.data.titel}</a></h3>
+              <p>{kurztext(aufmacher, 220)}</p>
+            </div>
+          </article>
+        )
+      }
       <div class="karten">
-        {beitraege.map((b) => <BeitragKarte beitrag={b} />)}
+        {liste.map((b) => <BeitragKarte beitrag={b} />)}
       </div>
     </div>
   </section>
 
   <section class="abschnitt weiss">
-    <div class="container zwei-spalten">
-      <div>
-        <div class="abschnitt-kopf">
-          <h2>Nächste Termine</h2>
-          <a class="mehr" href="/termine/">Alle Termine</a>
-        </div>
-        <TerminListe modus="kommend" anzahl={4} />
+    <div class="container">
+      <div class="abschnitt-kopf">
+        <div><span class="kicker">Abflüge</span><h2>Nächste Termine</h2></div>
+        <a class="mehr" href="/termine/">Alle Termine</a>
       </div>
-      <div>
-        <div class="abschnitt-kopf">
-          <h2>Wetter am Platz</h2>
-          <a class="mehr" href="/wetter/">Vorhersage</a>
-        </div>
-        <div class="box"><Wetter /></div>
-      </div>
+      <TerminListe modus="kommend" anzahl={6} />
     </div>
   </section>
 
   <section class="abschnitt">
-    <div class="container">
-      <div class="abschnitt-kopf"><h2>Schnell gefunden</h2></div>
-      <div class="kacheln">
-        <a class="kachel" href="/gastpiloten/"><strong>Gastpiloten</strong><span>Was Gäste vor dem ersten Flug wissen müssen</span></a>
-        <a class="kachel" href="/anfahrt/"><strong>Anfahrt</strong><span>So finden Sie unseren Flugplatz</span></a>
-        <a class="kachel" href="/jugend/"><strong>Jugend</strong><span>Modellbau und Fliegen lernen im Verein</span></a>
-        <a class="kachel" href="/impressionen/"><strong>Impressionen</strong><span>Bilder und Videos unserer Veranstaltungen</span></a>
-        <a class="kachel" href="/downloads/"><strong>Downloads</strong><span>Flugplatzordnung, Aufnahmeantrag und mehr</span></a>
-        <a class="kachel" href="/kontakt/"><strong>Kontakt</strong><span>Fragen? Schreiben Sie uns</span></a>
+    <div class="container zwei-spalten">
+      <div>
+        <div class="abschnitt-kopf">
+          <div><span class="kicker">Lage am Platz</span><h2>Wetter</h2></div>
+          <a class="mehr" href="/wetter/">Vorhersage</a>
+        </div>
+        <div class="box"><Wetter /></div>
+      </div>
+      <div>
+        <div class="abschnitt-kopf">
+          <div><span class="kicker">Ziele</span><h2>Schnell gefunden</h2></div>
+        </div>
+        <ul class="ziele">
+          <li><a href="/gastpiloten/"><div><strong>Gastpiloten</strong><span>Was Gäste vor dem ersten Flug wissen müssen</span></div></a></li>
+          <li><a href="/anfahrt/"><div><strong>Anfahrt</strong><span>So finden Sie unseren Flugplatz</span></div></a></li>
+          <li><a href="/jugend/"><div><strong>Jugend</strong><span>Modellbau und Fliegen lernen im Verein</span></div></a></li>
+          <li><a href="/impressionen/"><div><strong>Impressionen</strong><span>Bilder und Videos unserer Veranstaltungen</span></div></a></li>
+          <li><a href="/downloads/"><div><strong>Downloads</strong><span>Flugplatzordnung, Aufnahmeantrag und mehr</span></div></a></li>
+          <li><a href="/kontakt/"><div><strong>Kontakt</strong><span>Fragen? Schreiben Sie uns</span></div></a></li>
+        </ul>
       </div>
     </div>
   </section>

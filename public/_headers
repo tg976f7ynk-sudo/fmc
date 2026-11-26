@@ -10,6 +10,6 @@
 /admin/*
   X-Robots-Tag: noindex
 
-# Vorschau-Adressen nicht in Suchmaschinen aufnehmen
-https://:projekt.pages.dev/*
+# Vorläufige Cloudflare-Adressen nicht in Suchmaschinen aufnehmen
+https://:worker.:konto.workers.dev/*
   X-Robots-Tag: noindex

@@ -1,6 +1,6 @@
 // Wetter für den Flugplatz. Die Abfrage läuft über unseren Server,
 // damit Besucher keine Daten direkt an den Wetterdienst übertragen.
-import seite from '../../src/data/einstellungen.json';
+import seite from '../src/data/einstellungen.json';
 
 export async function onRequestGet() {
   const { breite, laenge } = seite.flugplatz;

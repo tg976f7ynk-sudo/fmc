@@ -1,0 +1,19 @@
+{
+  // Einstellungen für Cloudflare Workers. Der Name muss dem Worker im Cloudflare-Konto entsprechen.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fmc",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-11-23",
+  "assets": {
+    // fertig gebaute Seite
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash",
+    // nur /api/ läuft durch den Worker, alles andere wird direkt ausgeliefert
+    "run_worker_first": ["/api/*"]
+  },
+  // im Dashboard eingetragene Variablen bei einer neuen Veröffentlichung behalten
+  "keep_vars": true,
+  "observability": { "enabled": true }
+}

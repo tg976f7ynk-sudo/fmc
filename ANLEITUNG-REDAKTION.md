@@ -5,7 +5,7 @@ Du brauchst nur einen Browser – am Computer, Tablet oder Handy.
 
 ## Anmelden
 
-1. Öffne **https://fmc-dietzenbach.org/admin/** (oder unten auf der Seite „Redaktion“ anklicken).
+1. Öffne **https://fmc.sehnen-randvoll1q.workers.dev/admin/** (oder unten auf der Seite „Redaktion“ anklicken).
 2. Klicke auf **„Mit GitHub anmelden“** und melde dich mit deinem GitHub-Konto an.
    (Das Konto richtet der Administrator einmalig für dich ein.)
 

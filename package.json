@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "node scripts/cms-kopieren.mjs && astro dev",
     "build": "node scripts/cms-kopieren.mjs && astro build",
-    "preview": "wrangler pages dev dist",
-    "vorschau": "wrangler pages dev dist"
+    "vorschau": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.10",

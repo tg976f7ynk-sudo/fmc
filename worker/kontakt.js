@@ -1,5 +1,5 @@
 // Kontaktformular: prüft die Eingaben und verschickt sie per E-Mail über das
-// Postfach des Vereins (SMTP). Einstellungen (in Cloudflare als Variablen/Secrets):
+// Postfach des Vereins (SMTP). Einstellungen (im Worker unter Einstellungen → Variablen und Secrets):
 //   SMTP_HOST   z. B. smtp.strato.de
 //   SMTP_PORT   465 (Standard, verschlüsselt)
 //   SMTP_USER   Postfach-Adresse, z. B. kontakt@fmc-dietzenbach.org

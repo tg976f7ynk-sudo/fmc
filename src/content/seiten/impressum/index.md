@@ -1,24 +1,47 @@
 ---
 titel: "Impressum"
+untertitel: "Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)"
 ---
 
-![Anbieterkennzeichnung des Flug- und Modellbauclub Dietzenbach e.V.](impressum.jpg)
+> **Entwurf**, vom Vorstand noch zu prüfen. Die mit *(Platzhalter)* markierten Angaben müssen vor der Veröffentlichung unter der Vereinsdomain ersetzt werden. Diesen Hinweis danach entfernen.
 
-## Hinweis auf EU-Streitschlichtung
+## Anbieter
 
-Zur außergerichtlichen Beilegung von verbraucherrechtlichen Streitigkeiten hat die Europäische Union eine Online-Plattform (“OS-Plattform”) eingerichtet, an die Sie sich wenden können. Die Plattform finden Sie unter <http://ec.europa.eu/consumers/odr/>.
+Flug- und Modellbau Club Dietzenbach e.V.\
+Musterstraße 20 *(Platzhalter)*\
+63128 Dietzenbach
 
-## Disclaimer – rechtliche Hinweise
+Postanschrift: Postfach 2053, 63120 Dietzenbach
 
-§ 1 Warnhinweis zu Inhalten\
-Die kostenlosen und frei zugänglichen Inhalte dieser Webseite wurden mit größtmöglicher Sorgfalt erstellt. Der Anbieter dieser Webseite übernimmt jedoch keine Gewähr für die Richtigkeit und Aktualität der bereitgestellten kostenlosen und frei zugänglichen journalistischen Ratgeber und Nachrichten. Namentlich gekennzeichnete Beiträge geben die Meinung des jeweiligen Autors und nicht immer die Meinung des Anbieters wieder. Allein durch den Aufruf der kostenlosen und frei zugänglichen Inhalte kommt keinerlei Vertragsverhältnis zwischen dem Nutzer und dem Anbieter zustande, insoweit fehlt es am Rechtsbindungswillen des Anbieters.
+## Kontakt
 
-§ 2 Externe Links\
-Diese Website enthält Verknüpfungen zu Websites Dritter ("externe Links"). Diese Websites unterliegen der Haftung der jeweiligen Betreiber. Der Anbieter hat bei der erstmaligen Verknüpfung der externen Links die fremden Inhalte daraufhin überprüft, ob etwaige Rechtsverstöße bestehen. Zu dem Zeitpunkt waren keine Rechtsverstöße ersichtlich. Der Anbieter hat keinerlei Einfluss auf die aktuelle und zukünftige Gestaltung und auf die Inhalte der verknüpften Seiten. Das Setzen von externen Links bedeutet nicht, dass sich der Anbieter die hinter dem Verweis oder Link liegenden Inhalte zu Eigen macht. Eine ständige Kontrolle der externen Links ist für den Anbieter ohne konkrete Hinweise auf Rechtsverstöße nicht zumutbar. Bei Kenntnis von Rechtsverstößen werden jedoch derartige externe Links unverzüglich gelöscht.
+Telefon: [0172 7686037](tel:+491727686037)\
+E-Mail: [vorstand@fmc-dietzenbach.org](mailto:vorstand@fmc-dietzenbach.org)
 
-§ 3 Urheber- und Leistungsschutzrechte\
-Die auf dieser Website veröffentlichten Inhalte unterliegen dem deutschen Urheber- und Leistungsschutzrecht. Jede vom deutschen Urheber- und Leistungsschutzrecht nicht zugelassene Verwertung bedarf der vorherigen schriftlichen Zustimmung des Anbieters oder jeweiligen Rechteinhabers. Dies gilt insbesondere für Vervielfältigung, Bearbeitung, Übersetzung, Einspeicherung, Verarbeitung bzw. Wiedergabe von Inhalten in Datenbanken oder anderen elektronischen Medien und Systemen. Inhalte und Rechte Dritter sind dabei als solche gekennzeichnet. Die unerlaubte Vervielfältigung oder Weitergabe einzelner Inhalte oder kompletter Seiten ist nicht gestattet und strafbar. Lediglich die Herstellung von Kopien und Downloads für den persönlichen, privaten und nicht kommerziellen Gebrauch ist erlaubt.\
-Die Darstellung dieser Website in fremden Frames ist nur mit schriftlicher Erlaubnis zulässig. Das Copyright aller Bilder dieser Homepage gehört dem FMCD.
+## Vertretungsberechtigter Vorstand
 
-§ 4 Besondere Nutzungsbedingungen\
-Soweit besondere Bedingungen für einzelne Nutzungen dieser Website von den vorgenannten Paragraphen abweichen, wird an entsprechender Stelle ausdrücklich darauf hingewiesen. In diesem Falle gelten im jeweiligen Einzelfall die besonderen Nutzungsbedingungen.
+Ralf Kaiser (Vorsitzender)\
+Stephan Langhammer (stellvertretender Vorsitzender)\
+Volker Horch (Kassierer)
+
+## Registereintrag
+
+Eingetragen im Vereinsregister\
+Registergericht: Amtsgericht Offenbach am Main\
+Registernummer: 5VR846 *(Schreibweise bitte mit dem Registerauszug abgleichen)*
+
+## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
+
+Vorname Nachname *(Platzhalter)*\
+Musterstraße 20 *(Platzhalter)*\
+63128 Dietzenbach
+
+## Haftung für Links
+
+Unsere Seiten enthalten Links zu Webseiten anderer Anbieter, auf deren Inhalte wir keinen Einfluss haben. Für diese Inhalte ist der jeweilige Anbieter verantwortlich. Bei der Verlinkung haben wir die fremden Seiten auf erkennbare Rechtsverstöße geprüft. Werden uns Rechtsverletzungen bekannt, entfernen wir den betreffenden Link umgehend.
+
+## Urheberrecht
+
+Texte, Fotos und Grafiken auf dieser Webseite stammen, soweit nicht anders angegeben, vom Flug- und Modellbau Club Dietzenbach e.V. und seinen Mitgliedern und unterliegen dem Urheberrecht. Eine Verwendung außerhalb dieser Webseite ist nur mit unserer Zustimmung erlaubt. Sollten Sie auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen Hinweis; wir entfernen den betreffenden Inhalt dann umgehend.
+
+Hinweise zum Datenschutz finden Sie in unserer [Datenschutzerklärung](/datenschutz/).

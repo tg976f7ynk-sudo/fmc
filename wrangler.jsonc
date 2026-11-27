@@ -11,13 +11,15 @@
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
     // nur /api/ läuft durch den Worker, alles andere wird direkt ausgeliefert
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/mcp"]
   },
   // Kontaktformular: höchstens 3 Nachrichten pro Minute je Besucher
   "ratelimits": [
     { "name": "KONTAKT_LIMIT", "namespace_id": "20261126", "simple": { "limit": 3, "period": 60 } },
     // Seitenaufrufe: höchstens 60 Zählungen pro Minute je Besucher (Schutz vor künstlich hochgetriebenen Zahlen)
-    { "name": "ZAEHLER_LIMIT", "namespace_id": "20261127", "simple": { "limit": 60, "period": 60 } }
+    { "name": "ZAEHLER_LIMIT", "namespace_id": "20261127", "simple": { "limit": 60, "period": 60 } },
+    // Suche und MCP-Zugang: höchstens 60 Anfragen pro Minute je Absender
+    { "name": "SUCHE_LIMIT", "namespace_id": "20261128", "simple": { "limit": 60, "period": 60 } }
   ],
   // Anonyme Zählung der Seitenaufrufe: nur Seite, Tag und Anzahl – keine IP-Adressen, keine Cookies
   "d1_databases": [{ "binding": "STATISTIK", "database_name": "fmc-statistik", "database_id": "3a6b8b7c-6174-4f9f-8258-90142f74a50d" }],

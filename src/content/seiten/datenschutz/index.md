@@ -37,6 +37,10 @@ Es werden **keine IP-Adressen, keine Cookies, keine Geräte- oder Browsermerkmal
 
 Rechtsgrundlage ist unser berechtigtes Interesse, unser Angebot an den Interessen der Besucher auszurichten (Art. 6 Abs. 1 lit. f DSGVO). Da keine personenbezogenen Daten gespeichert werden, ist ein Widerspruch technisch nicht erforderlich; wer die Zählung dennoch verhindern möchte, kann JavaScript im Browser deaktivieren.
 
+## Suche
+
+Die Suche auf dieser Webseite (und die öffentliche Such-Schnittstelle für Programme und KI-Assistenten) verarbeitet Ihren Suchbegriff nur, um die passenden Inhalte zu finden. Suchbegriffe werden **nicht gespeichert** und nicht ausgewertet. Um Missbrauch zu verhindern, wird die IP-Adresse für höchstens eine Minute als Schlüssel einer Mengenbegrenzung verwendet und nicht gespeichert.
+
 ## Kontaktformular und E-Mail
 
 Wenn Sie uns über das Kontaktformular schreiben, verarbeiten wir Ihren Namen, Ihre E-Mail-Adresse, den Betreff und Ihre Nachricht. Die Angaben werden als E-Mail an ein Postfach des Vereins weitergeleitet und nur zur Beantwortung Ihrer Anfrage verwendet. Das Gleiche gilt, wenn Sie uns direkt per E-Mail schreiben.

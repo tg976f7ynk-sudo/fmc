@@ -31,6 +31,7 @@ const jahr = new Date().getFullYear();
     <link rel="canonical" href={kanonisch} />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="text/markdown" title="Inhalte für Sprachmodelle" href="/llms.txt" />
     <link rel="alternate" type="application/rss+xml" title={`${seite.kurzname} – Aktuelles`} href="/rss.xml" />
     <meta name="theme-color" content="#0b5cab" />
     <meta property="og:site_name" content={seite.name} />
@@ -51,6 +52,9 @@ const jahr = new Date().getFullYear();
             <strong>{seite.kurzname}</strong>
             <span>Flug- und Modellbau Club e.V. · seit 1971</span>
           </span>
+        </a>
+        <a class="kopf-suche" href="/suche/" aria-label="Suche" title="Suche">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2" /><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
         </a>
         <button class="menue-knopf" type="button" aria-expanded="false" aria-controls="hauptmenue">
           <span class="striche" aria-hidden="true"></span> Menü

@@ -1,0 +1,132 @@
+---
+import Basis from '../layouts/Basis.astro';
+import Seitenkopf from '../components/Seitenkopf.astro';
+---
+
+<Basis titel="Suche" beschreibung="Alle Beiträge, Seiten, Bildergalerien und Termine des FMC Dietzenbach durchsuchen.">
+  <Seitenkopf titel="Suche" untertitel="Beiträge, Bauberichte, Seiten, Galerien und Termine durchsuchen." />
+  <section class="abschnitt">
+    <div class="schmal">
+      <form class="suchfeld" action="/suche/" method="get" role="search" data-suchformular>
+        <label class="sr-only" for="suchbegriff">Suchbegriff</label>
+        <input id="suchbegriff" name="q" type="search" placeholder="z. B. Wasserflug, Do X, Hallenfliegen …" autocomplete="off" maxlength="200" data-suchbegriff />
+        <button class="knopf" type="submit">Suchen</button>
+      </form>
+      <div class="filter such-filter" role="group" aria-label="Art" data-arten>
+        <button type="button" data-art="" aria-pressed="true">Alles</button>
+        <button type="button" data-art="Beitrag" aria-pressed="false">Beiträge</button>
+        <button type="button" data-art="Termin" aria-pressed="false">Termine</button>
+        <button type="button" data-art="Galerie" aria-pressed="false">Galerien</button>
+        <button type="button" data-art="Seite" aria-pressed="false">Seiten</button>
+      </div>
+      <p class="such-status" data-status role="status" aria-live="polite"></p>
+      <ol class="such-treffer" data-treffer></ol>
+      <noscript><p>Für die Suche wird JavaScript benötigt.</p></noscript>
+      <p class="such-hinweis">
+        Für Programme und KI-Assistenten: <a href="/llms.txt">llms.txt</a> · Such-Schnittstelle <code>/api/suche?q=…</code> · MCP-Zugang <code>/mcp</code>
+      </p>
+    </div>
+  </section>
+</Basis>
+
+<style is:global>
+  .suchfeld { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
+  .suchfeld input { flex: 1; min-width: 0; font: inherit; font-size: 1.1rem; padding: 0.75rem 1rem; border: 2px solid var(--blau); border-radius: 99px; background: var(--weiss); }
+  .suchfeld input:focus { outline: 3px solid rgba(11, 92, 171, 0.25); }
+  .such-filter { margin-bottom: 1rem; }
+  .such-filter button { padding: 0.4rem 0.95rem; border-radius: 99px; border: 1px solid var(--linie); background: var(--weiss); font: inherit; font-weight: 600; font-size: 0.93rem; color: var(--text); cursor: pointer; }
+  .such-filter button[aria-pressed='true'] { background: var(--blau); border-color: var(--blau); color: #fff; }
+  .such-status { color: var(--text-leise); min-height: 1.5em; }
+  .such-treffer { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.8rem; }
+  .such-treffer li { background: var(--weiss); border: 1px solid var(--linie); border-radius: var(--radius); padding: 1rem 1.2rem; box-shadow: var(--schatten); }
+  .such-treffer .meta { margin-bottom: 0.3rem; }
+  .such-treffer h2 { font-size: 1.2rem; margin: 0 0 0.3rem; }
+  .such-treffer h2 a { text-decoration: none; }
+  .such-treffer h2 a:hover { text-decoration: underline; }
+  .such-treffer p { margin: 0; color: var(--text-leise); font-size: 0.97rem; }
+  .such-treffer mark { background: #fff1a8; color: inherit; padding: 0 0.1em; border-radius: 3px; }
+  .such-hinweis { margin-top: 2.5rem; font-size: 0.85rem; color: var(--text-leise); }
+</style>
+
+<script>
+  const eingabe = document.querySelector<HTMLInputElement>('[data-suchbegriff]')!;
+  const liste = document.querySelector<HTMLOListElement>('[data-treffer]')!;
+  const status = document.querySelector<HTMLElement>('[data-status]')!;
+  let art = '';
+  let laufend = 0;
+  const datum = (iso: string) => new Date(iso + 'T12:00:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+  // Suchwörter im Text markieren (ä/ae usw. gleichwertig), sicher über Textknoten
+  const markieren = (text: string, woerter: string[]) => {
+    const frag = document.createDocumentFragment();
+    if (!woerter.length) { frag.append(text); return frag; }
+    const teil = woerter
+      .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ae|ä/g, '(?:ae|ä)').replace(/oe|ö/g, '(?:oe|ö)').replace(/ue|ü/g, '(?:ue|ü)').replace(/ss|ß/g, '(?:ss|ß)'))
+      .join('|');
+    const re = new RegExp(`(${teil})`, 'gi');
+    let zuletzt = 0;
+    for (const m of text.matchAll(re)) {
+      frag.append(text.slice(zuletzt, m.index));
+      const mark = document.createElement('mark');
+      mark.textContent = m[0];
+      frag.append(mark);
+      zuletzt = m.index! + m[0].length;
+    }
+    frag.append(text.slice(zuletzt));
+    return frag;
+  };
+
+  async function suchen() {
+    const q = eingabe.value.trim();
+    const url = new URL(location.href);
+    q ? url.searchParams.set('q', q) : url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+    if (q.length < 2) { liste.replaceChildren(); status.textContent = q ? 'Bitte mindestens zwei Zeichen eingeben.' : ''; return; }
+    const nr = ++laufend;
+    status.textContent = 'Suche …';
+    try {
+      const antwort = await fetch(`/api/suche?q=${encodeURIComponent(q)}&anzahl=30${art ? `&art=${encodeURIComponent(art)}` : ''}`);
+      const daten = await antwort.json();
+      if (nr !== laufend) return;
+      if (!antwort.ok) throw new Error(daten.fehler);
+      const woerter = q.toLowerCase().split(/\s+/).filter((w) => w.length > 1);
+      liste.replaceChildren(
+        ...daten.treffer.map((t: any) => {
+          const li = document.createElement('li');
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          const kat = document.createElement('span');
+          kat.className = 'marke-kat';
+          kat.textContent = t.art;
+          meta.append(kat);
+          if (t.datum && t.art !== 'Galerie') meta.append(document.createTextNode(datum(t.datum)));
+          const h = document.createElement('h2');
+          const a = document.createElement('a');
+          a.href = new URL(t.url).pathname;
+          a.append(markieren(t.titel, woerter));
+          h.append(a);
+          const p = document.createElement('p');
+          p.append(markieren(t.auszug, woerter));
+          li.append(meta, h, p);
+          return li;
+        }),
+      );
+      status.textContent = daten.treffer.length ? `${daten.treffer.length} ${daten.treffer.length === 1 ? 'Treffer' : 'Treffer'} für „${q}“` : `Keine Treffer für „${q}“. Vielleicht ein anderes Wort oder nur den Wortanfang versuchen?`;
+    } catch {
+      if (nr === laufend) status.textContent = 'Die Suche ist im Moment nicht erreichbar.';
+    }
+  }
+
+  let warten: number | undefined;
+  eingabe.addEventListener('input', () => { clearTimeout(warten); warten = window.setTimeout(suchen, 250); });
+  document.querySelector('[data-suchformular]')!.addEventListener('submit', (e) => { e.preventDefault(); suchen(); });
+  document.querySelectorAll<HTMLButtonElement>('[data-art]').forEach((b) =>
+    b.addEventListener('click', () => {
+      art = b.dataset.art!;
+      document.querySelectorAll('[data-art]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      suchen();
+    }),
+  );
+  eingabe.value = new URLSearchParams(location.search).get('q') ?? '';
+  if (eingabe.value) suchen();
+  eingabe.focus();
+</script>

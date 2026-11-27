@@ -261,3 +261,9 @@ details.vergangen summary { cursor: pointer; font-weight: 700; color: var(--blau
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 @media print { .kopf, .fuss, .lb, .knoepfe { display: none !important; } body { background: #fff; } }
+
+/* ---------- Suchsymbol im Kopf ---------- */
+.kopf-suche { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; color: var(--text); flex: none; }
+.kopf-suche:hover, .kopf-suche[aria-current='page'] { background: var(--blau-hell); color: var(--blau-dunkel); }
+.kopf-suche svg { width: 22px; height: 22px; }
+@media (min-width: 1021px) { .kopf-suche { order: 3; } }

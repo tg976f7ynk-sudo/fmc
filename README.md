@@ -89,6 +89,20 @@ für Besucher ist sie in der Regel unsichtbar.
 4. Im Turnstile-Widget die neue Domain als Hostnamen ergänzen.
 5. In `wrangler.jsonc` `"workers_dev": false` setzen, damit die vorläufige Adresse abgeschaltet wird.
 
+## Suche und Zugang für KI-Systeme
+
+| Adresse | Zweck |
+| --- | --- |
+| `/suche/` | Suchseite für Besucher (Suchsymbol oben im Kopf) |
+| `/api/suche?q=…&art=…&anzahl=…` | Volltextsuche als JSON, öffentlich, nur lesend |
+| `/mcp` | MCP-Server (Streamable HTTP, ohne Sitzung) mit den Werkzeugen `suche`, `inhalt_lesen`, `termine` |
+| `/api/openapi.json` | Beschreibung der Such-Schnittstelle (OpenAPI 3.1), z. B. für eigene GPTs |
+| `/llms.txt`, `/llms-full.txt` | Übersicht bzw. alle Texte für Sprachmodelle |
+| `/suchindex.json` | Suchindex, wird bei jedem Bau neu erzeugt |
+
+Die Suche läuft im Worker (`worker/suchmaschine.js`) über den beim Bau erzeugten Index.
+Suchbegriffe werden nicht gespeichert; je Absender sind 60 Anfragen pro Minute möglich.
+
 ## Statistik
 
 Jeder Seitenaufruf im Browser zählt einen Eintrag in der D1-Datenbank `fmc-statistik`

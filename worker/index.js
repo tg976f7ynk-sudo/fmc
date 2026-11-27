@@ -7,6 +7,8 @@ import * as auth from './auth.js';
 import * as callback from './callback.js';
 import * as zaehler from './zaehler.js';
 import * as statistik from './statistik.js';
+import * as suche from './suche.js';
+import * as mcp from './mcp.js';
 
 // Schutz-Header für alle Antworten der Serverfunktionen
 // (für die fertigen Seiten stehen sie in public/_headers)
@@ -31,6 +33,8 @@ const routen = {
   '/api/callback': callback,
   '/api/zaehler': zaehler,
   '/api/statistik': statistik,
+  '/api/suche': suche,
+  '/mcp': mcp,
 };
 
 export default {
@@ -39,7 +43,7 @@ export default {
     const modul = routen[url.pathname.replace(/\/$/, '')];
     if (!modul) return env.ASSETS.fetch(request);
 
-    const name = request.method === 'POST' ? 'onRequestPost' : request.method === 'GET' || request.method === 'HEAD' ? 'onRequestGet' : null;
+    const name = request.method === 'POST' ? 'onRequestPost' : request.method === 'GET' || request.method === 'HEAD' ? 'onRequestGet' : request.method === 'OPTIONS' ? 'onRequestOptions' : null;
     const funktion = name && modul[name];
     if (!funktion) return absichern(new Response('Methode nicht erlaubt', { status: 405 }));
     try {

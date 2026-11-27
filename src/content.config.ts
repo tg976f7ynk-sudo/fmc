@@ -23,6 +23,7 @@ const beitraege = defineCollection({
       datum: z.coerce.date(),
       kategorien: z.array(z.string()).default(['Aktuelles']),
       titelbild: z.preprocess(neben, image().optional()),
+      titelbild_alt: z.preprocess(leerZuUndefined, z.string().optional()),
       kurztext: z.preprocess(leerZuUndefined, z.string().optional()),
       bilder: bildliste(image),
       entwurf: z.boolean().default(false),
@@ -61,6 +62,7 @@ const termine = defineCollection({
     beschreibung: z.string().optional().nullable(),
     link: z.string().optional().nullable(),
     bild: z.preprocess(neben, image().optional()),
+    bild_alt: z.preprocess(leerZuUndefined, z.string().optional().nullable()),
   }),
 });
 

@@ -32,7 +32,8 @@ In den Listen helfen oben **Sortieren**, **Gruppieren nach Jahr** und **Filter**
 1. **Beiträge → Neu**.
 2. **Überschrift** eintragen. Das **Datum** ist bereits auf heute gesetzt.
 3. **Kategorie** wählen (z. B. Aktuelles, Veranstaltungen, Baubericht).
-4. **Titelbild** auswählen – es erscheint in der Übersicht und oben im Beitrag.
+4. **Titelbild** auswählen – es erscheint in der Übersicht und oben im Beitrag – und
+   darunter in einem Satz beschreiben, was zu sehen ist (**Bildbeschreibung**).
 5. Den **Text** schreiben. Die Leiste über dem Textfeld hat Knöpfe für fett,
    Überschriften, Listen, Links und Bilder.
 6. Oben rechts auf **Speichern** klicken.
@@ -42,7 +43,11 @@ Beiträgen führt das Menü oben rechts (⋮) mit **„Auf Website ansehen“** 
 
 ### Bilder
 
-- **Einzelne Bilder im Text:** im Textfeld auf das Bild-Symbol klicken und ein Foto auswählen.
+- **Einzelne Bilder im Text:** im Textfeld auf das Bild-Symbol klicken, ein Foto auswählen
+  und im Feld **„Alternativtext“** kurz beschreiben, was zu sehen ist.
+- **Warum Bildbeschreibungen?** Blinde Besucher lassen sich Seiten vorlesen und erfahren so,
+  was auf den Fotos ist. Auch Suchmaschinen finden die Seite dadurch besser.
+  Gut: „Rotes Wasserflugzeug startet auf dem Badesee“. Nicht nötig: „Bild von …“.
 - **Mehrere Bilder nebeneinander:** mehrere Bilder direkt hintereinander einfügen –
   daraus wird automatisch eine Bilderreihe.
 - **Viele Fotos auf einmal:** im Feld **Bildergalerie** alle Fotos gleichzeitig auswählen.

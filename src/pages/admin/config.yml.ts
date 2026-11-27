@@ -8,7 +8,7 @@ const neben = { media_folder: '', public_folder: '' }; // Bilder liegen direkt b
 const datum = (name: string, label: string, extra = {}) => ({
   name, label, widget: 'datetime', format: 'YYYY-MM-DD', date_format: 'DD.MM.YYYY', time_format: false, ...extra,
 });
-const text = { name: 'body', label: 'Text', widget: 'markdown', required: false, buttons: ['bold', 'italic', 'link', 'heading-two', 'heading-three', 'bulleted-list', 'numbered-list', 'quote'], editor_components: ['image'], hint: 'Bilder über das Bild-Symbol einfügen. Mehrere Bilder direkt hintereinander werden automatisch als Bilderreihe dargestellt. Ein YouTube-Link in einer eigenen Zeile wird zum Video.' };
+const text = { name: 'body', label: 'Text', widget: 'markdown', required: false, buttons: ['bold', 'italic', 'link', 'heading-two', 'heading-three', 'bulleted-list', 'numbered-list', 'quote'], editor_components: ['image'], hint: 'Bilder über das Bild-Symbol einfügen und im Feld „Alternativtext“ kurz beschreiben, was zu sehen ist. Mehrere Bilder direkt hintereinander werden automatisch als Bilderreihe dargestellt. Ein YouTube-Link in einer eigenen Zeile wird zum Video.' };
 const galerie = (hint: string) => ({ name: 'bilder', label: 'Bildergalerie', widget: 'image', multiple: true, required: false, hint });
 
 const config = {
@@ -64,6 +64,7 @@ const config = {
         { name: 'kategorien', label: 'Kategorie', widget: 'select', multiple: true, min: 1, options: [...KATEGORIEN], default: ['Aktuelles'], hint: 'Mindestens eine. Bauberichte zusätzlich unter „Baubericht“ einordnen.' },
         { name: 'entwurf', label: 'Entwurf – noch nicht veröffentlichen', widget: 'boolean', default: false, required: false, hint: 'Eingeschaltet: Der Beitrag wird gespeichert, erscheint aber noch nicht auf der Seite.' },
         { name: 'titelbild', label: 'Titelbild', widget: 'image', required: false, hint: 'Erscheint in der Übersicht und oben im Beitrag. Ohne Titelbild wird das Vereinslogo gezeigt.' },
+        { name: 'titelbild_alt', label: 'Bildbeschreibung zum Titelbild', widget: 'string', required: false, hint: 'Kurz beschreiben, was zu sehen ist – für blinde Besucher und Suchmaschinen. Zum Beispiel „Rotes Wasserflugzeug startet auf dem Badesee“.' },
         text,
         galerie('Optional: viele Fotos auf einmal hochladen. Sie erscheinen als Galerie unter dem Text.'),
         { name: 'kurztext', label: 'Kurztext für die Übersicht', widget: 'text', required: false, hint: 'Optional, ein bis zwei Sätze. Ohne Angabe wird der Anfang des Textes verwendet.' },
@@ -99,6 +100,7 @@ const config = {
         { name: 'beschreibung', label: 'Kurzbeschreibung', widget: 'text', required: false },
         { name: 'link', label: 'Link zu weiteren Infos', widget: 'string', required: false, hint: 'z. B. Adresse eines Beitrags: /aktuelles/…/' },
         { name: 'bild', label: 'Bild (z. B. Plakat oder Einladung)', widget: 'image', required: false, hint: 'Optional. Erscheint als kleines Vorschaubild beim Termin und lässt sich zum Vergrößern antippen.' },
+        { name: 'bild_alt', label: 'Bildbeschreibung', widget: 'string', required: false, hint: 'Kurz beschreiben, was zu sehen ist – für blinde Besucher und Suchmaschinen. Zum Beispiel „Rotes Wasserflugzeug startet auf dem Badesee“.' },
       ],
     },
     {

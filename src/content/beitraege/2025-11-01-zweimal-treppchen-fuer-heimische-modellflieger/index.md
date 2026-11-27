@@ -4,6 +4,7 @@ datum: 2025-11-01
 kategorien:
   - "Aktuelles"
 titelbild: "schneiderrrennen2-scaled.jpg"
+titelbild_alt: "Rote Wasserflug-Rennmodelle am Strand des Badesees Nieder-Roden in Abendstimmung"
 ---
 
 **Zweimal „Treppchen“ für heimische Modellflieger**
@@ -22,10 +23,10 @@ Pressewart des FMCD, im Oktober 2025
 
 Erstellt unter Zuhilfenahme von menschlicher Intelligenz
 
-![](schneiderrrennen2-scaled.jpg)
+![Rote Wasserflug-Rennmodelle am Strand des Badesees Nieder-Roden in Abendstimmung](schneiderrrennen2-scaled.jpg)
 
-![](schneiderrennen3.jpg)
+![Rennmodelle mit Schwimmern in vielen Farben, aufgereiht auf der Wiese](schneiderrennen3.jpg)
 
-![](schneiderrennen1-scaled.jpg)
+![Piloten und Zuschauer am Ufer des Badesees, vorn Wasserflugmodelle im Sand](schneiderrennen1-scaled.jpg)
 
-![](schneiderrennen4.jpg)
+![Gruppenfoto der Teilnehmerinnen und Teilnehmer mit Pokalen am Seeufer](schneiderrennen4.jpg)

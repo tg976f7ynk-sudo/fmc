@@ -4,6 +4,7 @@ datum: 2025-08-01
 kategorien:
   - "Aktuelles"
 titelbild: "e6b71853-b4a3-4d22-86ea-6ac6c5e2dc40.jpg"
+titelbild_alt: "Drei Jetmodelle in Blau-Weiß, Tarnfarben und Rot-Weiß vor der Hecke am Flugplatz"
 ---
 
 Erstes Staubsaugertreffen beim FMC Dietzenbach\
@@ -40,14 +41,14 @@ Holm Und Rippenbruch\
 i. A. Thore Lorenz/Ralf Kaiser\
 *Bericht verfasst unter Zuhilfenahme von menschlicher Intelligenz!*
 
-![](e6b71853-b4a3-4d22-86ea-6ac6c5e2dc40.jpg)
+![Drei Jetmodelle in Blau-Weiß, Tarnfarben und Rot-Weiß vor der Hecke am Flugplatz](e6b71853-b4a3-4d22-86ea-6ac6c5e2dc40.jpg)
 
-![](a9db1ef5-aa56-4f90-917f-0e9d1bce2eb3.jpg)
+![Aufgereihte Jetmodelle vor einem Tarnnetz am Rand des Fluggeländes](a9db1ef5-aa56-4f90-917f-0e9d1bce2eb3.jpg)
 
-![](2be642db-5bf9-4a35-b121-3281358066aa.jpg)
+![Jetmodelle in einer Reihe auf der Wiese, vorn die Kabinenhaube eines blau-weißen Jets](2be642db-5bf9-4a35-b121-3281358066aa.jpg)
 
-![](img-6233.jpg)
+![Zahlreiche Jet- und Impellermodelle unter einem Tarnnetz, vorn ein grauer Jet mit roter Nase und der Nummer 57](img-6233.jpg)
 
-![](eda314a3-bf18-4fab-8800-5bb4e382fc85.jpg)
+![Frontansicht eines Jetmodells mit großem Impeller-Lufteinlass über der Kabine](eda314a3-bf18-4fab-8800-5bb4e382fc85.jpg)
 
-![](img-6267.jpg)
+![Zwei Jetmodelle in Tarnbemalung neben dem rot-weißen Absperrband, darüber Wolken und Sonne](img-6267.jpg)

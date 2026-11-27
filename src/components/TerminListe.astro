@@ -33,7 +33,7 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
           </div>
           {t.vorschau && t.data.bild && (
             <a class="termin-bild" href={t.data.bild.src} data-bild>
-              <img src={t.vorschau.src} width="80" height="80" alt={`Bild zum Termin „${t.data.titel}“`} loading="lazy" decoding="async" />
+              <img src={t.vorschau.src} width="80" height="80" alt={t.data.bild_alt || `Bild zum Termin „${t.data.titel}“`} loading="lazy" decoding="async" />
             </a>
           )}
         </li>

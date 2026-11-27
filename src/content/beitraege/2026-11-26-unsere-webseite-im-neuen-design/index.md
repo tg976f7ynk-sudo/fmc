@@ -4,6 +4,7 @@ datum: 2026-11-26
 kategorien:
   - "Verein"
 titelbild: "neue-webseite.jpg"
+titelbild_alt: "Die neue Vereinswebseite auf einem Computerbildschirm und einem Smartphone"
 kurztext: "Frischer Look, schneller, fürs Handy gemacht: Der FMCD hat eine neue Webseite – mit allen bisherigen Beiträgen und Bildern."
 ---
 

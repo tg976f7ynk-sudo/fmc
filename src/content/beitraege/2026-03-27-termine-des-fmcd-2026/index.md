@@ -4,11 +4,12 @@ datum: 2026-03-27
 kategorien:
   - "Veranstaltungen"
 titelbild: "68289997-c4d9-45ee-806a-3b42934f02f2.jpg"
+titelbild_alt: "Plakat zum Wasserflugtreffen des FMCD: wegen schlechten Wetters verschoben, neuer Termin 17. und 18. Oktober 2026 am Badesee Rodgau-Nieder-Roden"
 ---
 
 ## Achtung Terminänderung !!!
 
-![](68289997-c4d9-45ee-806a-3b42934f02f2.jpg)
+![Plakat zum Wasserflugtreffen des FMCD: wegen schlechten Wetters verschoben, neuer Termin 17. und 18. Oktober 2026 am Badesee Rodgau-Nieder-Roden](68289997-c4d9-45ee-806a-3b42934f02f2.jpg)
 
 **Einladung zum Wasserflugtreffen des FMCD**
 
@@ -52,7 +53,7 @@ Wir freuen uns auf viele Teilnehmer, spannende Modelle und ein großartiges geme
 Mit sportlichen Grüßen\
 Der Vorstand des FMCD
 
-![](2-edf-treffen.jpg)
+![Plakat zum 2. EDF-Treffen des FMC Dietzenbach am Samstag, 22. August 2026: alle Impeller- und Turbinenmodelle sind willkommen](2-edf-treffen.jpg)
 
 - 2026 wird es wieder jeden ersten Dienstag im Monat, in der Badesession, ab 20Uhr Wasserflug am Badesee Nieder-Roden geben.
 - Bis Ende März findet noch das Hallenfliegen statt.

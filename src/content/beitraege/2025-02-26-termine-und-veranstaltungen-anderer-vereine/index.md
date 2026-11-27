@@ -4,6 +4,7 @@ datum: 2025-02-26
 kategorien:
   - "Aktuelles"
 titelbild: "image003.jpg"
+titelbild_alt: "Plakat des Aero-Club Oestrich-Winkel: Freundschaftsfliegen am 30. und 31. August 2025 ab 10 Uhr, mit Fotos von Modellflugzeugen über dem Rheingau"
 ---
 
 Wasserflugtreffen MFG Markdorf am Bodensee 27./28.9.25
@@ -16,7 +17,7 @@ folge den Links:
 
 [g](/dateien/einladung.docx)
 
-![](image003.jpg)
+![Plakat des Aero-Club Oestrich-Winkel: Freundschaftsfliegen am 30. und 31. August 2025 ab 10 Uhr, mit Fotos von Modellflugzeugen über dem Rheingau](image003.jpg)
 
 Lasst uns gemeinsam abheben!
 
@@ -69,13 +70,13 @@ Viele Grüße und Happy Landings,
 
 **Aero-Club Oestrich-Winkel e.V.**
 
-![](img20250525-11564756-scaled.jpg)
+![Einladung zum 29. Modellflugtag 2025 in Ober-Ramstadt am 13. und 14. September, mit Flugzeiten und Hinweisen für Piloten](img20250525-11564756-scaled.jpg)
 
-![](img20250525-11564759-scaled.jpg)
+![Anfahrtsbeschreibung zum Modellfluggelände Ober-Ramstadt mit Luftbild und Kartenausschnitt](img20250525-11564759-scaled.jpg)
 
-![](wappen150.png)
+![Vereinswappen der Modellflug-Gruppe Goldener Grund e.V. aus Hünfelden-Kirberg](wappen150.png)
 
-![](ramy-rc1024.jpg)
+![Luftaufnahme eines Modellflugtags: Fluggelände mit zahlreichen Wohnwagen, Zelten und Besuchern](ramy-rc1024.jpg)
 
 Flugtag Hünfelden-Kirberg folge dem Link
 

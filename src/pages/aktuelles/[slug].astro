@@ -54,7 +54,7 @@ const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
       {
         d.titelbild && !imText && (
           <div class="titelbild">
-            <Image src={d.titelbild} alt="" widths={[480, 800, 1200, 1600]} sizes="(min-width: 800px) 780px, 100vw" loading="eager" />
+            <Image src={d.titelbild} alt={d.titelbild_alt ?? ''} widths={[480, 800, 1200, 1600]} sizes="(min-width: 800px) 780px, 100vw" loading="eager" />
           </div>
         )
       }

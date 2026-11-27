@@ -1,11 +1,15 @@
 ---
 // Statistik der Seitenaufrufe – nur für angemeldete Redakteure.
-import Basis from '../../layouts/Basis.astro';
-import Seitenkopf from '../../components/Seitenkopf.astro';
+import Redaktion from '../../layouts/Redaktion.astro';
 ---
 
-<Basis titel="Statistik" beschreibung="Seitenaufrufe für die Redaktion.">
-  <Seitenkopf titel="Statistik" untertitel="Wie oft wurden Beiträge und Seiten aufgerufen? Anonym gezählt – ohne Cookies und ohne IP-Adressen." pfad={[{ titel: 'Redaktion', link: '/admin/' }]} />
+<Redaktion titel="Statistik">
+  <div class="seitenkopf">
+    <div class="container">
+      <h1>Statistik</h1>
+      <p>Wie oft wurden Beiträge und Seiten aufgerufen? Anonym gezählt – ohne Cookies und ohne IP-Adressen.</p>
+    </div>
+  </div>
   <section class="abschnitt statistik">
     <div class="container">
       <p class="leer" data-status>Statistik wird geladen …</p>
@@ -61,7 +65,7 @@ import Seitenkopf from '../../components/Seitenkopf.astro';
       </div>
     </div>
   </section>
-</Basis>
+</Redaktion>
 
 <style is:global>
   .statistik .stat-kacheln { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.4rem; }

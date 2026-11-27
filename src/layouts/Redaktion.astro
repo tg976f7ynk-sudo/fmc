@@ -1,0 +1,60 @@
+---
+// Eigenes Layout für Seiten des Redaktionsbereichs (Statistik, Anleitung):
+// ohne öffentliches Menü, nicht für Suchmaschinen, nicht von öffentlichen Seiten verlinkt.
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import logo from '../assets/logo.jpg';
+
+interface Props { titel: string; }
+const { titel } = Astro.props;
+const logoKlein = await getImage({ src: logo, width: 80, height: 80, format: 'webp', layout: 'none' });
+const pfad = Astro.url.pathname;
+const links = [
+  { titel: 'Redaktionssystem', link: '/admin/' },
+  { titel: 'Statistik', link: '/admin/statistik/' },
+  { titel: 'Anleitung', link: '/admin/hilfe/' },
+];
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{titel} – FMCD Redaktion</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  </head>
+  <body class="redaktion">
+    <header class="redaktion-kopf">
+      <div class="container redaktion-kopf-innen">
+        <a class="marke" href="/admin/">
+          <img src={logoKlein.src} width="40" height="40" alt="" />
+          <span class="marke-text"><strong>FMCD Redaktion</strong><span>Nur für die Redaktion</span></span>
+        </a>
+        <nav class="redaktion-nav" aria-label="Redaktion">
+          {links.map((l) => <a href={l.link} aria-current={pfad === l.link ? 'page' : undefined}>{l.titel}</a>)}
+          <a href="/" class="zur-seite">Zur Webseite ↗</a>
+        </nav>
+      </div>
+    </header>
+    <main id="inhalt">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  body.redaktion { background: #eef2f7; }
+  .redaktion-kopf { background: #073a6e; color: #fff; border-bottom: 3px solid var(--gelb); }
+  .redaktion-kopf-innen { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 64px; padding-block: 0.5rem; }
+  .redaktion-kopf .marke { color: #fff; margin-right: 0; }
+  .redaktion-kopf .marke img { width: 40px; height: 40px; }
+  .redaktion-kopf .marke-text span { color: #c9daf0; }
+  .redaktion-nav { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .redaktion-nav a { color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 0.45rem 0.8rem; border-radius: 8px; }
+  .redaktion-nav a:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+  .redaktion-nav a[aria-current='page'] { background: var(--gelb); color: #073a6e; }
+  .redaktion-nav .zur-seite { opacity: 0.8; }
+  .redaktion .seitenkopf { background: transparent; }
+</style>

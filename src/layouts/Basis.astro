@@ -129,6 +129,13 @@ const jahr = new Date().getFullYear();
     </div>
 
     <script>
+      // ---- Anonyme Zählung des Seitenaufrufs (keine Cookies, nichts wird im Browser gespeichert)
+      if (!navigator.webdriver && !location.pathname.startsWith('/admin')) {
+        const melden = () => navigator.sendBeacon?.('/api/zaehler', JSON.stringify({ p: location.pathname }));
+        if (document.visibilityState === 'visible') melden();
+        else document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && melden(), { once: true });
+      }
+
       // ---- Menü (mobil)
       const knopf = document.querySelector<HTMLButtonElement>('.menue-knopf');
       const nav = document.querySelector<HTMLElement>('.nav');

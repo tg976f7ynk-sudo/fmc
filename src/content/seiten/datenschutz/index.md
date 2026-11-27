@@ -7,7 +7,7 @@ untertitel: "Welche Daten beim Besuch dieser Webseite verarbeitet werden – und
 
 ## Auf einen Blick
 
-- Diese Webseite setzt **keine Cookies** und verwendet **keine Werbe- oder Analysedienste**. Es gibt keine Besucherstatistik und kein Tracking.
+- Diese Webseite setzt **keine Cookies** und verwendet **keine Werbe- oder Analysedienste** fremder Anbieter. Es gibt kein Tracking. Wir zählen lediglich anonym, wie oft eine Seite aufgerufen wird – ohne IP-Adresse und ohne Daten über Sie.
 - Beim Aufruf jeder Webseite fallen technisch notwendige Verbindungsdaten an (zum Beispiel Ihre IP-Adresse). Diese verarbeitet unser Hosting-Dienstleister Cloudflare.
 - Daten, die Sie selbst eingeben, verarbeiten wir nur, wenn Sie uns über das **Kontaktformular** oder per E-Mail schreiben.
 - **YouTube-Videos** und die **Karte** auf der Seite „Anfahrt“ werden erst geladen, wenn Sie sie ausdrücklich anklicken.
@@ -28,6 +28,14 @@ Diese Webseite wird bei **Cloudflare** betrieben (Cloudflare, Inc., 101 Townsend
 Bei jedem Aufruf verarbeitet Cloudflare dazu die Verbindungsdaten, die Ihr Browser übermittelt: IP-Adresse, Datum und Uhrzeit, aufgerufene Adresse, übertragene Datenmenge, Browser und Betriebssystem sowie die zuvor besuchte Seite (Referrer). Ohne diese Daten kann eine Webseite nicht ausgeliefert werden. Fehlermeldungen unserer Serverfunktionen (Kontaktformular, Wetter, Anmeldung der Redaktion) werden zur Fehlersuche kurzzeitig protokolliert und nach wenigen Tagen automatisch gelöscht.
 
 Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren und zuverlässigen Bereitstellung der Webseite (Art. 6 Abs. 1 lit. f DSGVO). Mit Cloudflare besteht ein Vertrag zur Auftragsverarbeitung (Art. 28 DSGVO). Da Cloudflare ein Unternehmen mit Sitz in den USA ist, können Daten in die USA übermittelt werden. Cloudflare ist nach dem EU-US Data Privacy Framework zertifiziert, für das ein Angemessenheitsbeschluss der EU-Kommission besteht (Art. 45 DSGVO).
+
+## Anonyme Zählung der Seitenaufrufe
+
+Damit wir sehen, welche Beiträge und Seiten gelesen werden, zählen wir die Seitenaufrufe. Beim Aufruf einer Seite meldet Ihr Browser an unseren Server lediglich die Adresse der aufgerufenen Seite. Gespeichert werden ausschließlich **die Seitenadresse, das Datum und die Anzahl der Aufrufe** an diesem Tag – zum Beispiel „/termine/, 27.11.2026, 14 Aufrufe“.
+
+Es werden **keine IP-Adressen, keine Cookies, keine Geräte- oder Browsermerkmale und keine Kennungen** gespeichert; auf Ihrem Gerät wird nichts abgelegt oder ausgelesen. Ein Rückschluss auf einzelne Besucher ist nicht möglich. Um künstlich hochgetriebene Zahlen zu verhindern, wird die IP-Adresse für höchstens eine Minute als Schlüssel einer Mengenbegrenzung verwendet und nicht gespeichert. Die Zählung läuft auf den Servern unseres Hosting-Dienstleisters Cloudflare (siehe oben).
+
+Rechtsgrundlage ist unser berechtigtes Interesse, unser Angebot an den Interessen der Besucher auszurichten (Art. 6 Abs. 1 lit. f DSGVO). Da keine personenbezogenen Daten gespeichert werden, ist ein Widerspruch technisch nicht erforderlich; wer die Zählung dennoch verhindern möchte, kann JavaScript im Browser deaktivieren.
 
 ## Kontaktformular und E-Mail
 

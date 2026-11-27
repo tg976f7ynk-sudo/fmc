@@ -22,6 +22,7 @@ die Redaktion pflegt sie über eine Eingabemaske im Browser.
 | Wetter und Wind am Flugplatz (Open-Meteo) | `worker/wetter.js` |
 | Anmeldung der Redaktion über GitHub | `worker/auth.js`, `callback.js` |
 | Weiterleitung aller alten WordPress-Adressen | `public/_redirects` |
+| Anonyme Zählung der Seitenaufrufe, Statistik für die Redaktion (`/admin/statistik/`) | `worker/zaehler.js`, `worker/statistik.js`, D1-Datenbank `fmc-statistik` |
 
 Datenschutz: keine Cookies, keine Schriften oder Skripte von fremden Servern.
 YouTube-Videos und die Karte werden erst nach einem Klick geladen; die Wetterdaten
@@ -87,6 +88,22 @@ für Besucher ist sie in der Regel unsichtbar.
 3. In der GitHub-OAuth-App die beiden Adressen aus Schritt 3 auf die neue Domain ändern.
 4. Im Turnstile-Widget die neue Domain als Hostnamen ergänzen.
 5. In `wrangler.jsonc` `"workers_dev": false` setzen, damit die vorläufige Adresse abgeschaltet wird.
+
+## Statistik
+
+Jeder Seitenaufruf im Browser zählt einen Eintrag in der D1-Datenbank `fmc-statistik`
+(Tabelle `aufrufe`: Seite, Tag, Anzahl – keine IP-Adressen, keine Cookies). Programme und
+Suchmaschinen werden nicht gezählt, ebenso nur Adressen, die es wirklich gibt.
+Die Seite `/admin/statistik/` zeigt die Zahlen; sie ist nur mit der GitHub-Anmeldung der
+Redaktion und Schreibrecht auf dieses Repository abrufbar.
+
+Die Tabelle wurde einmalig angelegt mit:
+
+```sql
+CREATE TABLE aufrufe (pfad TEXT NOT NULL, tag TEXT NOT NULL, anzahl INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (pfad, tag)) WITHOUT ROWID;
+CREATE INDEX aufrufe_tag ON aufrufe(tag);
+```
 
 ## Sicherheit
 

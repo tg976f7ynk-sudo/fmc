@@ -5,6 +5,8 @@ import * as wetter from './wetter.js';
 import * as kontakt from './kontakt.js';
 import * as auth from './auth.js';
 import * as callback from './callback.js';
+import * as zaehler from './zaehler.js';
+import * as statistik from './statistik.js';
 
 // Schutz-Header für alle Antworten der Serverfunktionen
 // (für die fertigen Seiten stehen sie in public/_headers)
@@ -22,7 +24,14 @@ function absichern(antwort) {
   return neu;
 }
 
-const routen = { '/api/wetter': wetter, '/api/kontakt': kontakt, '/api/auth': auth, '/api/callback': callback };
+const routen = {
+  '/api/wetter': wetter,
+  '/api/kontakt': kontakt,
+  '/api/auth': auth,
+  '/api/callback': callback,
+  '/api/zaehler': zaehler,
+  '/api/statistik': statistik,
+};
 
 export default {
   async fetch(request, env, ctx) {

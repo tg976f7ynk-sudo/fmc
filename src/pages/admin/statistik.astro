@@ -1,0 +1,320 @@
+---
+// Statistik der Seitenaufrufe – nur für angemeldete Redakteure.
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+---
+
+<Basis titel="Statistik" beschreibung="Seitenaufrufe für die Redaktion.">
+  <Seitenkopf titel="Statistik" untertitel="Wie oft wurden Beiträge und Seiten aufgerufen? Anonym gezählt – ohne Cookies und ohne IP-Adressen." pfad={[{ titel: 'Redaktion', link: '/admin/' }]} />
+  <section class="abschnitt statistik">
+    <div class="container">
+      <p class="leer" data-status>Statistik wird geladen …</p>
+      <div class="box" data-anmelden hidden>
+        <p><strong>Bitte zuerst in der Redaktion anmelden.</strong> Die Statistik ist nur für Redakteure sichtbar.</p>
+        <p><a class="knopf" href="/admin/">Zur Redaktion</a></p>
+      </div>
+
+      <div data-inhalt hidden>
+        <div class="stat-kacheln">
+          <div class="stat-kachel"><span>Heute</span><b data-summe="heute">–</b></div>
+          <div class="stat-kachel"><span>Letzte 7 Tage</span><b data-summe="d7">–</b></div>
+          <div class="stat-kachel"><span>Letzte 30 Tage</span><b data-summe="d30">–</b></div>
+          <div class="stat-kachel"><span>Gesamt</span><b data-summe="gesamt">–</b></div>
+        </div>
+
+        <div class="box stat-diagramm-box">
+          <h2>Seitenaufrufe pro Tag</h2>
+          <p class="stat-hinweis">Letzte 90 Tage · <span data-seit></span></p>
+          <div class="stat-diagramm" data-diagramm></div>
+          <div class="stat-tooltip" data-tooltip role="status" hidden></div>
+          <details class="stat-tabelle-tage">
+            <summary>Als Tabelle anzeigen</summary>
+            <table><thead><tr><th>Tag</th><th class="zahl">Aufrufe</th></tr></thead><tbody data-tage></tbody></table>
+          </details>
+        </div>
+
+        <div class="stat-filter">
+          <div class="filter" role="group" aria-label="Art">
+            <button type="button" data-art="" aria-pressed="true">Alle</button>
+            <button type="button" data-art="Beitrag" aria-pressed="false">Beiträge</button>
+            <button type="button" data-art="Seite" aria-pressed="false">Seiten</button>
+            <button type="button" data-art="Galerie" aria-pressed="false">Galerien</button>
+          </div>
+          <label class="stat-suche">Suchen <input type="search" data-suche placeholder="Titel oder Adresse" /></label>
+        </div>
+
+        <div class="stat-tabelle-huelle">
+          <table class="stat-tabelle">
+            <thead>
+              <tr>
+                <th><button type="button" data-sort="titel">Seite</button></th>
+                <th class="zahl"><button type="button" data-sort="heute">Heute</button></th>
+                <th class="zahl"><button type="button" data-sort="d7">7 Tage</button></th>
+                <th class="zahl"><button type="button" data-sort="d30" aria-sort="descending">30 Tage</button></th>
+                <th class="zahl"><button type="button" data-sort="gesamt">Gesamt</button></th>
+              </tr>
+            </thead>
+            <tbody data-zeilen></tbody>
+          </table>
+        </div>
+        <p class="stat-hinweis">Gezählt wird jeder Aufruf einer Seite im Browser (ohne Suchmaschinen und Programme). Wer eine Seite neu lädt, wird erneut gezählt.</p>
+      </div>
+    </div>
+  </section>
+</Basis>
+
+<style is:global>
+  .statistik .stat-kacheln { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.4rem; }
+  @media (max-width: 700px) { .statistik .stat-kacheln { grid-template-columns: repeat(2, 1fr); } }
+  .statistik .stat-kachel { background: var(--weiss); border: 1px solid var(--linie); border-radius: var(--radius); padding: 1rem 1.2rem; box-shadow: var(--schatten); }
+  .statistik .stat-kachel span { display: block; font-size: 0.9rem; color: var(--text-leise); }
+  .statistik .stat-kachel b { font-size: 2.1rem; color: var(--blau-dunkel); font-variant-numeric: tabular-nums; }
+  .statistik .stat-diagramm-box { position: relative; margin-bottom: 1.6rem; }
+  .statistik .stat-diagramm-box h2 { font-size: 1.25rem; margin-bottom: 0.2rem; }
+  .statistik .stat-hinweis { color: var(--text-leise); font-size: 0.9rem; margin: 0 0 0.8rem; }
+  .statistik .stat-diagramm svg { width: 100%; height: 220px; display: block; overflow: visible; }
+  .statistik .stat-diagramm .gitter { stroke: #e3e9f0; stroke-width: 1; }
+  .statistik .stat-diagramm .achse { fill: #5b6b7b; font-size: 11px; font-family: var(--schrift); }
+  .statistik .stat-diagramm .balken { fill: #0b5cab; pointer-events: none; }
+  .statistik .stat-diagramm .treffer { fill: transparent; cursor: default; }
+  .statistik .stat-diagramm .treffer:hover + .balken, .statistik .stat-diagramm .treffer:focus-visible + .balken { fill: #2f7fd0; }
+  .statistik .stat-diagramm .treffer:focus-visible { outline: 2px solid #ffd21f; }
+  .statistik .stat-diagramm .treffer:focus { outline: none; }
+  .statistik .stat-tooltip { position: absolute; pointer-events: none; background: #fff; border: 1px solid var(--linie); border-radius: 8px; box-shadow: var(--schatten); padding: 0.45rem 0.7rem; font-size: 0.85rem; line-height: 1.3; transform: translate(-50%, -110%); white-space: nowrap; }
+  .statistik .stat-tooltip b { display: block; font-size: 1.05rem; color: var(--text); }
+  .statistik .stat-tooltip span { color: var(--text-leise); }
+  .statistik .stat-tabelle-tage { margin-top: 0.8rem; }
+  .statistik .stat-tabelle-tage summary { cursor: pointer; color: var(--blau); font-weight: 600; font-size: 0.92rem; }
+  .statistik .stat-tabelle-tage table { margin-top: 0.6rem; border-collapse: collapse; font-size: 0.9rem; }
+  .statistik .stat-tabelle-tage td, .statistik .stat-tabelle-tage th { padding: 0.25rem 1.2rem 0.25rem 0; text-align: left; }
+  .statistik .stat-filter { display: flex; flex-wrap: wrap; gap: 0.8rem 1.4rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .statistik .stat-filter .filter { margin: 0; }
+  .statistik .stat-filter button { padding: 0.4rem 0.95rem; border-radius: 99px; border: 1px solid var(--linie); background: var(--weiss); font: inherit; font-weight: 600; font-size: 0.93rem; color: var(--text); cursor: pointer; }
+  .statistik .stat-filter button[aria-pressed='true'] { background: var(--blau); border-color: var(--blau); color: #fff; }
+  .statistik .stat-suche { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.93rem; }
+  .statistik .stat-suche input { font: inherit; padding: 0.45rem 0.7rem; border: 1px solid #b8c4d0; border-radius: 8px; min-width: 14rem; }
+  .statistik .stat-tabelle-huelle { background: var(--weiss); border: 1px solid var(--linie); border-radius: var(--radius); overflow-x: auto; }
+  .statistik .stat-tabelle { width: 100%; border-collapse: collapse; font-size: 0.97rem; }
+  .statistik .stat-tabelle th, .statistik .stat-tabelle td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--linie); text-align: left; vertical-align: top; }
+  .statistik .stat-tabelle tr:last-child td { border-bottom: 0; }
+  .statistik .stat-tabelle th { background: var(--blau-hell); }
+  .statistik .stat-tabelle th button { background: none; border: 0; font: inherit; font-weight: 700; color: var(--blau-dunkel); cursor: pointer; padding: 0; }
+  .statistik .stat-tabelle th button[aria-sort='descending']::after { content: ' ↓'; }
+  .statistik .stat-tabelle th button[aria-sort='ascending']::after { content: ' ↑'; }
+  .statistik .stat-tabelle .zahl { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .statistik .stat-tabelle td small { display: block; color: var(--text-leise); font-size: 0.82rem; }
+  .statistik .stat-tabelle .art { display: inline-block; font-size: 0.74rem; font-weight: 700; background: var(--blau-hell); color: var(--blau-dunkel); border-radius: 99px; padding: 0.05rem 0.5rem; margin-right: 0.4rem; }
+  .statistik .stat-tabelle .balkenzelle { position: relative; }
+  @media (max-width: 600px) { .statistik .stat-tabelle th:nth-child(2), .statistik .stat-tabelle td:nth-child(2) { display: none; } .statistik .stat-tabelle th, .statistik .stat-tabelle td { padding: 0.55rem 0.6rem; } }
+  .statistik .stat-tabelle .anteil { display: block; height: 4px; border-radius: 2px; background: #0b5cab; margin-top: 0.35rem; opacity: 0.7; }
+</style>
+
+<script>
+  type Zeile = { pfad: string; gesamt: number; d30: number; d7: number; heute: number; titel: string; art: string };
+  const zahl = (n: number) => n.toLocaleString('de-DE');
+  const q = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const tagText = (iso: string, opt: Intl.DateTimeFormatOptions) => new Date(iso + 'T12:00:00').toLocaleDateString('de-DE', opt);
+
+  function token(): string {
+    try {
+      return JSON.parse(localStorage.getItem('sveltia-cms.user') || 'null')?.token || '';
+    } catch {
+      return '';
+    }
+  }
+
+  async function laden() {
+    const t = token();
+    if (!t) return zeigeAnmelden();
+    const [antwort, titel] = await Promise.all([
+      fetch('/api/statistik', { headers: { authorization: `Bearer ${t}` } }),
+      fetch('/admin/seitenliste.json').then((r) => r.json()).catch(() => ({})),
+    ]);
+    if (antwort.status === 401) return zeigeAnmelden();
+    if (!antwort.ok) throw new Error(String(antwort.status));
+    const daten = await antwort.json();
+    const zeilen: Zeile[] = daten.seiten.map((s: any) => ({ ...s, titel: titel[s.pfad]?.titel ?? s.pfad, art: titel[s.pfad]?.art ?? 'Seite' }));
+    // Erst sichtbar machen, damit das Diagramm die tatsächliche Breite kennt
+    q('[data-status]').hidden = true;
+    q('[data-inhalt]').hidden = false;
+    zeigeSummen(zeilen);
+    zeigeVerlauf(daten.verlauf, daten.stand);
+    q('[data-seit]').textContent = daten.seit ? `gezählt seit ${tagText(daten.seit, { day: 'numeric', month: 'long', year: 'numeric' })}` : 'noch keine Aufrufe gezählt';
+    einrichtenTabelle(zeilen);
+  }
+
+  function zeigeAnmelden() {
+    q('[data-status]').hidden = true;
+    q('[data-anmelden]').hidden = false;
+  }
+
+  function zeigeSummen(zeilen: Zeile[]) {
+    for (const k of ['heute', 'd7', 'd30', 'gesamt'] as const) q(`[data-summe="${k}"]`).textContent = zahl(zeilen.reduce((s, z) => s + z[k], 0));
+  }
+
+  // Balkendiagramm: eine Reihe (Aufrufe pro Tag), Hover/Fokus zeigt den Wert, Tabelle als Alternative
+  function zeigeVerlauf(verlauf: { tag: string; anzahl: number }[], stand: string) {
+    const werte = new Map(verlauf.map((v) => [v.tag, v.anzahl]));
+    const tage: { tag: string; anzahl: number }[] = [];
+    const ende = new Date(stand + 'T12:00:00');
+    for (let i = 89; i >= 0; i--) {
+      const d = new Date(ende.getTime() - i * 86400000);
+      const iso = d.toLocaleDateString('sv-SE');
+      tage.push({ tag: iso, anzahl: werte.get(iso) ?? 0 });
+    }
+    const max = Math.max(1, ...tage.map((t) => t.anzahl));
+    const stufe = 10 ** Math.floor(Math.log10(max));
+    const oben = Math.ceil(max / stufe) * stufe;
+    const B = Math.max(320, Math.round(q('[data-diagramm]').clientWidth || 900)), H = 220, links = 36, unten = 22, breite = (B - links) / tage.length;
+    const y = (n: number) => H - unten - (n / oben) * (H - unten - 8);
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${B} ${H}`);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Seitenaufrufe pro Tag in den letzten 90 Tagen');
+    const el = (name: string, attr: Record<string, string | number>, text?: string) => {
+      const e = document.createElementNS(ns, name);
+      for (const [k, v] of Object.entries(attr)) e.setAttribute(k, String(v));
+      if (text !== undefined) e.textContent = text;
+      svg.append(e);
+      return e;
+    };
+    for (const w of [0, oben / 2, oben]) {
+      el('line', { x1: links, x2: B, y1: y(w), y2: y(w), class: 'gitter' });
+      el('text', { x: links - 6, y: y(w) + 4, 'text-anchor': 'end', class: 'achse' }, zahl(w));
+    }
+    const tooltip = q('[data-tooltip]');
+    const box = q('.stat-diagramm-box');
+    tage.forEach((t, i) => {
+      const x = links + i * breite;
+      const h = Math.max(0, H - unten - y(t.anzahl));
+      const treffer = el('rect', { x, y: 0, width: breite, height: H - unten, class: 'treffer', tabindex: 0 });
+      const radius = Math.min(2, breite / 3);
+      if (t.anzahl > 0) {
+        // Balken mit abgerundeter Oberkante, unten an der Grundlinie
+        const bx = x + 1, bw = Math.max(1, breite - 2), by = y(t.anzahl);
+        el('path', { class: 'balken', d: `M${bx},${H - unten}V${by + radius}Q${bx},${by} ${bx + radius},${by}H${bx + bw - radius}Q${bx + bw},${by} ${bx + bw},${by + radius}V${H - unten}Z` });
+      } else el('rect', { x, y: 0, width: 0, height: 0, class: 'balken' });
+      const zeige = () => {
+        tooltip.replaceChildren();
+        const b = document.createElement('b');
+        b.textContent = `${zahl(t.anzahl)} ${t.anzahl === 1 ? 'Aufruf' : 'Aufrufe'}`;
+        const s = document.createElement('span');
+        s.textContent = tagText(t.tag, { weekday: 'short', day: 'numeric', month: 'long' });
+        tooltip.append(b, s);
+        const r = svg.getBoundingClientRect(), rb = box.getBoundingClientRect();
+        tooltip.style.left = `${r.left - rb.left + ((x + breite / 2) / B) * r.width}px`;
+        tooltip.style.top = `${r.top - rb.top + (Math.min(y(t.anzahl), H - unten - 4) / H) * r.height}px`;
+        tooltip.hidden = false;
+      };
+      treffer.addEventListener('pointerenter', zeige);
+      treffer.addEventListener('focus', zeige);
+      treffer.addEventListener('pointerleave', () => (tooltip.hidden = true));
+      treffer.addEventListener('blur', () => (tooltip.hidden = true));
+      void h;
+    });
+    // Monatsbeschriftungen
+    const ersterMonat = tage.findIndex((t) => t.tag.endsWith('-01'));
+    tage.forEach((t, i) => {
+      const anfang = i === 0 && (ersterMonat < 0 || ersterMonat > 8);
+      if (t.tag.endsWith('-01') || anfang) el('text', { x: links + i * breite, y: H - 6, class: 'achse' }, tagText(t.tag, anfang ? { day: 'numeric', month: 'short' } : { month: 'long' }));
+    });
+    q('[data-diagramm]').replaceChildren(svg);
+    const tbody = q('[data-tage]');
+    tbody.replaceChildren(
+      ...tage
+        .filter((t) => t.anzahl > 0)
+        .reverse()
+        .map((t) => {
+          const tr = document.createElement('tr');
+          const a = document.createElement('td');
+          a.textContent = tagText(t.tag, { weekday: 'short', day: 'numeric', month: 'numeric', year: 'numeric' });
+          const b = document.createElement('td');
+          b.className = 'zahl';
+          b.textContent = zahl(t.anzahl);
+          tr.append(a, b);
+          return tr;
+        }),
+    );
+  }
+
+  function einrichtenTabelle(alle: Zeile[]) {
+    let art = '';
+    let suche = '';
+    let sortierung: keyof Zeile = 'd30';
+    let absteigend = true;
+    const tbody = q('[data-zeilen]');
+    const zeichnen = () => {
+      const liste = alle
+        .filter((z) => (!art || z.art === art) && (!suche || (z.titel + ' ' + z.pfad).toLowerCase().includes(suche)))
+        .sort((a, b) => {
+          const va = a[sortierung], vb = b[sortierung];
+          const v = typeof va === 'number' ? (va as number) - (vb as number) : String(va).localeCompare(String(vb), 'de');
+          return absteigend ? -v : v;
+        });
+      const max = Math.max(1, ...liste.map((z) => z.d30));
+      tbody.replaceChildren(
+        ...liste.map((z) => {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          const kennung = document.createElement('span');
+          kennung.className = 'art';
+          kennung.textContent = z.art;
+          const link = document.createElement('a');
+          link.href = z.pfad;
+          link.textContent = z.titel;
+          const adresse = document.createElement('small');
+          adresse.textContent = z.pfad;
+          td.append(kennung, link, adresse);
+          tr.append(td);
+          for (const k of ['heute', 'd7', 'd30', 'gesamt'] as const) {
+            const c = document.createElement('td');
+            c.className = 'zahl' + (k === 'd30' ? ' balkenzelle' : '');
+            c.textContent = zahl(z[k]);
+            if (k === 'd30') {
+              const anteil = document.createElement('span');
+              anteil.className = 'anteil';
+              anteil.style.width = `${(z.d30 / max) * 100}%`;
+              c.append(anteil);
+            }
+            tr.append(c);
+          }
+          return tr;
+        }),
+      );
+      if (!liste.length) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.className = 'leer';
+        td.textContent = 'Keine Einträge.';
+        tr.append(td);
+        tbody.append(tr);
+      }
+    };
+    document.querySelectorAll<HTMLButtonElement>('[data-art]').forEach((b) =>
+      b.addEventListener('click', () => {
+        art = b.dataset.art!;
+        document.querySelectorAll('[data-art]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        zeichnen();
+      }),
+    );
+    q<HTMLInputElement>('[data-suche]').addEventListener('input', (e) => {
+      suche = (e.target as HTMLInputElement).value.trim().toLowerCase();
+      zeichnen();
+    });
+    document.querySelectorAll<HTMLButtonElement>('[data-sort]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const k = b.dataset.sort as keyof Zeile;
+        absteigend = sortierung === k ? !absteigend : k !== 'titel';
+        sortierung = k;
+        document.querySelectorAll('[data-sort]').forEach((x) => x.removeAttribute('aria-sort'));
+        b.setAttribute('aria-sort', absteigend ? 'descending' : 'ascending');
+        zeichnen();
+      }),
+    );
+    zeichnen();
+  }
+
+  laden().catch(() => (q('[data-status]').textContent = 'Die Statistik konnte nicht geladen werden.'));
+</script>

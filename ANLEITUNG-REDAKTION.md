@@ -9,7 +9,8 @@ Du brauchst nur einen Browser – am Computer, Tablet oder Handy.
 2. Klicke auf **„Mit GitHub anmelden“** und melde dich mit deinem GitHub-Konto an.
    (Das Konto richtet der Administrator einmalig für dich ein.)
 
-Unten links im Redaktionssystem öffnet der Knopf **„? Anleitung“** jederzeit diese Seite.
+Unten links in den Listen öffnet der Knopf **„? Anleitung“** jederzeit diese Seite,
+der Knopf **„Statistik“** zeigt, wie oft Beiträge und Seiten aufgerufen wurden.
 
 ## Überblick
 
@@ -100,6 +101,14 @@ unter **Impressionen** beim passenden Jahr. Das erste Bild ist das Vorschaubild.
 - **Seiten**: Texte wie „Über uns“, „Gastpiloten“, „Vorstand“ oder „Impressum“ ändern.
 - **Einstellungen → Menü**: Menüpunkte umbenennen, verschieben oder ergänzen.
 - **Einstellungen → Allgemeine Angaben**: Anschrift, E-Mail-Adresse und Lage des Flugplatzes.
+
+## Statistik
+
+Unter **Statistik** (Knopf unten links oder `/admin/statistik/`) siehst du, wie oft
+jede Seite heute, in den letzten 7 und 30 Tagen und insgesamt aufgerufen wurde.
+Die Tabelle lässt sich nach jeder Spalte sortieren, nach Beiträgen, Seiten oder Galerien
+filtern und durchsuchen. Gezählt wird anonym – ohne Cookies und ohne IP-Adressen.
+Die Statistik ist nur sichtbar, wenn du in der Redaktion angemeldet bist.
 
 ## Wenn etwas nicht klappt
 

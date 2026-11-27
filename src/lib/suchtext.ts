@@ -14,3 +14,12 @@ export function klartext(markdown: string): string {
     .replace(/\s*\n\s*/g, '\n')
     .trim();
 }
+
+// Muss mit normal() in worker/suchmaschine.js übereinstimmen
+export const normal = (s: string) =>
+  String(s ?? '')
+    .toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();

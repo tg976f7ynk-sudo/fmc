@@ -17,7 +17,14 @@ export async function ladeIndex(env, request) {
   const antwort = await env.ASSETS.fetch(new Request(new URL('/suchindex.json', request.url)));
   if (!antwort.ok) throw new Error('Suchindex nicht verfügbar');
   const { dokumente } = await antwort.json();
-  index = dokumente.map((d) => ({ ...d, _titel: ' ' + normal(d.titel) + ' ', _text: ' ' + normal(d.text) + ' ', _kat: ' ' + normal((d.kategorien || []).join(' ')) + ' ' }));
+  // Normalisierte Felder kommen fertig aus dem Bau (Feld „n“); nur zur Sicherheit hier berechnen
+  for (const d of dokumente) {
+    d._titel = d.n?.t ?? ' ' + normal(d.titel) + ' ';
+    d._text = d.n?.x ?? ' ' + normal(d.text) + ' ';
+    d._kat = d.n?.k ?? ' ' + normal((d.kategorien || []).join(' ')) + ' ';
+    delete d.n;
+  }
+  index = dokumente;
   geladen = Date.now();
   return index;
 }

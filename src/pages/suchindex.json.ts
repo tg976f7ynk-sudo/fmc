@@ -3,7 +3,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { alleBeitraege, alleTermine, beitragUrl, isoTag, kurztext, zeitraum } from '../lib/inhalte';
-import { klartext } from '../lib/suchtext';
+import { klartext, normal } from '../lib/suchtext';
 
 export type Dokument = {
   id: string;
@@ -65,7 +65,11 @@ export async function suchindex(): Promise<Dokument[]> {
   return docs;
 }
 
+// Für den Worker vorbereitet: normalisierte Felder schon beim Bau berechnen (spart CPU-Zeit pro Aufruf)
 export const GET: APIRoute = async () =>
-  new Response(JSON.stringify({ erstellt: new Date().toISOString(), dokumente: await suchindex() }), {
+  new Response(JSON.stringify({
+    erstellt: new Date().toISOString(),
+    dokumente: (await suchindex()).map((d) => ({ ...d, n: { t: ` ${normal(d.titel)} `, x: ` ${normal(d.text)} `, k: ` ${normal((d.kategorien || []).join(' '))} ` } })),
+  }), {
     headers: { 'content-type': 'application/json; charset=utf-8' },
   });

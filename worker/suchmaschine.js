@@ -9,23 +9,20 @@ export const normal = (s) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
-let index = null;
-let geladen = 0;
-export async function ladeIndex(env, request) {
-  // Index je Worker-Instanz zwischenspeichern (höchstens 10 Minuten)
-  if (index && Date.now() - geladen < 600000) return index;
-  const antwort = await env.ASSETS.fetch(new Request(new URL('/suchindex.json', request.url)));
-  if (!antwort.ok) throw new Error('Suchindex nicht verfügbar');
-  const { dokumente } = await antwort.json();
-  // Normalisierte Felder kommen fertig aus dem Bau (Feld „n“); nur zur Sicherheit hier berechnen
-  for (const d of dokumente) {
-    d._titel = d.n?.t ?? ' ' + normal(d.titel) + ' ';
-    d._text = d.n?.x ?? ' ' + normal(d.text) + ' ';
-    d._kat = d.n?.k ?? ' ' + normal((d.kategorien || []).join(' ')) + ' ';
-    delete d.n;
-  }
-  index = dokumente;
-  geladen = Date.now();
+// Der Suchindex wird beim Bau der Seite erzeugt (dist/suchindex.json) und beim Veröffentlichen
+// direkt in den Worker eingebunden. So wird er beim Start der Worker-Instanz eingelesen –
+// nicht bei jeder Anfrage – und die CPU-Zeit pro Suche bleibt klein.
+import daten from '../dist/suchindex.json';
+
+// Vorbereitung einmal beim Start der Instanz
+const index = daten.dokumente.map((d) => ({
+  ...d,
+  _titel: d.n?.t ?? ' ' + normal(d.titel) + ' ',
+  _text: d.n?.x ?? ' ' + normal(d.text) + ' ',
+  _kat: d.n?.k ?? ' ' + normal((d.kategorien || []).join(' ')) + ' ',
+  n: undefined,
+}));
+export async function ladeIndex() {
   return index;
 }
 

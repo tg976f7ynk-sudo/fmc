@@ -9,13 +9,18 @@ import { alleBeitraege, beitragSlug, beitragUrl, datumLang, isoTag, kategorieUrl
 
 export const getStaticPaths = (async () => {
   const beitraege = await alleBeitraege();
-  return beitraege.map((beitrag, i) => ({
+  const seiten = beitraege.map((beitrag, i) => ({
     params: { slug: beitragSlug(beitrag) },
-    props: { beitrag, neuer: beitraege[i - 1], aelter: beitraege[i + 1] },
+    props: { beitrag, neuer: beitraege[i - 1], aelter: beitraege[i + 1], weiterleitung: undefined as string | undefined },
   }));
+  // Das Redaktionssystem verlinkt Beiträge mit ihrem Ordnernamen (mit Datum) – diese Adressen leiten weiter.
+  const weiter = beitraege
+    .filter((b) => b.id !== beitragSlug(b))
+    .map((beitrag) => ({ params: { slug: beitrag.id }, props: { beitrag, neuer: undefined, aelter: undefined, weiterleitung: beitragUrl(beitrag) } }));
+  return [...seiten, ...weiter];
 }) satisfies GetStaticPaths;
 
-const { beitrag, neuer, aelter } = Astro.props;
+const { beitrag, neuer, aelter, weiterleitung } = Astro.props;
 const d = beitrag.data;
 const { Content } = await render(beitrag);
 // Titelbild oben nur zeigen, wenn es nicht ohnehin im Text vorkommt
@@ -24,6 +29,19 @@ const stamm = dateiname.replace(/\.\w+$/, '');
 const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
 ---
 
+{
+  weiterleitung ? (
+    <html lang="de">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex" />
+        <meta http-equiv="refresh" content={`0; url=${weiterleitung}`} />
+        <link rel="canonical" href={new URL(weiterleitung, Astro.site)} />
+        <title>{d.titel}</title>
+      </head>
+      <body><a href={weiterleitung}>{d.titel}</a></body>
+    </html>
+  ) : (
 <Basis titel={d.titel} beschreibung={kurztext(beitrag, 155)} bild={d.titelbild?.src} artikel>
   <Seitenkopf titel={d.titel} pfad={[{ titel: 'Aktuelles', link: '/aktuelles/' }]}>
     <div class="meta" style="margin-top:.6rem">
@@ -49,3 +67,5 @@ const imText = !!stamm && (beitrag.body ?? '').includes(stamm);
     </div>
   </article>
 </Basis>
+  )
+}

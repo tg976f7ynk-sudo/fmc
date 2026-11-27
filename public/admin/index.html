@@ -4,10 +4,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Redaktion – FMC Dietzenbach</title>
+    <title>FMCD Redaktion</title>
     <link rel="icon" type="image/png" href="/favicon-32.png" />
+    <style>
+      /* Vereinsfarben im Redaktionssystem: Blau wie auf der Webseite */
+      :root { --sui-base-hue: 211; }
+      .fmc-hilfe {
+        position: fixed; left: 14px; bottom: 14px; z-index: 2147483000;
+        display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px 9px 10px;
+        background: #0b5cab; color: #fff; border-radius: 999px; text-decoration: none;
+        font: 600 14px/1 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        box-shadow: 0 4px 14px rgba(11, 92, 171, 0.35); border: 2px solid #ffd21f;
+        text-decoration: none !important;
+      }
+      /* Beim Bearbeiten ausblenden, damit der Knopf keine Eingabefelder verdeckt */
+      .fmc-hilfe[hidden] { display: none !important; }
+      .fmc-hilfe:hover { background: #073a6e; }
+      .fmc-hilfe b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #ffd21f; color: #073a6e; font-size: 14px; }
+      @media (max-width: 600px) { .fmc-hilfe span { display: none; } .fmc-hilfe { padding: 9px; bottom: 76px; } }
+    </style>
   </head>
   <body>
+    <a class="fmc-hilfe" href="/admin/hilfe/" target="_blank" rel="noopener" title="Anleitung für die Redaktion (öffnet in neuem Tab)"><b>?</b><span>Anleitung</span></a>
+    <script>
+      (() => {
+        const knopf = document.querySelector('.fmc-hilfe');
+        const pruefen = () => (knopf.hidden = /\/(new|entries)(\/|$|\?)/.test(location.hash));
+        addEventListener('hashchange', pruefen);
+        pruefen();
+      })();
+    </script>
     <script src="/admin/sveltia-cms.js"></script>
   </body>
 </html>

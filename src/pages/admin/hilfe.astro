@@ -1,0 +1,16 @@
+---
+// Anleitung für die Redaktion – aus ANLEITUNG-REDAKTION.md erzeugt.
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+import { Content } from '../../../ANLEITUNG-REDAKTION.md';
+---
+
+<Basis titel="Anleitung für die Redaktion">
+  <Seitenkopf titel="Anleitung für die Redaktion" untertitel="Beiträge, Termine und Bilder veröffentlichen – Schritt für Schritt." pfad={[{ titel: 'Redaktion', link: '/admin/' }]} />
+  <section class="abschnitt">
+    <div class="schmal prose">
+      <p><a class="knopf" href="/admin/">Zum Redaktionssystem</a></p>
+      <Content />
+    </div>
+  </section>
+</Basis>

@@ -25,7 +25,7 @@ const daten = JSON.stringify(termine).replace(/</g, '\\u003c');
         <h2 data-t="titel"></h2>
         <p data-t="wann"></p>
         <p data-t="beschreibung" class="anmeldung-beschreibung"></p>
-        <p data-t="frei" class="anmeldung-frei" hidden></p>
+        <div data-t="frei" class="termin-frei anmeldung-frei" hidden></div>
       </div>
 
       <p class="leer" data-status>Wird geladen …</p>
@@ -34,7 +34,10 @@ const daten = JSON.stringify(termine).replace(/</g, '\\u003c');
         <h2>Ihre Anmeldung</h2>
         <label>Ihr Name *<input type="text" name="name" required autocomplete="name" maxlength="120" /></label>
         <label>Ihre E-Mail-Adresse *<input type="email" name="email" required autocomplete="email" maxlength="200" /></label>
-        <label class="anmeldung-personen">Anzahl Personen *<input type="number" name="personen" required min="1" max="10" value="1" inputmode="numeric" /></label>
+        <div class="anmeldung-zahlen">
+          <label class="anmeldung-personen">Anzahl Personen *<input type="number" name="personen" required min="1" max="10" value="1" inputmode="numeric" /></label>
+          <label class="anmeldung-personen" data-geraete-feld hidden>Mitgebrachte Fluggeräte *<input type="number" name="geraete" min="0" max="20" value="1" inputmode="numeric" disabled /><small>0, wenn Sie ohne Fluggerät kommen</small></label>
+        </div>
         <label>Anmerkung<textarea name="anmerkung" rows="3" maxlength="500" placeholder="optional, z. B. Modell, Frequenz oder Fragen"></textarea></label>
         <label class="falle" aria-hidden="true">Bitte leer lassen<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
         <label class="einwilligung">
@@ -78,7 +81,9 @@ const daten = JSON.stringify(termine).replace(/</g, '\\u003c');
   .anmeldung-termin h2 { margin: 0.2rem 0 0.3rem; }
   .anmeldung-termin p { margin: 0.2rem 0; }
   .anmeldung-beschreibung { color: var(--text-leise); }
-  .anmeldung-frei { font-weight: 700; color: var(--blau-dunkel); }
+  .anmeldung-frei { margin-top: 0.6rem; font-size: 0.95rem; }
+  .anmeldung-zahlen { display: flex; flex-wrap: wrap; gap: 1rem 2rem; }
+  .anmeldung-personen small { font-weight: 400; color: var(--text-leise); font-size: 0.85rem; }
   .anmeldung-personen input { max-width: 8rem; }
   .anmeldung-knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0; }
   .formular h2, [data-ansicht] h2, [data-gesendet] h2 { font-size: 1.35rem; margin: 0; }
@@ -144,15 +149,36 @@ const daten = JSON.stringify(termine).replace(/</g, '\\u003c');
     const info = await fetch(`/api/anmeldung?termin=${encodeURIComponent(id)}`).then((r) => r.json()).catch(() => null);
     if (!info) return zeigeStatus(FEHLER);
     if (!info.offen) return zeigeStatus(info.grund);
-    if (info.frei != null) {
-      const f = q('[data-t="frei"]');
-      f.textContent = info.frei === 1 ? 'Noch 1 Platz frei' : `Noch ${info.frei} Plätze frei`;
-      f.hidden = false;
-    }
+    const f = q('[data-t="frei"]');
+    const zeile = (frei: number, max: number, was: string) => {
+      const z = document.createElement('span');
+      z.className = `termin-frei-zeile${frei === 0 ? ' voll' : frei / max <= 0.2 ? ' knapp' : ''}`;
+      const balken = document.createElement('span');
+      balken.className = 'platzbalken';
+      balken.style.setProperty('--anteil', `${Math.round(((max - frei) / max) * 100)}%`);
+      balken.append(document.createElement('span'));
+      z.append(balken, frei === 0 ? `${was}: ausgebucht` : `${was}: noch ${frei} von ${max} frei`);
+      f.append(z);
+    };
+    if (info.frei != null) zeile(info.frei, info.plaetze, 'Plätze');
+    if (info.geraeteFrei != null) zeile(info.geraeteFrei, info.geraete, 'Fluggeräte');
+    f.hidden = !f.childElementCount;
     status.hidden = true;
     const form = q<HTMLFormElement>('#anmeldeformular');
     const personen = form.querySelector<HTMLInputElement>('[name=personen]')!;
     personen.max = String(Math.min(info.maxPersonen ?? 10, info.frei ?? 99));
+    if (info.geraete) {
+      const feld = form.querySelector<HTMLElement>('[data-geraete-feld]')!;
+      const g = feld.querySelector<HTMLInputElement>('input')!;
+      g.disabled = false;
+      g.required = true;
+      g.max = String(Math.min(info.maxGeraete ?? 20, info.geraeteFrei ?? 99));
+      if (info.geraeteFrei === 0) {
+        g.value = '0';
+        feld.querySelector('small')!.textContent = 'Für Fluggeräte ist kein Platz mehr frei – Anmeldung nur ohne Fluggerät möglich.';
+      }
+      feld.hidden = false;
+    }
     form.hidden = false;
     const geladen = Date.now();
     const pruefung = sicherheitspruefung(form, async () => info.turnstile);
@@ -214,7 +240,8 @@ const daten = JSON.stringify(termine).replace(/</g, '\\u003c');
       if (r.termin) zeigeTermin(r.termin, t);
       aktionen.replaceChildren();
       q('[data-kalender]').hidden = true;
-      const personen = r.personen > 1 ? ` für ${r.personen} Personen` : '';
+      const teile = [r.personen > 1 ? `${r.personen} Personen` : '', r.geraete != null ? (r.geraete === 1 ? '1 Fluggerät' : `${r.geraete} Fluggeräte`) : ''].filter(Boolean);
+      const personen = teile.length ? ` (${teile.join(', ')})` : '';
       if (r.status === 'offen') {
         v('ueberschrift').textContent = 'Anmeldung bestätigen';
         v('text').textContent = `Hallo ${r.name}, bitte bestätigen Sie Ihre Anmeldung${personen}. Danach erhalten Sie die Kalendereinladung per E-Mail.`;

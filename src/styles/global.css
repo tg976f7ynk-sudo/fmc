@@ -150,7 +150,16 @@ a.marke-kat:hover { background: var(--blau); color: #fff; }
 .termin h3 { margin: 0 0 0.15rem; font-size: 1.08rem; }
 .termin p { margin: 0; font-size: 0.95rem; color: var(--text-leise); }
 .termin.vorbei { opacity: 0.6; }
-.termin p.termin-anmelden { margin-top: 0.55rem; }
+.termin-anmelden { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin-top: 0.6rem; }
+.termin-frei { display: grid; gap: 0.25rem; font-size: 0.88rem; color: var(--text-leise); font-weight: 600; }
+.termin-frei-zeile { display: flex; align-items: center; gap: 0.5rem; }
+.termin-frei-zeile.knapp { color: #8a5a00; }
+.termin-frei-zeile.voll { color: #8c1d18; }
+/* Belegung als Balken: --anteil = belegter Anteil */
+.platzbalken { display: inline-block; width: 5.5rem; height: 7px; border-radius: 4px; background: #dfe6ee; overflow: hidden; flex: none; }
+.platzbalken > span { display: block; height: 100%; width: var(--anteil, 0%); background: #1f9d55; border-radius: inherit; }
+.knapp .platzbalken > span { background: #e0a100; }
+.voll .platzbalken > span { background: #c0392b; }
 .knopf.klein { padding: 0.4rem 0.95rem; font-size: 0.9rem; }
 .termin.vorbei .termin-anmelden { display: none; }
 .termin:has(.termin-bild) { grid-template-columns: 4.3rem 1fr 5rem; }

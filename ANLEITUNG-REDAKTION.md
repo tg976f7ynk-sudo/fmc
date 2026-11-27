@@ -95,7 +95,10 @@ Vergangene Termine verschwinden von selbst aus der Liste der kommenden Termine.
 Beim Termin **Online-Anmeldung möglich** einschalten. Dann erscheint auf der Webseite
 beim Termin der Knopf **Jetzt anmelden**. Optional:
 
-- **Höchstzahl Teilnehmer:** Ist sie erreicht, ist keine Anmeldung mehr möglich.
+- **Höchstzahl Teilnehmer (Personen):** Ist sie erreicht, ist keine Anmeldung mehr möglich.
+- **Höchstzahl Fluggeräte:** z. B. beim Hallenfliegen. Dann fragt das Formular, wie viele
+  Fluggeräte jemand mitbringt. Ist die Zahl erreicht, geht die Anmeldung nur noch ohne
+  Fluggerät (als Zuschauer oder Helfer).
 - **Anmeldeschluss:** letzter Tag, an dem man sich anmelden kann.
 
 So läuft es für Besucher: Name, E-Mail und Personenzahl eintragen → E-Mail mit
@@ -103,8 +106,12 @@ Bestätigungslink → nach dem Klick kommt eine Kalendereinladung (Google, Apple
 GMX, Web.de). Abmelden geht über den Link in der Einladung; der Termin verschwindet
 dann auch aus dem Kalender.
 
+Die freien Plätze stehen öffentlich beim Termin, mit einem kleinen Balken (grün, bei
+wenigen freien Plätzen gelb, ausgebucht rot). Namen erscheinen dort nie.
+
 Wer sich angemeldet hat, siehst du unter **Anmeldungen** (Knopf unten links oder
-`/admin/anmeldungen/`): je Termin die Zahl der Plätze, alle Teilnehmer mit Status und
+`/admin/anmeldungen/`): je Termin ein Balken für Personen und – falls festgelegt –
+für Fluggeräte (grün = bestätigt, gestreift = noch unbestätigt, grau = frei), alle Teilnehmer mit Status und
 den Knopf **Liste herunterladen (Excel)**. **E-Mail an alle (Bcc)** öffnet dein
 Mailprogramm mit allen bestätigten Teilnehmern als Blindkopie. Teilnehmer werden nie
 öffentlich gezeigt.

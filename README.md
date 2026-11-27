@@ -161,7 +161,8 @@ Virenscanner, die Links in Mails vorab öffnen, nichts auslösen.
 - Täglich um 3:17 Uhr UTC (Cron in `wrangler.jsonc`) werden unbestätigte Anmeldungen nach
   48 Stunden und alle übrigen 14 Tage nach der Veranstaltung gelöscht.
 - Schutz: Turnstile, verstecktes Feld, Mindestzeit, `ANMELDUNG_LIMIT` (10 Aktionen pro Minute).
-  Öffentlich abfragbar ist nur die Zahl freier Plätze.
+  Öffentlich abfragbar ist nur die Zahl freier Plätze (`GET /api/anmeldung/plaetze`, für die Terminliste).
+- Grenzen je Termin: `plaetze` (Personen) und `geraete` (Fluggeräte, Spalte `geraete`).
 - Redaktion: `GET /api/anmeldungen` (Übersicht), `?termin=…&format=csv` (Excel-Liste mit
   Semikolon und UTF-8-BOM), `POST` mit `{aktion:'loeschen', id}` – alles nur mit GitHub-Anmeldung
   und Schreibrecht (`worker/redaktion.js`).

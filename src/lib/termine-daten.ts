@@ -14,6 +14,7 @@ export async function termineDaten() {
     link: t.data.link ?? null,
     anmeldung: t.data.anmeldung === true,
     plaetze: t.data.plaetze ?? null,
+    geraete: t.data.geraete ?? null,
     anmeldeschluss: t.data.anmeldeschluss ? isoTag(t.data.anmeldeschluss) : null,
   }));
 }

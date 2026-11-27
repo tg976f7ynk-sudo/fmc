@@ -36,6 +36,7 @@ const routen = {
   '/api/statistik': statistik,
   '/api/suche': suche,
   '/api/anmeldung': anmeldung.start,
+  '/api/anmeldung/plaetze': anmeldung.plaetze,
   '/api/anmeldung/status': anmeldung.status,
   '/api/anmeldung/bestaetigen': anmeldung.bestaetigen,
   '/api/anmeldung/abmelden': anmeldung.abmelden,

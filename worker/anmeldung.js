@@ -22,6 +22,7 @@ const json = (inhalt, status = 200) => Response.json(inhalt, { status, headers: 
 const einzeilig = (s) => String(s ?? '').replace(/[\r\n\t]+/g, ' ').trim();
 const EMAIL = /^[^\s@<>"',;]+@[^\s@<>"',;]+\.[a-z]{2,}$/i;
 const MAX_PERSONEN = 10;
+const MAX_GERAETE = 20;
 const AUFHEBEN_TAGE = 14;
 const OFFEN_STUNDEN = 48;
 
@@ -38,10 +39,24 @@ const tagDeutsch = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('de-
 // Belegte Plätze (bestätigt oder noch offen) – nur Zahlen, nie Namen
 async function belegt(env, termin, ohneId = '') {
   const r = await env.ANMELDUNGEN.prepare(
-    "SELECT COALESCE(SUM(personen),0) AS n FROM anmeldungen WHERE termin = ? AND status IN ('offen','bestaetigt') AND id != ?",
+    "SELECT COALESCE(SUM(personen),0) AS personen, COALESCE(SUM(geraete),0) AS geraete FROM anmeldungen WHERE termin = ? AND status IN ('offen','bestaetigt') AND id != ?",
   ).bind(termin, ohneId).first();
-  return r?.n ?? 0;
+  return { personen: r?.personen ?? 0, geraete: r?.geraete ?? 0 };
 }
+// Freie Plätze und Fluggeräte (null = keine Grenze)
+const freiAus = (t, b) => ({
+  frei: t.plaetze ? Math.max(0, t.plaetze - b.personen) : null,
+  geraeteFrei: t.geraete ? Math.max(0, t.geraete - b.geraete) : null,
+});
+// Passt eine Anmeldung noch hinein? Liefert den Fehlertext oder null.
+function passt(t, b, personen, geraete) {
+  const f = freiAus(t, b);
+  if (f.frei != null && personen > f.frei) return f.frei ? `Es ${f.frei === 1 ? 'ist nur noch 1 Platz' : `sind nur noch ${f.frei} Plätze`} frei.` : 'Leider sind alle Plätze vergeben.';
+  if (f.geraeteFrei != null && geraete > f.geraeteFrei)
+    return f.geraeteFrei ? `Es ${f.geraeteFrei === 1 ? 'ist nur noch 1 Platz' : `sind nur noch ${f.geraeteFrei} Plätze`} für Fluggeräte frei.` : 'Für Fluggeräte ist leider kein Platz mehr frei. Ohne Fluggerät (z. B. als Zuschauer oder Helfer) können Sie sich weiterhin anmelden.';
+  return null;
+}
+const geraeteText = (n) => (n == null ? '' : n === 1 ? '1 Fluggerät' : `${n} Fluggeräte`);
 
 // Ist die Anmeldung für diesen Termin gerade möglich?
 function lage(t) {
@@ -96,7 +111,7 @@ async function sendeBestaetigungslink(env, b, t, z, k, schonBestaetigt) {
 async function sendeEinladung(env, b, t, z, k) {
   const abmelden = linkFuer(b, 'a', z.id, k);
   const ics = kalender(t, { methode: 'REQUEST', basis: b, uid: z.id, organisator: env.MAIL_VON || env.SMTP_USER, teilnehmer: { name: z.name, email: z.email }, abmeldeLink: abmelden });
-  const text = `Hallo ${z.name},\n\nIhre Anmeldung zu „${t.titel}“ ist bestätigt${z.personen > 1 ? ` (${z.personen} Personen)` : ''}.\n\n${termineZeile(t)}${t.beschreibung ? `\n${t.beschreibung}` : ''}\n\nIm Anhang finden Sie die Kalendereinladung. Ihr Kalender (Google, Apple, Outlook, GMX, Web.de) zeigt sie meist direkt an – sonst die Datei „termin.ics“ öffnen.\n\nFalls Sie doch nicht kommen können, melden Sie sich bitte hier ab:\n${abmelden}\n\nWir freuen uns auf Sie!${fussText(b)}`;
+  const text = `Hallo ${z.name},\n\nIhre Anmeldung zu „${t.titel}“ ist bestätigt${z.personen > 1 || z.geraete != null ? ` (${[z.personen > 1 ? `${z.personen} Personen` : '', geraeteText(z.geraete)].filter(Boolean).join(', ')})` : ''}.\n\n${termineZeile(t)}${t.beschreibung ? `\n${t.beschreibung}` : ''}\n\nIm Anhang finden Sie die Kalendereinladung. Ihr Kalender (Google, Apple, Outlook, GMX, Web.de) zeigt sie meist direkt an – sonst die Datei „termin.ics“ öffnen.\n\nFalls Sie doch nicht kommen können, melden Sie sich bitte hier ab:\n${abmelden}\n\nWir freuen uns auf Sie!${fussText(b)}`;
   await sendeMail(env, { an: z.email, anName: z.name, betreff: `Anmeldung bestätigt: ${t.titel}`, text, kalender: { methode: 'REQUEST', inhalt: ics, dateiname: 'termin.ics' } });
 }
 
@@ -110,6 +125,7 @@ const oeffentlich = (z, t) => ({
   status: z.status,
   name: z.name,
   personen: z.personen,
+  geraete: z.geraete ?? null,
   termin: t ? { id: t.id, titel: t.titel, wann: t.wann, uhrzeit: t.uhrzeit, ort: t.ort } : null,
 });
 
@@ -120,12 +136,12 @@ export const start = {
     if (!t) return json({ offen: false, grund: 'Diesen Termin gibt es nicht (mehr).' }, 404);
     const l = lage(t);
     if (l.offen && !bereit(env)) Object.assign(l, { offen: false, grund: 'Die Online-Anmeldung ist noch nicht freigeschaltet. Bitte melden Sie sich per E-Mail an.' });
-    let frei = null;
-    if (l.offen && t.plaetze) {
-      frei = Math.max(0, t.plaetze - (await belegt(env, t.id)));
-      if (frei === 0) Object.assign(l, { offen: false, grund: 'Leider sind alle Plätze vergeben.' });
+    let f = { frei: null, geraeteFrei: null };
+    if (l.offen && (t.plaetze || t.geraete)) {
+      f = freiAus(t, await belegt(env, t.id));
+      if (f.frei === 0) Object.assign(l, { offen: false, grund: 'Leider sind alle Plätze vergeben.' });
     }
-    return json({ ...l, frei, maxPersonen: MAX_PERSONEN, turnstile: l.offen && turnstileAktiv(env) ? env.TURNSTILE_SITEKEY : null });
+    return json({ ...l, ...f, plaetze: t.plaetze, geraete: t.geraete, maxPersonen: MAX_PERSONEN, maxGeraete: MAX_GERAETE, turnstile: l.offen && turnstileAktiv(env) ? env.TURNSTILE_SITEKEY : null });
   },
 
   // ---------- POST /api/anmeldung – neue Anmeldung, schickt den Bestätigungslink
@@ -145,9 +161,12 @@ export const start = {
     const name = einzeilig(d.name).slice(0, 120);
     const email = einzeilig(d.email).slice(0, 200).toLowerCase();
     const personen = Math.trunc(Number(d.personen) || 1);
+    // Fluggeräte nur abfragen, wenn der Termin dafür eine Grenze hat
+    const geraete = t.geraete ? Math.trunc(Number(d.geraete ?? 0)) : null;
     const anmerkung = String(d.anmerkung ?? '').trim().slice(0, 500) || null;
     if (!name || !EMAIL.test(email)) return json({ ok: false, fehler: 'Bitte geben Sie Ihren Namen und eine gültige E-Mail-Adresse an.' }, 400);
     if (personen < 1 || personen > MAX_PERSONEN) return json({ ok: false, fehler: `Bitte eine Personenzahl zwischen 1 und ${MAX_PERSONEN} angeben.` }, 400);
+    if (geraete != null && !(geraete >= 0 && geraete <= MAX_GERAETE)) return json({ ok: false, fehler: `Bitte eine Zahl an Fluggeräten zwischen 0 und ${MAX_GERAETE} angeben.` }, 400);
     if (!d.einwilligung) return json({ ok: false, fehler: 'Bitte stimmen Sie der Verwendung Ihrer Angaben zu.' }, 400);
 
     if (turnstileAktiv(env)) {
@@ -173,14 +192,14 @@ export const start = {
       await sendeBestaetigungslink(env, b, t, vorhanden, k, vorhanden.status === 'bestaetigt');
       return json({ ok: true });
     }
-    if (t.plaetze && (await belegt(env, t.id)) + personen > t.plaetze) {
-      const frei = Math.max(0, t.plaetze - (await belegt(env, t.id)));
-      return json({ ok: false, fehler: frei ? `Es sind nur noch ${frei} Plätze frei.` : 'Leider sind alle Plätze vergeben.' }, 409);
+    if (t.plaetze || t.geraete) {
+      const voll = passt(t, await belegt(env, t.id), personen, geraete ?? 0);
+      if (voll) return json({ ok: false, fehler: voll }, 409);
     }
-    const z = { id: crypto.randomUUID(), name, email, personen };
+    const z = { id: crypto.randomUUID(), name, email, personen, geraete };
     await env.ANMELDUNGEN.prepare(
-      "INSERT INTO anmeldungen (id, termin, termin_datum, name, email, personen, anmerkung, status, token_hash, erstellt) VALUES (?, ?, ?, ?, ?, ?, ?, 'offen', ?, ?)",
-    ).bind(z.id, t.id, t.ende || t.datum, name, email, personen, anmerkung, kHash, jetzt).run();
+      "INSERT INTO anmeldungen (id, termin, termin_datum, name, email, personen, geraete, anmerkung, status, token_hash, erstellt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'offen', ?, ?)",
+    ).bind(z.id, t.id, t.ende || t.datum, name, email, personen, geraete, anmerkung, kHash, jetzt).run();
     try {
       await sendeBestaetigungslink(env, b, t, z, k, false);
     } catch (fehler) {
@@ -189,6 +208,22 @@ export const start = {
       return json({ ok: false, fehler: 'Die Bestätigungsmail konnte nicht verschickt werden. Bitte versuchen Sie es später erneut.' }, 502);
     }
     return json({ ok: true });
+  },
+};
+
+// ---------- GET /api/anmeldung/plaetze – freie Plätze aller Termine mit Grenze (nur Zahlen, für die Terminliste)
+export const plaetze = {
+  async onRequestGet({ env }) {
+    const mitGrenze = daten.termine.filter((t) => t.anmeldung && (t.plaetze || t.geraete) && (t.ende || t.datum) >= heute());
+    const ergebnis = {};
+    if (env.ANMELDUNGEN && mitGrenze.length) {
+      const { results } = await env.ANMELDUNGEN.prepare(
+        `SELECT termin, COALESCE(SUM(personen),0) AS personen, COALESCE(SUM(geraete),0) AS geraete FROM anmeldungen WHERE status IN ('offen','bestaetigt') AND termin IN (${mitGrenze.map(() => '?').join(',')}) GROUP BY termin`,
+      ).bind(...mitGrenze.map((t) => t.id)).all();
+      const summen = new Map(results.map((r) => [r.termin, r]));
+      for (const t of mitGrenze) ergebnis[t.id] = { plaetze: t.plaetze, geraete: t.geraete, ...freiAus(t, summen.get(t.id) ?? { personen: 0, geraete: 0 }) };
+    }
+    return Response.json({ termine: ergebnis }, { headers: { 'cache-control': 'public, max-age=60' } });
   },
 };
 
@@ -215,8 +250,10 @@ export const bestaetigen = {
     if (z.status === 'abgemeldet') return json({ ok: false, fehler: 'Diese Anmeldung wurde bereits storniert. Bitte melden Sie sich neu an.' }, 409);
     const b = basis(request);
     if (z.status === 'offen') {
-      if (t.plaetze && (await belegt(env, t.id, z.id)) + z.personen > t.plaetze)
-        return json({ ok: false, fehler: 'Leider sind inzwischen alle Plätze vergeben.' }, 409);
+      if (t.plaetze || t.geraete) {
+        const voll = passt(t, await belegt(env, t.id, z.id), z.personen, z.geraete ?? 0);
+        if (voll) return json({ ok: false, fehler: `Inzwischen ist es leider zu voll geworden: ${voll}` }, 409);
+      }
       await env.ANMELDUNGEN.prepare("UPDATE anmeldungen SET status = 'bestaetigt', bestaetigt = ? WHERE id = ?").bind(new Date().toISOString(), z.id).run();
       z.status = 'bestaetigt';
       await sendeEinladung(env, b, t, z, d.k);
@@ -252,7 +289,7 @@ export const abmelden = {
 };
 
 // ---------- Redaktion: GET /api/anmeldungen – alle Anmeldungen je Termin
-const CSV_SPALTEN = [['name', 'Name'], ['email', 'E-Mail'], ['personen', 'Personen'], ['anmerkung', 'Anmerkung'], ['status', 'Status'], ['erstellt', 'Angemeldet am'], ['bestaetigt', 'Bestätigt am'], ['abgemeldet', 'Abgemeldet am']];
+const CSV_SPALTEN = [['name', 'Name'], ['email', 'E-Mail'], ['personen', 'Personen'], ['geraete', 'Fluggeräte'], ['anmerkung', 'Anmerkung'], ['status', 'Status'], ['erstellt', 'Angemeldet am'], ['bestaetigt', 'Bestätigt am'], ['abgemeldet', 'Abgemeldet am']];
 const STATUS_TEXT = { offen: 'unbestätigt', bestaetigt: 'bestätigt', abgemeldet: 'abgemeldet' };
 const zeitDeutsch = (iso) => (iso ? new Date(iso).toLocaleString('de-DE', { timeZone: 'Europe/Berlin', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '');
 const csvFeld = (wert) => {
@@ -287,7 +324,7 @@ export const redaktion = {
     }
 
     const { results } = await env.ANMELDUNGEN.prepare(
-      'SELECT id, termin, name, email, personen, anmerkung, status, erstellt, bestaetigt, abgemeldet FROM anmeldungen ORDER BY termin_datum, erstellt',
+      'SELECT id, termin, name, email, personen, geraete, anmerkung, status, erstellt, bestaetigt, abgemeldet FROM anmeldungen ORDER BY termin_datum, erstellt',
     ).all();
     const gruppen = new Map();
     for (const t of daten.termine) if (t.anmeldung) gruppen.set(t.id, { termin: t.id, eintraege: [] });

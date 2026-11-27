@@ -54,8 +54,22 @@ import Redaktion from '../../layouts/Redaktion.astro';
   .anmeldungen .anm-zahl { background: var(--blau-hell); border-radius: 10px; padding: 0.4rem 0.8rem; font-size: 0.88rem; color: var(--blau-dunkel); }
   .anmeldungen .anm-zahl b { font-size: 1.25rem; margin-right: 0.25rem; font-variant-numeric: tabular-nums; }
   .anmeldungen .anm-zahl.voll { background: #fdecea; color: #8c1d18; }
-  .anmeldungen .anm-balken { height: 6px; border-radius: 3px; background: #e3e9f0; overflow: hidden; margin-bottom: 0.8rem; }
-  .anmeldungen .anm-balken span { display: block; height: 100%; background: #0b5cab; }
+  .anmeldungen .anm-belegung { margin: 0.9rem 0 0.4rem; display: grid; gap: 0.75rem; }
+  .anmeldungen .anm-belegung-kopf { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.2rem 1rem; font-size: 0.93rem; margin-bottom: 0.3rem; }
+  .anmeldungen .anm-belegung-kopf strong { color: var(--blau-dunkel); }
+  .anmeldungen .anm-belegung-kopf b { font-variant-numeric: tabular-nums; }
+  .anmeldungen .anm-belegung-kopf .frei { color: #135c2c; font-weight: 700; }
+  .anmeldungen .anm-belegung-kopf .frei.knapp { color: #8a5a00; }
+  .anmeldungen .anm-belegung-kopf .frei.voll { color: #8c1d18; }
+  .anmeldungen .anm-balken { display: flex; height: 16px; border-radius: 8px; background: #e3e9f0; overflow: hidden; }
+  .anmeldungen .anm-balken .best { background: #1f9d55; }
+  .anmeldungen .anm-balken.knapp .best { background: #e0a100; }
+  .anmeldungen .anm-balken.voll .best { background: #c0392b; }
+  .anmeldungen .anm-balken .offen { background: repeating-linear-gradient(135deg, #f4c542 0 6px, #f9dc85 6px 12px); }
+  .anmeldungen .anm-legende { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.8rem; color: var(--text-leise); margin-top: 0.3rem; }
+  .anmeldungen .anm-legende i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 3px; vertical-align: -0.1rem; margin-right: 0.3rem; background: #1f9d55; }
+  .anmeldungen .anm-legende i.offen { background: repeating-linear-gradient(135deg, #f4c542 0 3px, #f9dc85 3px 6px); }
+  .anmeldungen .anm-legende i.frei { background: #e3e9f0; }
   .anmeldungen .anm-aktionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .anmeldungen .anm-aktionen .knopf { padding: 0.45rem 0.95rem; font-size: 0.9rem; }
   .anmeldungen .anm-schild { display: inline-block; font-size: 0.74rem; font-weight: 700; border-radius: 99px; padding: 0.1rem 0.55rem; margin-left: 0.4rem; vertical-align: middle; background: #e6f6ec; color: #135c2c; }
@@ -80,8 +94,8 @@ import Redaktion from '../../layouts/Redaktion.astro';
 </style>
 
 <script>
-  type Eintrag = { id: string; termin: string; name: string; email: string; personen: number; anmerkung: string | null; status: 'offen' | 'bestaetigt' | 'abgemeldet'; erstellt: string; bestaetigt: string | null; abgemeldet: string | null };
-  type Termin = { id: string; titel: string; datum: string; ende: string | null; wann: string; uhrzeit: string | null; ort: string | null; anmeldung: boolean; plaetze: number | null; anmeldeschluss: string | null };
+  type Eintrag = { id: string; termin: string; name: string; email: string; personen: number; geraete: number | null; anmerkung: string | null; status: 'offen' | 'bestaetigt' | 'abgemeldet'; erstellt: string; bestaetigt: string | null; abgemeldet: string | null };
+  type Termin = { id: string; titel: string; datum: string; ende: string | null; wann: string; uhrzeit: string | null; ort: string | null; anmeldung: boolean; plaetze: number | null; geraete: number | null; anmeldeschluss: string | null };
   const q = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s)!;
   const STATUS = { offen: 'unbestätigt', bestaetigt: 'bestätigt', abgemeldet: 'abgemeldet' };
   const zeit = (iso: string | null) => (iso ? new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') + ' Uhr' : '');
@@ -145,11 +159,26 @@ import Redaktion from '../../layouts/Redaktion.astro';
 
   function karte(gruppe: { termin: string; eintraege: Eintrag[] }) {
     const t = termine.get(gruppe.termin);
-    const summe = (s: string) => gruppe.eintraege.filter((e) => e.status === s).reduce((n, e) => n + e.personen, 0);
+    const summe = (s: string, feld: 'personen' | 'geraete' = 'personen') => gruppe.eintraege.filter((e) => e.status === s).reduce((n, e) => n + (e[feld] ?? 0), 0);
     const anzahl = (s: string) => gruppe.eintraege.filter((e) => e.status === s).length;
     const bestaetigt = summe('bestaetigt');
     const heute = stand.stand as string;
     const offenFuerAnmeldung = !!t?.anmeldung && (t.ende || t.datum) >= heute && (!t.anmeldeschluss || t.anmeldeschluss >= heute) && (!t.plaetze || bestaetigt + summe('offen') < t.plaetze);
+
+    // Belegungsbalken: bestätigt (voll), unbestätigt (gestreift, hält den Platz 48 Stunden frei), frei (grau)
+    const belegung = (was: string, best: number, offen: number, max: number | null) => {
+      const kopf = el('div', { class: 'anm-belegung-kopf' }, el('strong', {}, was));
+      if (!max) {
+        kopf.append(el('span', {}, el('b', {}, String(best)), ' bestätigt', offen ? ` · ${offen} unbestätigt` : '', ' · keine Grenze festgelegt'));
+        return el('div', {}, kopf);
+      }
+      const frei = Math.max(0, max - best - offen);
+      const stufe = frei === 0 ? 'voll' : frei / max <= 0.2 ? 'knapp' : '';
+      kopf.append(el('span', {}, el('b', {}, String(best + offen)), ` von ${max} belegt`, offen ? ` (${offen} unbestätigt)` : '', ' · ', el('span', { class: `frei ${stufe}` }, frei === 0 ? 'ausgebucht' : `${frei} frei`)));
+      const anteil = (n: number) => `${Math.min(100, (n / max) * 100)}%`;
+      const balken = el('div', { class: `anm-balken ${stufe}`, role: 'img', 'aria-label': `${was}: ${best} bestätigt, ${offen} unbestätigt, ${frei} frei von ${max}` }, el('span', { class: 'best', style: `width:${anteil(best)}` }), el('span', { class: 'offen', style: `width:${anteil(offen)}` }));
+      return el('div', {}, kopf, balken);
+    };
 
     const titel = el('h2', {}, t?.titel ?? gruppe.termin, el('span', { class: `anm-schild${offenFuerAnmeldung ? '' : ' zu'}` }, offenFuerAnmeldung ? 'Anmeldung offen' : 'Anmeldung geschlossen'));
     const info = el('p', {}, [t?.wann, t?.uhrzeit, t?.ort].filter(Boolean).join(' · ') || 'Termin wurde entfernt');
@@ -166,14 +195,16 @@ import Redaktion from '../../layouts/Redaktion.astro';
     }
 
     const zahlen = el('div', { class: 'anm-zahlen' },
-      el('span', { class: `anm-zahl${t?.plaetze && bestaetigt >= t.plaetze ? ' voll' : ''}` }, el('b', {}, String(bestaetigt)), t?.plaetze ? `von ${t.plaetze} Plätzen belegt` : bestaetigt === 1 ? 'Person bestätigt' : 'Personen bestätigt'),
-      el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('bestaetigt'))), 'Anmeldungen'),
+      el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('bestaetigt'))), anzahl('bestaetigt') === 1 ? 'Anmeldung bestätigt' : 'Anmeldungen bestätigt'),
     );
     if (anzahl('offen')) zahlen.append(el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('offen'))), 'noch unbestätigt'));
     if (anzahl('abgemeldet')) zahlen.append(el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('abgemeldet'))), 'abgemeldet'));
 
-    const karte = el('article', { class: 'anm-termin' }, el('div', { class: 'anm-kopf' }, el('div', {}, titel, info), aktionen), zahlen);
-    if (t?.plaetze) karte.append(el('div', { class: 'anm-balken', 'aria-hidden': 'true' }, el('span', { style: `width:${Math.min(100, (bestaetigt / t.plaetze) * 100)}%` })));
+    const karte = el('article', { class: 'anm-termin' }, el('div', { class: 'anm-kopf' }, el('div', {}, titel, info), aktionen));
+    const belegungen = el('div', { class: 'anm-belegung' }, belegung('Teilnehmer (Personen)', bestaetigt, summe('offen'), t?.plaetze ?? null));
+    if (t?.geraete) belegungen.append(belegung('Fluggeräte', summe('bestaetigt', 'geraete'), summe('offen', 'geraete'), t.geraete));
+    if (t?.plaetze || t?.geraete) belegungen.append(el('div', { class: 'anm-legende', 'aria-hidden': 'true' }, el('span', {}, el('i'), 'bestätigt'), el('span', {}, el('i', { class: 'offen' }), 'unbestätigt (max. 48 Std.)'), el('span', {}, el('i', { class: 'frei' }), 'frei')));
+    karte.append(belegungen, zahlen);
 
     if (gruppe.eintraege.length) {
       const zeilen = gruppe.eintraege
@@ -186,12 +217,13 @@ import Redaktion from '../../layouts/Redaktion.astro';
             el('td', {}, e.name),
             el('td', {}, el('a', { href: `mailto:${e.email}` }, e.email)),
             el('td', { class: 'zahl' }, String(e.personen)),
+            ...(t?.geraete ? [el('td', { class: 'zahl' }, String(e.geraete ?? ''))] : []),
             el('td', {}, e.anmerkung ?? ''),
             el('td', {}, el('span', { class: `status ${e.status}` }, STATUS[e.status]), el('br'), el('small', {}, zeit(e.abgemeldet || e.bestaetigt || e.erstellt))),
             el('td', {}, knopf),
           );
         });
-      const tabelle = el('table', {}, el('thead', {}, el('tr', {}, ...['Name', 'E-Mail', 'Personen', 'Anmerkung', 'Status', ''].map((s) => el('th', {}, s)))), el('tbody', {}, ...zeilen));
+      const tabelle = el('table', {}, el('thead', {}, el('tr', {}, ...['Name', 'E-Mail', 'Personen', ...(t?.geraete ? ['Fluggeräte'] : []), 'Anmerkung', 'Status', ''].map((s) => el('th', {}, s)))), el('tbody', {}, ...zeilen));
       const details = el('details', {}, el('summary', {}, `Teilnehmer anzeigen (${gruppe.eintraege.length})`), el('div', { class: 'anm-tabelle-huelle' }, tabelle));
       if (gruppe.eintraege.length <= 12) (details as HTMLDetailsElement).open = true;
       karte.append(details);

@@ -31,9 +31,10 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
             </p>
             {t.data.beschreibung && <p>{t.data.beschreibung}</p>}
             {t.data.anmeldung && (
-              <p class="termin-anmelden" data-schluss={t.data.anmeldeschluss ? isoTag(t.data.anmeldeschluss) : undefined}>
+              <div class="termin-anmelden" data-schluss={t.data.anmeldeschluss ? isoTag(t.data.anmeldeschluss) : undefined} data-grenze={t.data.plaetze || t.data.geraete ? t.id : undefined}>
                 <a class="knopf klein" href={`/termine/anmeldung/?termin=${t.id}`}>Jetzt anmelden</a>
-              </p>
+                <span class="termin-frei" data-frei hidden></span>
+              </div>
             )}
           </div>
           {t.vorschau && t.data.bild && (
@@ -82,4 +83,39 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
     if (n === 0) box.querySelector<HTMLElement>('[data-leer]')!.hidden = false;
     if (vergangen && alt.length) box.querySelector<HTMLElement>('[data-vergangen-box]')!.hidden = false;
   });
+
+  // Freie Plätze bei Terminen mit Teilnehmergrenze (nur Zahlen, keine Namen)
+  const mitGrenze = [...document.querySelectorAll<HTMLElement>('.terminliste [data-kommend] [data-grenze]')];
+  if (mitGrenze.length) {
+    fetch('/api/anmeldung/plaetze')
+      .then((r) => r.json())
+      .then(({ termine }) => {
+        for (const el of mitGrenze) {
+          const p = termine?.[el.dataset.grenze!];
+          if (!p) continue;
+          const anzeige = el.querySelector<HTMLElement>('[data-frei]')!;
+          const zeile = (frei: number, max: number, was: string) => {
+            const z = document.createElement('span');
+            z.className = 'termin-frei-zeile';
+            const balken = document.createElement('span');
+            balken.className = 'platzbalken';
+            balken.style.setProperty('--anteil', `${Math.round(((max - frei) / max) * 100)}%`);
+            balken.append(document.createElement('span'));
+            z.append(balken, frei === 0 ? `${was}: ausgebucht` : `${was}: noch ${frei} von ${max} frei`);
+            if (frei === 0) z.classList.add('voll');
+            else if (frei / max <= 0.2) z.classList.add('knapp');
+            return z;
+          };
+          if (p.frei === 0) {
+            el.querySelector('a')?.remove();
+            anzeige.append(zeile(0, p.plaetze, 'Plätze'));
+          } else {
+            if (p.frei != null) anzeige.append(zeile(p.frei, p.plaetze, 'Plätze'));
+            if (p.geraeteFrei != null) anzeige.append(zeile(p.geraeteFrei, p.geraete, 'Fluggeräte'));
+          }
+          anzeige.hidden = false;
+        }
+      })
+      .catch(() => {});
+  }
 </script>

@@ -65,6 +65,7 @@ const termine = defineCollection({
     bild_alt: z.preprocess(leerZuUndefined, z.string().optional().nullable()),
     anmeldung: z.boolean().default(false),
     plaetze: z.preprocess(leerZuUndefined, z.coerce.number().int().positive().optional().nullable()),
+    geraete: z.preprocess(leerZuUndefined, z.coerce.number().int().positive().optional().nullable()),
     anmeldeschluss: z.preprocess(leerZuUndefined, z.coerce.date().optional().nullable()),
   }),
 });

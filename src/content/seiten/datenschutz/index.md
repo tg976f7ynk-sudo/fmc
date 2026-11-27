@@ -60,7 +60,7 @@ Rechtsgrundlage ist unser berechtigtes Interesse am Schutz vor Spam und Missbrau
 
 ## Anmeldung zu Veranstaltungen
 
-Zu manchen Terminen können Sie sich über die Webseite anmelden. Dabei verarbeiten wir Ihren Namen, Ihre E-Mail-Adresse, die Zahl der Personen und – falls Sie etwas eintragen – Ihre Anmerkung sowie den Zeitpunkt der Anmeldung, Bestätigung oder Abmeldung. Die Angaben dienen ausschließlich der Organisation der Veranstaltung. Sie sind nur für die Redaktion des Vereins sichtbar und werden **nicht veröffentlicht**; öffentlich ist allenfalls, wie viele Plätze noch frei sind.
+Zu manchen Terminen können Sie sich über die Webseite anmelden. Dabei verarbeiten wir Ihren Namen, Ihre E-Mail-Adresse, die Zahl der Personen, bei manchen Terminen die Zahl der mitgebrachten Fluggeräte und – falls Sie etwas eintragen – Ihre Anmerkung sowie den Zeitpunkt der Anmeldung, Bestätigung oder Abmeldung. Die Angaben dienen ausschließlich der Organisation der Veranstaltung. Sie sind nur für die Redaktion des Vereins sichtbar und werden **nicht veröffentlicht**; öffentlich ist allenfalls, wie viele Plätze noch frei sind.
 
 Nach der Anmeldung erhalten Sie eine E-Mail mit einem Bestätigungslink. Erst nach Ihrer Bestätigung gilt die Anmeldung, und wir schicken Ihnen eine Kalendereinladung. So stellen wir sicher, dass niemand eine fremde E-Mail-Adresse anmeldet. Über den Link in der Einladung können Sie sich jederzeit wieder abmelden.
 

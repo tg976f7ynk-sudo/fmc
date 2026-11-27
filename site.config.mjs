@@ -6,4 +6,7 @@ export default {
   // GitHub-Repository, in dem die Inhalte liegen (BESITZER/NAME)
   repo: 'tg976f7ynk-sudo/fmc',
   branch: 'main',
+  // Mitgliederbereich: erst einschalten, wenn der Zugangsschutz (z. B. Cloudflare Access für
+  // /mitglieder/*) eingerichtet ist. Solange false, werden keine Mitgliederdokumente veröffentlicht.
+  mitgliederbereich: false,
 };

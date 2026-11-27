@@ -66,4 +66,18 @@ const termine = defineCollection({
   }),
 });
 
-export const collections = { beitraege, seiten, galerien, termine };
+// Mitgliederbereich: Dokumente (Dateien liegen in src/mitglieder/dateien, nicht öffentlich)
+export const MITGLIEDER_KATEGORIEN = ['Flugbetrieb', 'Verein', 'Protokolle', 'Formulare', 'Sonstiges'] as const;
+const mitgliederDokumente = defineCollection({
+  loader: glob({ pattern: '*.{yml,yaml}', base: './src/content/mitglieder-dokumente' }),
+  schema: z.object({
+    titel: z.string(),
+    kategorie: z.string().default('Sonstiges'),
+    beschreibung: z.preprocess(leerZuUndefined, z.string().optional().nullable()),
+    datei: z.string(),
+    stand: z.preprocess(leerZuUndefined, z.coerce.date().optional().nullable()),
+    sichtbar: z.boolean().default(true),
+  }),
+});
+
+export const collections = { beitraege, seiten, galerien, termine, mitgliederDokumente };

@@ -89,6 +89,32 @@ für Besucher ist sie in der Regel unsichtbar.
 4. Im Turnstile-Widget die neue Domain als Hostnamen ergänzen.
 5. In `wrangler.jsonc` `"workers_dev": false` setzen, damit die vorläufige Adresse abgeschaltet wird.
 
+## Mitgliederbereich (vorbereitet, noch nicht freigeschaltet)
+
+- **Redaktion:** „Mitglieder-Dokumente“ (Unterlagen hochladen) und „Mitgliederbereich“ (Mitgliederliste
+  mit E-Mail-Adressen, Begrüßungstext). Keine personenbezogenen Daten in die Dokumente.
+- **Dateien** liegen in `src/mitglieder/dateien/` und werden **nur** veröffentlicht, wenn in
+  `site.config.mjs` `mitgliederbereich: true` steht (`scripts/mitglieder-kopieren.mjs`).
+- **Die Mitgliederliste** (`src/data/mitglieder.json`) wird nie veröffentlicht; sie liegt nur im
+  (privaten) Repository.
+- Mitgliederinhalte erscheinen nie in Suche, MCP-Zugang, `llms.txt`, Sitemap oder Statistik;
+  `/mitglieder/*` ist für Suchmaschinen und Zwischenspeicher gesperrt.
+
+**Freischalten nach dem Domain-Umzug** (Domain liegt bei Cloudflare):
+
+1. Cloudflare-Dashboard → *Zero Trust*: Anmeldeverfahren **„One-time PIN“** (Code per E-Mail) aktivieren.
+2. *Access → Groups*: Gruppe „FMCD-Mitglieder“ anlegen, ID notieren.
+3. *Access → Applications → Self-hosted*: Adresse `fmc-dietzenbach.org/mitglieder/*`, Regel
+   „Allow“ für die Gruppe „FMCD-Mitglieder“, Sitzungsdauer z. B. 30 Tage.
+4. Mitgliederliste übertragen: `node scripts/access-mitglieder-abgleich.mjs` (Vorschau), dann mit
+   `--ausfuehren` (API-Schlüssel mit Recht „Access: Organizations, Identity Providers, and Groups: Edit“).
+   Später bei jeder Änderung der Liste erneut ausführen oder als GitHub Action automatisieren.
+5. Prüfen: `/mitglieder/` im privaten Fenster öffnen → es muss die Cloudflare-Anmeldung erscheinen.
+6. **Erst dann** in `site.config.mjs` `mitgliederbereich: true` setzen und einen Menüpunkt
+   „Mitglieder“ ergänzen.
+
+Cloudflare Access ist bis 50 Nutzer kostenlos.
+
 ## Suche und Zugang für KI-Systeme
 
 | Adresse | Zweck |

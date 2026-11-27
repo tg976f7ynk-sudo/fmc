@@ -134,7 +134,7 @@ const jahr = new Date().getFullYear();
 
     <script>
       // ---- Anonyme Zählung des Seitenaufrufs (keine Cookies, nichts wird im Browser gespeichert)
-      if (!navigator.webdriver && !location.pathname.startsWith('/admin')) {
+      if (!navigator.webdriver && !/^\/(admin|mitglieder)\//.test(location.pathname)) {
         const melden = () => navigator.sendBeacon?.('/api/zaehler', JSON.stringify({ p: location.pathname }));
         if (document.visibilityState === 'visible') melden();
         else document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && melden(), { once: true });

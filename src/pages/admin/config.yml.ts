@@ -2,7 +2,7 @@
 // Hier wird festgelegt, welche Eingabefelder die Redaktion sieht.
 import type { APIRoute } from 'astro';
 import technik from '../../../site.config.mjs';
-import { KATEGORIEN } from '../../content.config';
+import { KATEGORIEN, MITGLIEDER_KATEGORIEN } from '../../content.config';
 
 const neben = { media_folder: '', public_folder: '' }; // Bilder liegen direkt beim Eintrag
 const datum = (name: string, label: string, extra = {}) => ({
@@ -149,6 +149,68 @@ const config = {
       ],
     },
     { divider: true },
+    {
+      name: 'mitglieder_dokumente',
+      label: 'Mitglieder-Dokumente',
+      label_singular: 'Dokument',
+      description: 'Unterlagen nur für Mitglieder (z. B. Flugleiter-Plan, Protokolle). Keine personenbezogenen Daten einstellen. Erscheint erst, wenn der Mitgliederbereich freigeschaltet ist.',
+      icon: 'lock',
+      folder: 'src/content/mitglieder-dokumente',
+      extension: 'yml',
+      format: 'yaml',
+      slug: '{{fields.titel}}',
+      create: true,
+      identifier_field: 'titel',
+      summary: '{{kategorie}} – {{titel}}{{sichtbar | ternary(\'\', \' · AUSGEBLENDET\')}}',
+      sortable_fields: { fields: ['titel', 'kategorie', 'stand'], default: { field: 'kategorie', direction: 'ascending' } },
+      view_groups: [{ label: 'Kategorie', field: 'kategorie' }],
+      editor: { preview: false },
+      fields: [
+        { name: 'titel', label: 'Bezeichnung', widget: 'string', hint: 'z. B. „Flugleiter-Einteilung 2027“' },
+        { name: 'kategorie', label: 'Kategorie', widget: 'select', options: [...MITGLIEDER_KATEGORIEN], default: 'Flugbetrieb' },
+        { name: 'datei', label: 'Datei (PDF, Word, Excel …)', widget: 'file', media_folder: '/src/mitglieder/dateien', public_folder: '/mitglieder/dateien', hint: 'Die Datei ist nur über den geschützten Mitgliederbereich erreichbar. Höchstens 24 MB.' },
+        { name: 'beschreibung', label: 'Kurzbeschreibung', widget: 'string', required: false },
+        datum('stand', 'Stand', { required: false, hint: 'Datum der Fassung, z. B. bei Protokollen oder Plänen.' }),
+        { name: 'sichtbar', label: 'Für Mitglieder sichtbar', widget: 'boolean', default: true, required: false, hint: 'Ausschalten, um ein Dokument vorübergehend auszublenden, ohne es zu löschen.' },
+      ],
+    },
+    {
+      name: 'mitgliederbereich',
+      label: 'Mitgliederbereich',
+      description: 'Begrüßungstext und Liste der Mitglieder, die Zugang zum Mitgliederbereich bekommen.',
+      icon: 'group',
+      editor: { preview: false },
+      files: [
+        {
+          name: 'mitgliederliste',
+          label: 'Mitgliederliste (Zugang)',
+          file: 'src/data/mitglieder.json',
+          fields: [
+            {
+              name: 'mitglieder', label: 'Mitglieder mit Zugang', label_singular: 'Mitglied', widget: 'list', required: false,
+              summary: '{{name}} · {{email}}{{aktiv | ternary(\'\', \' · GESPERRT\')}}',
+              hint: 'Wer hier mit E-Mail-Adresse eingetragen und aktiv ist, kann sich im Mitgliederbereich mit einem Code per E-Mail anmelden. Ausgetretene Mitglieder einfach auf „gesperrt“ stellen oder löschen. Diese Liste wird nicht veröffentlicht.',
+              fields: [
+                { name: 'name', label: 'Name', widget: 'string' },
+                { name: 'email', label: 'E-Mail-Adresse', widget: 'string', pattern: ['^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$', 'Bitte eine gültige E-Mail-Adresse eingeben'] },
+                { name: 'aktiv', label: 'Zugang aktiv', widget: 'boolean', default: true },
+                { name: 'notiz', label: 'Notiz (intern)', widget: 'string', required: false, hint: 'z. B. „Flugleiter“ oder „Jugendgruppe“' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'texte',
+          label: 'Texte im Mitgliederbereich',
+          file: 'src/data/mitgliederbereich.json',
+          fields: [
+            { name: 'titel', label: 'Überschrift', widget: 'string' },
+            { name: 'begruessung', label: 'Begrüßung', widget: 'text' },
+            { name: 'hinweis', label: 'Hinweis über der Dokumentliste', widget: 'string', required: false },
+          ],
+        },
+      ],
+    },
     {
       name: 'einstellungen',
       label: 'Einstellungen',

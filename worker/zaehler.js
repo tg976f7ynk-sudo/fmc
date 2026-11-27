@@ -24,7 +24,7 @@ export async function onRequestPost({ request, env, ctx }) {
     return leer();
   }
   pfad = pfad.split(/[?#]/)[0];
-  if (!pfad.startsWith('/') || pfad.length > 200 || /^\/(admin|api)(\/|$)/.test(pfad) || pfad.includes('..')) return leer();
+  if (!pfad.startsWith('/') || pfad.length > 200 || /^\/(admin|api|mitglieder)(\/|$)/.test(pfad) || pfad.includes('..')) return leer();
   if (!pfad.endsWith('/') && !/\.[a-z0-9]{2,5}$/i.test(pfad)) pfad += '/';
 
   ctx.waitUntil(

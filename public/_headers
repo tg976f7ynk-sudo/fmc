@@ -15,6 +15,11 @@
   ! Content-Security-Policy
   X-Robots-Tag: noindex
 
+# Mitgliederbereich: nicht in Suchmaschinen, nicht in Zwischenspeichern
+/mitglieder/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: private, no-store
+
 # Vorläufige Cloudflare-Adressen nicht in Suchmaschinen aufnehmen
 https://:worker.:konto.workers.dev/*
   X-Robots-Tag: noindex

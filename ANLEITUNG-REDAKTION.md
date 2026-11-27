@@ -107,6 +107,22 @@ unter **Impressionen** beim passenden Jahr. Das erste Bild ist das Vorschaubild.
 - **Einstellungen → Menü**: Menüpunkte umbenennen, verschieben oder ergänzen.
 - **Einstellungen → Allgemeine Angaben**: Anschrift, E-Mail-Adresse und Lage des Flugplatzes.
 
+## Mitgliederbereich
+
+Der Mitgliederbereich ist vorbereitet, aber **noch nicht freigeschaltet**. Du kannst ihn trotzdem
+schon befüllen:
+
+- **Mitglieder-Dokumente → Neu:** Bezeichnung, Kategorie (Flugbetrieb, Verein, Protokolle,
+  Formulare, Sonstiges) und die Datei hochladen. Mit „Für Mitglieder sichtbar“ lässt sich ein
+  Dokument vorübergehend ausblenden.
+  **Bitte keine personenbezogenen Daten** (Adresslisten, Telefonnummern usw.) einstellen.
+- **Mitgliederbereich → Mitgliederliste:** Name und E-Mail-Adresse aller Mitglieder eintragen,
+  die Zugang bekommen sollen. Wer austritt, wird auf „gesperrt“ gestellt oder gelöscht.
+  Diese Liste ist nicht öffentlich.
+
+Nach der Freischaltung melden sich Mitglieder ganz einfach an: E-Mail-Adresse eingeben,
+Code aus der E-Mail eintippen, fertig – ohne Passwort.
+
 ## Statistik
 
 Unter **Statistik** (Knopf unten links oder `/admin/statistik/`) siehst du, wie oft

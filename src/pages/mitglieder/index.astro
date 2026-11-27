@@ -1,0 +1,57 @@
+---
+// Mitgliederbereich – wird erst nach Einrichtung des Zugangsschutzes freigeschaltet.
+import { getCollection } from 'astro:content';
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+import technik from '../../../site.config.mjs';
+import bereich from '../../data/mitgliederbereich.json';
+import { MITGLIEDER_KATEGORIEN } from '../../content.config';
+import { datumLang } from '../../lib/inhalte';
+
+const aktiv = technik.mitgliederbereich === true;
+const dokumente = aktiv ? (await getCollection('mitgliederDokumente')).filter((d) => d.data.sichtbar) : [];
+const gruppen = [...MITGLIEDER_KATEGORIEN, ...new Set(dokumente.map((d) => d.data.kategorie))]
+  .filter((k, i, a) => a.indexOf(k) === i)
+  .map((k) => ({ kategorie: k, liste: dokumente.filter((d) => d.data.kategorie === k).sort((a, b) => a.data.titel.localeCompare(b.data.titel, 'de')) }))
+  .filter((g) => g.liste.length);
+const endung = (datei: string) => (datei.split('.').pop() ?? '').slice(0, 4);
+---
+
+<Basis titel={bereich.titel} beschreibung="Bereich für Mitglieder des FMC Dietzenbach.">
+  <Seitenkopf titel={bereich.titel} untertitel={aktiv ? bereich.begruessung : undefined} />
+  <section class="abschnitt">
+    <div class="schmal">
+      {
+        !aktiv ? (
+          <div class="box">
+            <p><strong>Der Mitgliederbereich wird gerade eingerichtet.</strong></p>
+            <p>Hier finden Mitglieder bald Unterlagen für den Flugbetrieb und das Vereinsleben. Die Anmeldung erfolgt dann einfach mit der eigenen E-Mail-Adresse.</p>
+          </div>
+        ) : (
+          <>
+            {bereich.hinweis && <p class="hinweis gut">{bereich.hinweis}</p>}
+            {gruppen.length === 0 && <p class="leer">Zurzeit sind keine Dokumente eingestellt.</p>}
+            {gruppen.map((g) => (
+              <>
+                <h2>{g.kategorie}</h2>
+                <ul class="downloads">
+                  {g.liste.map((d) => (
+                    <li>
+                      <a href={d.data.datei}>
+                        <span class="typ">{endung(d.data.datei)}</span>
+                        <span>
+                          <strong>{d.data.titel}</strong>
+                          <small>{[d.data.beschreibung, d.data.stand && `Stand ${datumLang(d.data.stand)}`].filter(Boolean).join(' · ')}</small>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ))}
+          </>
+        )
+      }
+    </div>
+  </section>
+</Basis>

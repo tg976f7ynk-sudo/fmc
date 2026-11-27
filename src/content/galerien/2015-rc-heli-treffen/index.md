@@ -42,8 +42,6 @@ bilder:
   - "rcheli2015046.jpg"
   - "rcheli2015043.jpg"
   - "rcheli2015042.jpg"
-  - "rcheli2015049.jpg"
-  - "rcheli2015048.jpg"
   - "rcheli2015053.jpg"
   - "rcheli2015052.jpg"
   - "rcheli2015054.jpg"

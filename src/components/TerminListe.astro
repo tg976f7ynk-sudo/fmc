@@ -1,9 +1,15 @@
 ---
+import { getImage } from 'astro:assets';
 import { alleTermine, isoTag, zeitraum } from '../lib/inhalte';
 
 interface Props { modus?: 'kommend' | 'alle'; anzahl?: number; }
 const { modus = 'alle', anzahl = 0 } = Astro.props;
-const termine = await alleTermine();
+const termine = await Promise.all(
+  (await alleTermine()).map(async (t) => ({
+    ...t,
+    vorschau: t.data.bild ? await getImage({ src: t.data.bild, width: 160, height: 160, fit: 'cover', format: 'webp', quality: 70, layout: 'none' }) : null,
+  })),
+);
 const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC' });
 ---
 
@@ -25,6 +31,11 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
             </p>
             {t.data.beschreibung && <p>{t.data.beschreibung}</p>}
           </div>
+          {t.vorschau && t.data.bild && (
+            <a class="termin-bild" href={t.data.bild.src} data-bild>
+              <img src={t.vorschau.src} width="80" height="80" alt={`Bild zum Termin „${t.data.titel}“`} loading="lazy" decoding="async" />
+            </a>
+          )}
         </li>
       ))
     }

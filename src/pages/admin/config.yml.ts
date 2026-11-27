@@ -6,7 +6,7 @@ import { KATEGORIEN } from '../../content.config';
 
 const neben = { media_folder: '', public_folder: '' }; // Bilder liegen direkt beim Eintrag
 const datum = (name: string, label: string, extra = {}) => ({
-  name, label, widget: 'datetime', format: 'YYYY-MM-DD', date_format: 'DD.MM.YYYY', time_format: false, picker_utc: true, ...extra,
+  name, label, widget: 'datetime', format: 'YYYY-MM-DD', date_format: 'DD.MM.YYYY', time_format: false, ...extra,
 });
 const text = { name: 'body', label: 'Text', widget: 'markdown', required: false, buttons: ['bold', 'italic', 'link', 'heading-two', 'heading-three', 'bulleted-list', 'numbered-list', 'quote'], editor_components: ['image'], hint: 'Bilder über das Bild-Symbol einfügen. Mehrere Bilder direkt hintereinander werden automatisch als Bilderreihe dargestellt. Ein YouTube-Link in einer eigenen Zeile wird zum Video.' };
 const galerie = (hint: string) => ({ name: 'bilder', label: 'Bildergalerie', widget: 'image', multiple: true, required: false, hint });
@@ -72,6 +72,9 @@ const config = {
       description: 'Veranstaltungen und Treffen. Vergangene Termine werden automatisch ausgeblendet.',
       icon: 'event',
       folder: 'src/content/termine',
+      // Bilder zu Terminen liegen in src/content/termine/bilder/
+      media_folder: 'bilder',
+      public_folder: 'bilder',
       extension: 'yml',
       format: 'yaml',
       slug: '{{fields.datum}}-{{fields.titel}}',
@@ -87,6 +90,7 @@ const config = {
         { name: 'ort', label: 'Ort', widget: 'string', required: false },
         { name: 'beschreibung', label: 'Kurzbeschreibung', widget: 'text', required: false },
         { name: 'link', label: 'Link zu weiteren Infos', widget: 'string', required: false, hint: 'z. B. Adresse eines Beitrags: /aktuelles/…/' },
+        { name: 'bild', label: 'Bild (z. B. Plakat oder Einladung)', widget: 'image', required: false, hint: 'Optional. Erscheint als kleines Vorschaubild beim Termin und lässt sich zum Vergrößern antippen.' },
       ],
     },
     {

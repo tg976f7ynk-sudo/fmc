@@ -150,6 +150,10 @@ a.marke-kat:hover { background: var(--blau); color: #fff; }
 .termin h3 { margin: 0 0 0.15rem; font-size: 1.08rem; }
 .termin p { margin: 0; font-size: 0.95rem; color: var(--text-leise); }
 .termin.vorbei { opacity: 0.6; }
+.termin:has(.termin-bild) { grid-template-columns: 4.3rem 1fr 5rem; }
+.termin-bild { display: block; width: 5rem; height: 5rem; border-radius: 10px; overflow: hidden; align-self: center; border: 1px solid var(--linie); }
+.termin-bild img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+@media (max-width: 480px) { .termin:has(.termin-bild) { grid-template-columns: 4.3rem 1fr 3.5rem; } .termin-bild { width: 3.5rem; height: 3.5rem; } }
 .termin.vorbei .termin-tag { background: var(--text-leise); }
 .leer { color: var(--text-leise); font-style: italic; }
 details.vergangen { margin-top: 1.5rem; }

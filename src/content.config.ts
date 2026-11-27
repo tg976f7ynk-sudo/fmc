@@ -52,7 +52,7 @@ const galerien = defineCollection({
 
 const termine = defineCollection({
   loader: glob({ pattern: '*.{yml,yaml}', base: './src/content/termine' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     titel: z.string(),
     datum: z.coerce.date(),
     ende: z.preprocess(leerZuUndefined, z.coerce.date().optional().nullable()),
@@ -60,6 +60,7 @@ const termine = defineCollection({
     ort: z.string().optional().nullable(),
     beschreibung: z.string().optional().nullable(),
     link: z.string().optional().nullable(),
+    bild: z.preprocess(neben, image().optional()),
   }),
 });
 

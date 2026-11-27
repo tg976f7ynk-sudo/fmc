@@ -10,26 +10,19 @@
 //   - verstecktes Feld und Mindestzeit (immer aktiv)
 //   - höchstens 3 Nachrichten pro Minute je Besucher (KONTAKT_LIMIT, siehe wrangler.jsonc)
 //   - Cloudflare Turnstile, sobald TURNSTILE_SITEKEY und TURNSTILE_SECRET eingetragen sind
-import { connect } from 'cloudflare:sockets';
+import { sendeMail } from './mail.js';
 
 const json = (daten, status = 200) => Response.json(daten, { status, headers: { 'cache-control': 'no-store' } });
 const einzeilig = (s) => String(s ?? '').replace(/[\r\n\t]+/g, ' ').trim();
-const b64 = (text) => {
-  const bytes = new TextEncoder().encode(text);
-  let bin = '';
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin);
-};
-const kopfwort = (text) => `=?UTF-8?B?${b64(text)}?=`;
 
-const turnstileAktiv = (env) => Boolean(env.TURNSTILE_SITEKEY && env.TURNSTILE_SECRET);
+export const turnstileAktiv = (env) => Boolean(env.TURNSTILE_SITEKEY && env.TURNSTILE_SECRET);
 
 // Das Formular fragt hier ab, ob (und mit welchem Schlüssel) die Sicherheitsprüfung aktiv ist.
 export async function onRequestGet({ env }) {
   return json({ turnstile: turnstileAktiv(env) ? env.TURNSTILE_SITEKEY : null });
 }
 
-async function pruefeTurnstile(env, token, ip) {
+export async function pruefeTurnstile(env, token, ip) {
   if (!token || typeof token !== 'string' || token.length > 2048) return false;
   const daten = new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: token });
   if (ip) daten.set('remoteip', ip);
@@ -86,76 +79,10 @@ export async function onRequestPost({ request, env }) {
 
   const text = `Neue Nachricht über das Kontaktformular der Webseite\n\nName:    ${name}\nE-Mail:  ${email}\nBetreff: ${betreff}\n\n${nachricht}\n`;
   try {
-    await sendeMail(env, { antwortAn: email, betreff: `[Webseite] ${betreff}`, text });
+    await sendeMail(env, { vonName: 'Kontaktformular FMCD', antwortAn: email, betreff: `[Webseite] ${betreff}`, text });
     return json({ ok: true });
   } catch (fehler) {
     console.error('Kontaktformular:', fehler.message);
     return json({ ok: false, fehler: 'Die Nachricht konnte nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.' }, 502);
-  }
-}
-
-async function sendeMail(env, { antwortAn, betreff, text }) {
-  const von = env.MAIL_VON || env.SMTP_USER;
-  const an = env.MAIL_AN || env.SMTP_USER;
-  const socket = connect(
-    { hostname: env.SMTP_HOST, port: Number(env.SMTP_PORT || 465) },
-    { secureTransport: env.SMTP_SECURE === 'off' ? 'off' : 'on' },
-  );
-  const schreiber = socket.writable.getWriter();
-  const leser = socket.readable.getReader();
-  const enc = new TextEncoder();
-  const dec = new TextDecoder();
-  let puffer = '';
-
-  // Liest eine vollständige (ggf. mehrzeilige) Antwort des Mailservers
-  const lies = async () => {
-    for (;;) {
-      const zeilen = puffer.split('\r\n');
-      for (let i = 0; i < zeilen.length - 1; i++) {
-        if (/^\d{3}(?: |$)/.test(zeilen[i])) {
-          puffer = zeilen.slice(i + 1).join('\r\n');
-          return zeilen[i];
-        }
-      }
-      const { value, done } = await leser.read();
-      if (done) throw new Error('Verbindung zum Mailserver wurde beendet');
-      puffer += dec.decode(value, { stream: true });
-    }
-  };
-  const befehl = async (zeile, erwartet, was) => {
-    if (zeile !== null) await schreiber.write(enc.encode(zeile + '\r\n'));
-    const antwort = await lies();
-    if (!antwort.startsWith(String(erwartet))) throw new Error(`Mailserver lehnt ab bei „${was}“: ${antwort.slice(0, 120)}`);
-  };
-
-  try {
-    await befehl(null, 220, 'Begrüßung');
-    await befehl('EHLO fmc-dietzenbach.org', 250, 'EHLO');
-    await befehl('AUTH LOGIN', 334, 'Anmeldung');
-    await befehl(b64(env.SMTP_USER), 334, 'Benutzername');
-    await befehl(b64(env.SMTP_PASS), 235, 'Passwort');
-    await befehl(`MAIL FROM:<${von}>`, 250, 'Absender');
-    await befehl(`RCPT TO:<${an}>`, 250, 'Empfänger');
-    await befehl('DATA', 354, 'DATA');
-    const koerper = b64(text).replace(/(.{76})/g, '$1\r\n');
-    const mail = [
-      `From: ${kopfwort('Kontaktformular FMCD')} <${von}>`,
-      `To: <${an}>`,
-      `Reply-To: <${antwortAn}>`,
-      `Subject: ${kopfwort(betreff)}`,
-      `Date: ${new Date().toUTCString().replace('GMT', '+0000')}`,
-      `Message-ID: <${crypto.randomUUID()}@${von.split('@')[1] || 'fmc-dietzenbach.org'}>`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/plain; charset=UTF-8',
-      'Content-Transfer-Encoding: base64',
-      '',
-      koerper,
-    ].join('\r\n');
-    await befehl(mail + '\r\n.', 250, 'Nachricht');
-    await schreiber.write(enc.encode('QUIT\r\n'));
-  } finally {
-    try {
-      await socket.close();
-    } catch {}
   }
 }

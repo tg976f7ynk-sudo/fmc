@@ -30,6 +30,11 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
               {t.data.ort && ` · ${t.data.ort}`}
             </p>
             {t.data.beschreibung && <p>{t.data.beschreibung}</p>}
+            {t.data.anmeldung && (
+              <p class="termin-anmelden" data-schluss={t.data.anmeldeschluss ? isoTag(t.data.anmeldeschluss) : undefined}>
+                <a class="knopf klein" href={`/termine/anmeldung/?termin=${t.id}`}>Jetzt anmelden</a>
+              </p>
+            )}
           </div>
           {t.vorschau && t.data.bild && (
             <a class="termin-bild" href={t.data.bild.src} data-bild>
@@ -69,6 +74,10 @@ const monat = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC'
       t.classList.add('vorbei');
       if (vergangen) vergangen.append(t);
       else t.remove();
+    });
+    // Anmeldung nach dem Anmeldeschluss ausblenden
+    box.querySelectorAll<HTMLElement>('[data-schluss]').forEach((a) => {
+      if (a.dataset.schluss! < heute) a.remove();
     });
     if (n === 0) box.querySelector<HTMLElement>('[data-leer]')!.hidden = false;
     if (vergangen && alt.length) box.querySelector<HTMLElement>('[data-vergangen-box]')!.hidden = false;

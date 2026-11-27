@@ -90,6 +90,28 @@ Den Beitrag in der Liste anklicken, ändern und speichern. Zum Löschen oben rec
 
 Vergangene Termine verschwinden von selbst aus der Liste der kommenden Termine.
 
+### Online-Anmeldung zu einem Termin
+
+Beim Termin **Online-Anmeldung möglich** einschalten. Dann erscheint auf der Webseite
+beim Termin der Knopf **Jetzt anmelden**. Optional:
+
+- **Höchstzahl Teilnehmer:** Ist sie erreicht, ist keine Anmeldung mehr möglich.
+- **Anmeldeschluss:** letzter Tag, an dem man sich anmelden kann.
+
+So läuft es für Besucher: Name, E-Mail und Personenzahl eintragen → E-Mail mit
+Bestätigungslink → nach dem Klick kommt eine Kalendereinladung (Google, Apple, Outlook,
+GMX, Web.de). Abmelden geht über den Link in der Einladung; der Termin verschwindet
+dann auch aus dem Kalender.
+
+Wer sich angemeldet hat, siehst du unter **Anmeldungen** (Knopf unten links oder
+`/admin/anmeldungen/`): je Termin die Zahl der Plätze, alle Teilnehmer mit Status und
+den Knopf **Liste herunterladen (Excel)**. **E-Mail an alle (Bcc)** öffnet dein
+Mailprogramm mit allen bestätigten Teilnehmern als Blindkopie. Teilnehmer werden nie
+öffentlich gezeigt.
+
+Unbestätigte Anmeldungen werden nach 48 Stunden gelöscht, alle anderen 14 Tage nach der
+Veranstaltung – also die Liste bei Bedarf vorher herunterladen.
+
 ## Eine Bildergalerie anlegen
 
 **Bildergalerien → Neu**: Veranstaltung (z. B. „Wasserflugtreffen“) und Jahr eintragen,

@@ -9,7 +9,7 @@ untertitel: "Welche Daten beim Besuch dieser Webseite verarbeitet werden – und
 
 - Diese Webseite setzt **keine Cookies** und verwendet **keine Werbe- oder Analysedienste** fremder Anbieter. Es gibt kein Tracking. Wir zählen lediglich anonym, wie oft eine Seite aufgerufen wird – ohne IP-Adresse und ohne Daten über Sie.
 - Beim Aufruf jeder Webseite fallen technisch notwendige Verbindungsdaten an (zum Beispiel Ihre IP-Adresse). Diese verarbeitet unser Hosting-Dienstleister Cloudflare.
-- Daten, die Sie selbst eingeben, verarbeiten wir nur, wenn Sie uns über das **Kontaktformular** oder per E-Mail schreiben.
+- Daten, die Sie selbst eingeben, verarbeiten wir nur, wenn Sie uns über das **Kontaktformular** oder per E-Mail schreiben oder sich **zu einer Veranstaltung anmelden**. Teilnehmerlisten werden nie veröffentlicht.
 - **YouTube-Videos** und die **Karte** auf der Seite „Anfahrt“ werden erst geladen, wenn Sie sie ausdrücklich anklicken.
 
 ## Verantwortlicher
@@ -57,6 +57,16 @@ Damit das Formular nicht für Spam missbraucht wird, setzen wir zwei Maßnahmen 
 - **Cloudflare Turnstile:** Sobald Sie in das Formular tippen, wird eine Sicherheitsprüfung von Cloudflare geladen. Sie prüft anhand technischer Merkmale Ihres Browsers (unter anderem IP-Adresse, Browsertyp und Interaktion mit der Seite), ob die Nachricht von einem Menschen stammt. In der Regel geschieht das unsichtbar; nur im Zweifel werden Sie gebeten, ein Kästchen anzuklicken. Turnstile setzt auf dieser Seite keine Cookies. Nach Angaben von Cloudflare werden die Daten nicht für Werbezwecke verwendet.
 
 Rechtsgrundlage ist unser berechtigtes Interesse am Schutz vor Spam und Missbrauch (Art. 6 Abs. 1 lit. f DSGVO). Für Cloudflare gilt das zum Hosting Gesagte.
+
+## Anmeldung zu Veranstaltungen
+
+Zu manchen Terminen können Sie sich über die Webseite anmelden. Dabei verarbeiten wir Ihren Namen, Ihre E-Mail-Adresse, die Zahl der Personen und – falls Sie etwas eintragen – Ihre Anmerkung sowie den Zeitpunkt der Anmeldung, Bestätigung oder Abmeldung. Die Angaben dienen ausschließlich der Organisation der Veranstaltung. Sie sind nur für die Redaktion des Vereins sichtbar und werden **nicht veröffentlicht**; öffentlich ist allenfalls, wie viele Plätze noch frei sind.
+
+Nach der Anmeldung erhalten Sie eine E-Mail mit einem Bestätigungslink. Erst nach Ihrer Bestätigung gilt die Anmeldung, und wir schicken Ihnen eine Kalendereinladung. So stellen wir sicher, dass niemand eine fremde E-Mail-Adresse anmeldet. Über den Link in der Einladung können Sie sich jederzeit wieder abmelden.
+
+Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie jederzeit mit Wirkung für die Zukunft widerrufen können – am einfachsten über den Abmeldelink oder per E-Mail an uns.
+
+**Speicherdauer:** Nicht bestätigte Anmeldungen werden nach 48 Stunden automatisch gelöscht, alle übrigen 14 Tage nach der Veranstaltung. Gespeichert werden die Angaben in einer Datenbank bei Cloudflare (siehe „Hosting“); im Speicher liegt nur ein verschlüsselter Prüfwert des Links aus der E-Mail, nicht der Link selbst. Die E-Mails verschicken wir über unser Postfach bei IONOS (siehe „Kontaktformular und E-Mail“). Zum Schutz vor Missbrauch gelten dieselben Maßnahmen wie beim Kontaktformular (Begrenzung der Anzahl, Cloudflare Turnstile).
 
 ## Wetter am Flugplatz
 

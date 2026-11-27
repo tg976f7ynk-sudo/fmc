@@ -19,10 +19,18 @@
     // Seitenaufrufe: höchstens 60 Zählungen pro Minute je Besucher (Schutz vor künstlich hochgetriebenen Zahlen)
     { "name": "ZAEHLER_LIMIT", "namespace_id": "20261127", "simple": { "limit": 60, "period": 60 } },
     // Suche und MCP-Zugang: höchstens 60 Anfragen pro Minute je Absender
-    { "name": "SUCHE_LIMIT", "namespace_id": "20261128", "simple": { "limit": 60, "period": 60 } }
+    { "name": "SUCHE_LIMIT", "namespace_id": "20261128", "simple": { "limit": 60, "period": 60 } },
+    // Anmeldungen zu Terminen: höchstens 10 Aktionen pro Minute je Besucher
+    { "name": "ANMELDUNG_LIMIT", "namespace_id": "20261129", "simple": { "limit": 10, "period": 60 } }
   ],
   // Anonyme Zählung der Seitenaufrufe: nur Seite, Tag und Anzahl – keine IP-Adressen, keine Cookies
-  "d1_databases": [{ "binding": "STATISTIK", "database_name": "fmc-statistik", "database_id": "3a6b8b7c-6174-4f9f-8258-90142f74a50d" }],
+  "d1_databases": [
+    { "binding": "STATISTIK", "database_name": "fmc-statistik", "database_id": "3a6b8b7c-6174-4f9f-8258-90142f74a50d" },
+    // Anmeldungen zu Terminen – nur für die Redaktion sichtbar, werden automatisch gelöscht
+    { "binding": "ANMELDUNGEN", "database_name": "fmc-anmeldungen", "database_id": "207ab474-f797-4ada-922b-61c8b172fab7" }
+  ],
+  // täglich um 3:17 Uhr (UTC): unbestätigte und alte Anmeldungen löschen
+  "triggers": { "crons": ["17 3 * * *"] },
   // im Dashboard eingetragene Variablen bei einer neuen Veröffentlichung behalten
   "keep_vars": true,
   "observability": { "enabled": true }

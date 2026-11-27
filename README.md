@@ -23,6 +23,7 @@ die Redaktion pflegt sie über eine Eingabemaske im Browser.
 | Anmeldung der Redaktion über GitHub | `worker/auth.js`, `callback.js` |
 | Weiterleitung aller alten WordPress-Adressen | `public/_redirects` |
 | Anonyme Zählung der Seitenaufrufe, Statistik für die Redaktion (`/admin/statistik/`) | `worker/zaehler.js`, `worker/statistik.js`, D1-Datenbank `fmc-statistik` |
+| Anmeldung zu Terminen mit Bestätigung per E-Mail und Kalendereinladung, Übersicht und Excel-Liste für die Redaktion (`/admin/anmeldungen/`) | `worker/anmeldung.js`, `worker/kalender.js`, `src/pages/termine/anmeldung.astro`, D1-Datenbank `fmc-anmeldungen` |
 
 Datenschutz: keine Cookies, keine Schriften oder Skripte von fremden Servern.
 YouTube-Videos und die Karte werden erst nach einem Klick geladen; die Wetterdaten
@@ -144,6 +145,27 @@ CREATE TABLE aufrufe (pfad TEXT NOT NULL, tag TEXT NOT NULL, anzahl INTEGER NOT 
   PRIMARY KEY (pfad, tag)) WITHOUT ROWID;
 CREATE INDEX aufrufe_tag ON aufrufe(tag);
 ```
+
+## Anmeldungen zu Terminen
+
+Termine mit `anmeldung: true` zeigen den Knopf „Jetzt anmelden“ (`/termine/anmeldung/?termin=…`).
+Ablauf: Formular → Mail mit Bestätigungslink (Double-Opt-in) → Kalendereinladung
+(`METHOD:REQUEST`, Datei `termin.ics`) → Abmelden schickt `METHOD:CANCEL` mit derselben UID.
+Die Links tragen den Schlüssel hinter `#`, er landet also in keinem Server-Protokoll; gespeichert
+wird nur sein SHA-256-Wert. Bestätigt wird erst per Knopfdruck auf der Seite, damit
+Virenscanner, die Links in Mails vorab öffnen, nichts auslösen.
+
+- Datenbank: D1 `fmc-anmeldungen` (Binding `ANMELDUNGEN`), Tabelle siehe `worker/anmeldungen.sql`.
+- Der Mailversand braucht das eingerichtete Postfach (siehe „Kontaktformular“). Ohne Postfach
+  bleibt die Anmeldung auf der Webseite ausgeschaltet und zeigt einen Hinweis.
+- Täglich um 3:17 Uhr UTC (Cron in `wrangler.jsonc`) werden unbestätigte Anmeldungen nach
+  48 Stunden und alle übrigen 14 Tage nach der Veranstaltung gelöscht.
+- Schutz: Turnstile, verstecktes Feld, Mindestzeit, `ANMELDUNG_LIMIT` (10 Aktionen pro Minute).
+  Öffentlich abfragbar ist nur die Zahl freier Plätze.
+- Redaktion: `GET /api/anmeldungen` (Übersicht), `?termin=…&format=csv` (Excel-Liste mit
+  Semikolon und UTF-8-BOM), `POST` mit `{aktion:'loeschen', id}` – alles nur mit GitHub-Anmeldung
+  und Schreibrecht (`worker/redaktion.js`).
+- Kalenderdateien ohne persönliche Daten: `/termine/kalender/<termin>.ics`.
 
 ## Sicherheit
 

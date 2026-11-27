@@ -10,8 +10,10 @@ interface Props {
   beschreibung?: string;
   bild?: string;
   artikel?: boolean;
+  // nicht in Suchmaschinen (z. B. Anmeldeseite)
+  versteckt?: boolean;
 }
-const { titel, beschreibung = seite.beschreibung, bild, artikel = false } = Astro.props;
+const { titel, beschreibung = seite.beschreibung, bild, artikel = false, versteckt = false } = Astro.props;
 const volltitel = titel ? `${titel} – ${seite.kurzname}` : `${seite.name} – seit 1971`;
 const logoKlein = await getImage({ src: logo, width: 120, height: 120, format: 'webp', layout: 'none' });
 const pfad = Astro.url.pathname;
@@ -26,6 +28,7 @@ const jahr = new Date().getFullYear();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {versteckt && <meta name="robots" content="noindex, nofollow" />}
     <title>{volltitel}</title>
     <meta name="description" content={beschreibung} />
     <link rel="canonical" href={kanonisch} />

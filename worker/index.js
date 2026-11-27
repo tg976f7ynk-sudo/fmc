@@ -9,6 +9,7 @@ import * as zaehler from './zaehler.js';
 import * as statistik from './statistik.js';
 import * as suche from './suche.js';
 import * as mcp from './mcp.js';
+import * as anmeldung from './anmeldung.js';
 
 // Schutz-Header für alle Antworten der Serverfunktionen
 // (für die fertigen Seiten stehen sie in public/_headers)
@@ -34,6 +35,11 @@ const routen = {
   '/api/zaehler': zaehler,
   '/api/statistik': statistik,
   '/api/suche': suche,
+  '/api/anmeldung': anmeldung.start,
+  '/api/anmeldung/status': anmeldung.status,
+  '/api/anmeldung/bestaetigen': anmeldung.bestaetigen,
+  '/api/anmeldung/abmelden': anmeldung.abmelden,
+  '/api/anmeldungen': anmeldung.redaktion,
   '/mcp': mcp,
 };
 
@@ -52,5 +58,10 @@ export default {
       console.error(url.pathname, fehler?.message);
       return absichern(Response.json({ ok: false, fehler: 'Interner Fehler' }, { status: 500 }));
     }
+  },
+
+  // Täglich (siehe "triggers" in wrangler.jsonc): alte Anmeldungen löschen
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(anmeldung.aufraeumen(env));
   },
 };

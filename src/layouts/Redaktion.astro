@@ -1,5 +1,5 @@
 ---
-// Eigenes Layout für Seiten des Redaktionsbereichs (Statistik, Anleitung):
+// Eigenes Layout für Seiten des Redaktionsbereichs (Statistik, Anmeldungen, Anleitung):
 // ohne öffentliches Menü, nicht für Suchmaschinen, nicht von öffentlichen Seiten verlinkt.
 import '../styles/global.css';
 import { getImage } from 'astro:assets';
@@ -12,6 +12,7 @@ const pfad = Astro.url.pathname;
 const links = [
   { titel: 'Redaktionssystem', link: '/admin/' },
   { titel: 'Statistik', link: '/admin/statistik/' },
+  { titel: 'Anmeldungen', link: '/admin/anmeldungen/' },
   { titel: 'Anleitung', link: '/admin/hilfe/' },
 ];
 ---

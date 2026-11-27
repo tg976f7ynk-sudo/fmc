@@ -1,0 +1,272 @@
+---
+// Anmeldung zu einem Termin, Bestätigung und Abmeldung.
+//   /termine/anmeldung/?termin=ID   Formular
+//   /termine/anmeldung/#b=ID.KEY    Anmeldung bestätigen / ansehen (Link aus der Mail)
+//   /termine/anmeldung/#a=ID.KEY    Abmelden (Link aus der Kalendereinladung)
+// Der Schlüssel steht hinter „#“ und wird deshalb nie an den Server übertragen oder protokolliert.
+import Basis from '../../layouts/Basis.astro';
+import Seitenkopf from '../../components/Seitenkopf.astro';
+import seite from '../../data/einstellungen.json';
+import { termineDaten } from '../../lib/termine-daten';
+
+const termine = (await termineDaten()).filter((t) => t.anmeldung);
+const daten = JSON.stringify(termine).replace(/</g, '\\u003c');
+---
+
+<Basis titel="Anmeldung zu Terminen" beschreibung="Online-Anmeldung zu Veranstaltungen des FMC Dietzenbach" versteckt>
+  <Seitenkopf titel="Anmeldung" pfad={[{ titel: 'Termine', link: '/termine/' }]} />
+  <section class="abschnitt anmeldung">
+    <div class="schmal">
+      <script type="application/json" id="anmelde-termine" set:html={daten} is:inline />
+      <noscript><p class="hinweis schlecht">Für die Anmeldung wird JavaScript benötigt. Alternativ melden Sie sich per E-Mail an: <a href={`mailto:${seite.email}`}>{seite.email}</a></p></noscript>
+
+      <div class="box anmeldung-termin" data-termin hidden>
+        <p class="anmeldung-art">Veranstaltung</p>
+        <h2 data-t="titel"></h2>
+        <p data-t="wann"></p>
+        <p data-t="beschreibung" class="anmeldung-beschreibung"></p>
+        <p data-t="frei" class="anmeldung-frei" hidden></p>
+      </div>
+
+      <p class="leer" data-status>Wird geladen …</p>
+
+      <form class="formular box" id="anmeldeformular" novalidate hidden>
+        <h2>Ihre Anmeldung</h2>
+        <label>Ihr Name *<input type="text" name="name" required autocomplete="name" maxlength="120" /></label>
+        <label>Ihre E-Mail-Adresse *<input type="email" name="email" required autocomplete="email" maxlength="200" /></label>
+        <label class="anmeldung-personen">Anzahl Personen *<input type="number" name="personen" required min="1" max="10" value="1" inputmode="numeric" /></label>
+        <label>Anmerkung<textarea name="anmerkung" rows="3" maxlength="500" placeholder="optional, z. B. Modell, Frequenz oder Fragen"></textarea></label>
+        <label class="falle" aria-hidden="true">Bitte leer lassen<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        <label class="einwilligung">
+          <input type="checkbox" name="einwilligung" required />
+          <span>Ich bin einverstanden, dass meine Angaben für die Organisation dieser Veranstaltung gespeichert werden. Sie werden nicht veröffentlicht und spätestens 14 Tage nach der Veranstaltung gelöscht. Näheres in der <a href="/datenschutz/">Datenschutzerklärung</a>.</span>
+        </label>
+        <div data-pruefung></div>
+        <div><button class="knopf" type="submit">Anmelden</button></div>
+        <p class="hinweis" data-meldung role="status" hidden></p>
+        <p class="quelle">Sie erhalten eine E-Mail mit einem Bestätigungslink. Erst nach dem Klick darauf ist die Anmeldung gültig – danach kommt die Kalendereinladung.</p>
+      </form>
+
+      <div class="box" data-gesendet hidden>
+        <h2>Fast geschafft – bitte E-Mail bestätigen</h2>
+        <p>Wir haben Ihnen eine E-Mail an <strong data-adresse></strong> geschickt. Bitte klicken Sie auf den Link darin, um die Anmeldung zu bestätigen.</p>
+        <p class="quelle">Keine Mail erhalten? Schauen Sie bitte auch im Spam-Ordner nach. Ohne Bestätigung wird die Anmeldung nach 48 Stunden gelöscht.</p>
+      </div>
+
+      <div class="box" data-ansicht hidden>
+        <h2 data-v="ueberschrift"></h2>
+        <p data-v="text"></p>
+        <div class="anmeldung-knoepfe" data-v="aktionen"></div>
+        <div data-kalender hidden>
+          <h3>In den Kalender übernehmen</h3>
+          <p class="quelle">Die Einladung kam auch per E-Mail. Falls sie nicht im Kalender erscheint:</p>
+          <div class="anmeldung-knoepfe">
+            <a class="knopf hell" data-kal="google" target="_blank" rel="noopener">Google Kalender</a>
+            <a class="knopf hell" data-kal="outlook" target="_blank" rel="noopener">Outlook.com</a>
+            <a class="knopf hell" data-kal="ics" download>Apple, GMX, Web.de, Outlook (.ics)</a>
+          </div>
+        </div>
+        <p class="hinweis" data-v="meldung" role="status" hidden></p>
+      </div>
+    </div>
+  </section>
+</Basis>
+
+<style>
+  .anmeldung-termin { margin-bottom: 1.4rem; border-left: 5px solid var(--gelb); }
+  .anmeldung-art { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78rem; font-weight: 700; color: var(--text-leise); margin: 0; }
+  .anmeldung-termin h2 { margin: 0.2rem 0 0.3rem; }
+  .anmeldung-termin p { margin: 0.2rem 0; }
+  .anmeldung-beschreibung { color: var(--text-leise); }
+  .anmeldung-frei { font-weight: 700; color: var(--blau-dunkel); }
+  .anmeldung-personen input { max-width: 8rem; }
+  .anmeldung-knoepfe { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0; }
+  .formular h2, [data-ansicht] h2, [data-gesendet] h2 { font-size: 1.35rem; margin: 0; }
+  [data-kalender] h3 { font-size: 1.05rem; margin: 1.4rem 0 0.2rem; }
+</style>
+
+<script>
+  import { sicherheitspruefung } from '../../scripts/sicherheitspruefung';
+  import { zeiten } from '../../../worker/kalender.js';
+
+  type Termin = { id: string; titel: string; datum: string; ende: string | null; wann: string; uhrzeit: string | null; ort: string | null; beschreibung: string | null; link: string | null; plaetze: number | null };
+  const termine: Termin[] = JSON.parse(document.getElementById('anmelde-termine')!.textContent || '[]');
+  const q = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const status = q('[data-status]');
+  const FEHLER = 'Das hat leider nicht geklappt. Bitte versuchen Sie es später noch einmal.';
+  const post = async (pfad: string, daten: object) => {
+    const antwort = await fetch(pfad, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(daten) });
+    const ergebnis = await antwort.json().catch(() => ({}));
+    return { ok: antwort.ok && ergebnis.ok, ...ergebnis };
+  };
+  const meldung = (el: HTMLElement, text: string, gut: boolean) => {
+    el.textContent = text;
+    el.className = `hinweis ${gut ? 'gut' : 'schlecht'}`;
+    el.hidden = false;
+  };
+  const zeigeStatus = (text: string) => {
+    status.textContent = text;
+    status.hidden = false;
+  };
+
+  function zeigeTermin(t: { titel: string; wann: string; uhrzeit?: string | null; ort?: string | null }, voll?: Termin) {
+    const box = q('[data-termin]');
+    box.querySelector('[data-t="titel"]')!.textContent = t.titel;
+    box.querySelector('[data-t="wann"]')!.textContent = [t.wann, t.uhrzeit, t.ort].filter(Boolean).join(' · ');
+    const b = box.querySelector<HTMLElement>('[data-t="beschreibung"]')!;
+    b.textContent = voll?.beschreibung ?? '';
+    b.hidden = !voll?.beschreibung;
+    box.hidden = false;
+  }
+
+  // ---------- Kalender-Links
+  function kalenderLinks(t: Termin) {
+    const z = zeiten(t);
+    const seite = new URL(t.link || '/termine/', location.origin).href;
+    const details = [t.beschreibung, t.uhrzeit && z.ganztags ? t.uhrzeit : null, seite].filter(Boolean).join('\n');
+    const g = new URL('https://calendar.google.com/calendar/render');
+    g.search = new URLSearchParams({ action: 'TEMPLATE', text: t.titel, dates: `${z.start}/${z.ende}`, details, location: t.ort ?? '', ctz: 'Europe/Berlin' }).toString();
+    const iso = (s: string) => (s.length === 8 ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}` : `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(9, 11)}:${s.slice(11, 13)}:00`);
+    const o = new URL('https://outlook.live.com/calendar/0/action/compose');
+    o.search = new URLSearchParams({ rru: 'addevent', subject: t.titel, startdt: iso(z.start), enddt: iso(z.ende), allday: String(z.ganztags), location: t.ort ?? '', body: details }).toString();
+    q<HTMLAnchorElement>('[data-kal="google"]').href = g.href;
+    q<HTMLAnchorElement>('[data-kal="outlook"]').href = o.href;
+    q<HTMLAnchorElement>('[data-kal="ics"]').href = `/termine/kalender/${t.id}.ics`;
+    q('[data-kalender]').hidden = false;
+  }
+
+  // ---------- Formular
+  async function formular(id: string) {
+    const t = termine.find((x) => x.id === id);
+    if (!t) return zeigeStatus('Für diesen Termin ist keine Online-Anmeldung vorgesehen. Alle Termine finden Sie unter „Termine“.');
+    zeigeTermin(t, t);
+    document.title = `Anmeldung: ${t.titel} – FMCD`;
+    const info = await fetch(`/api/anmeldung?termin=${encodeURIComponent(id)}`).then((r) => r.json()).catch(() => null);
+    if (!info) return zeigeStatus(FEHLER);
+    if (!info.offen) return zeigeStatus(info.grund);
+    if (info.frei != null) {
+      const f = q('[data-t="frei"]');
+      f.textContent = info.frei === 1 ? 'Noch 1 Platz frei' : `Noch ${info.frei} Plätze frei`;
+      f.hidden = false;
+    }
+    status.hidden = true;
+    const form = q<HTMLFormElement>('#anmeldeformular');
+    const personen = form.querySelector<HTMLInputElement>('[name=personen]')!;
+    personen.max = String(Math.min(info.maxPersonen ?? 10, info.frei ?? 99));
+    form.hidden = false;
+    const geladen = Date.now();
+    const pruefung = sicherheitspruefung(form, async () => info.turnstile);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const m = form.querySelector<HTMLElement>('[data-meldung]')!;
+      if (!form.checkValidity()) return form.reportValidity();
+      const knopf = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+      knopf.disabled = true;
+      knopf.textContent = 'Wird gesendet …';
+      try {
+        const turnstile = await pruefung.token();
+        if (turnstile === null) {
+          meldung(m, 'Die Sicherheitsprüfung ist noch nicht abgeschlossen. Bitte bestätigen Sie sie und senden Sie erneut.', false);
+        } else {
+          const daten = Object.fromEntries(new FormData(form)) as Record<string, string>;
+          delete daten['cf-turnstile-response'];
+          const r = await post('/api/anmeldung', { ...daten, einwilligung: !!daten.einwilligung, termin: id, turnstile, dauer: Date.now() - geladen });
+          pruefung.zuruecksetzen();
+          if (r.ok) {
+            q('[data-adresse]').textContent = daten.email;
+            form.hidden = true;
+            q('[data-gesendet]').hidden = false;
+            q('[data-gesendet]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else meldung(m, r.fehler || FEHLER, false);
+        }
+      } catch {
+        meldung(m, FEHLER, false);
+      }
+      knopf.disabled = false;
+      knopf.textContent = 'Anmelden';
+    });
+  }
+
+  // ---------- Eigene Anmeldung: ansehen, bestätigen, abmelden
+  async function ansicht(art: string, id: string, k: string) {
+    const box = q('[data-ansicht]');
+    const v = (n: string) => box.querySelector<HTMLElement>(`[data-v="${n}"]`)!;
+    const aktionen = v('aktionen');
+    const knopf = (text: string, klasse: string, aktion: () => Promise<void>) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = `knopf ${klasse}`;
+      b.textContent = text;
+      b.addEventListener('click', async () => {
+        aktionen.querySelectorAll('button').forEach((x) => (x.disabled = true));
+        try {
+          await aktion();
+        } catch {
+          meldung(v('meldung'), FEHLER, false);
+        }
+        aktionen.querySelectorAll('button').forEach((x) => (x.disabled = false));
+      });
+      aktionen.append(b);
+    };
+
+    const zeige = (r: any, hinweis?: string) => {
+      const t = termine.find((x) => x.id === r.termin?.id);
+      if (r.termin) zeigeTermin(r.termin, t);
+      aktionen.replaceChildren();
+      q('[data-kalender]').hidden = true;
+      const personen = r.personen > 1 ? ` für ${r.personen} Personen` : '';
+      if (r.status === 'offen') {
+        v('ueberschrift').textContent = 'Anmeldung bestätigen';
+        v('text').textContent = `Hallo ${r.name}, bitte bestätigen Sie Ihre Anmeldung${personen}. Danach erhalten Sie die Kalendereinladung per E-Mail.`;
+        knopf('Anmeldung jetzt bestätigen', 'gelb', async () => {
+          const neu = await post('/api/anmeldung/bestaetigen', { id, k });
+          if (!neu.ok) return meldung(v('meldung'), neu.fehler || FEHLER, false);
+          zeige(neu, 'Vielen Dank! Ihre Anmeldung ist bestätigt. Die Kalendereinladung ist unterwegs.');
+        });
+      } else if (r.status === 'bestaetigt') {
+        v('ueberschrift').textContent = 'Sie sind angemeldet';
+        v('text').textContent = `Hallo ${r.name}, Ihre Anmeldung${personen} ist bestätigt. Wir freuen uns auf Sie!`;
+        if (t) kalenderLinks(t);
+        if (art === 'a') {
+          v('ueberschrift').textContent = 'Abmelden?';
+          v('text').textContent = `Hallo ${r.name}, möchten Sie Ihre Anmeldung${personen} zurückziehen? Der Termin wird dann auch aus Ihrem Kalender entfernt.`;
+        }
+        knopf(art === 'a' ? 'Ja, jetzt abmelden' : 'Abmelden', art === 'a' ? '' : 'hell', async () => {
+          if (art !== 'a' && !confirm('Wirklich von dieser Veranstaltung abmelden?')) return;
+          const neu = await post('/api/anmeldung/abmelden', { id, k });
+          if (!neu.ok) return meldung(v('meldung'), neu.fehler || FEHLER, false);
+          zeige(neu, 'Sie sind abgemeldet. Sie erhalten eine Absage, die den Termin aus Ihrem Kalender entfernt.');
+        });
+        knopf('Einladung erneut per E-Mail senden', 'hell', async () => {
+          const neu = await post('/api/anmeldung/bestaetigen', { id, k, erneut: true });
+          meldung(v('meldung'), neu.ok ? 'Die Kalendereinladung wurde erneut verschickt.' : neu.fehler || FEHLER, !!neu.ok);
+        });
+      } else {
+        v('ueberschrift').textContent = 'Abgemeldet';
+        v('text').textContent = `Hallo ${r.name}, Sie sind von dieser Veranstaltung abgemeldet.`;
+        if (t) {
+          const a = document.createElement('a');
+          a.className = 'knopf hell';
+          a.href = `?termin=${encodeURIComponent(t.id)}`;
+          a.textContent = 'Neu anmelden';
+          aktionen.append(a);
+        }
+      }
+      if (hinweis) meldung(v('meldung'), hinweis, true);
+      else v('meldung').hidden = true;
+      box.hidden = false;
+    };
+
+    const r = await post('/api/anmeldung/status', { id, k });
+    if (!r.ok) return zeigeStatus(r.fehler || FEHLER);
+    status.hidden = true;
+    zeige(r);
+  }
+
+  const hash = /^#([ab])=([\w-]+)\.([\w-]+)$/.exec(location.hash);
+  const terminId = new URLSearchParams(location.search).get('termin');
+  if (hash) {
+    ansicht(hash[1], hash[2], hash[3]).catch(() => zeigeStatus(FEHLER));
+  } else if (terminId) formular(terminId).catch(() => zeigeStatus(FEHLER));
+  else zeigeStatus('Bitte wählen Sie unter „Termine“ die Veranstaltung, zu der Sie sich anmelden möchten.');
+</script>

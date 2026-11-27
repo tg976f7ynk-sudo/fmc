@@ -8,7 +8,7 @@ export default defineConfig({
   site: site.url,
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap({ filter: (page) => !page.includes('/admin/') && !page.includes('/mitglieder/') })],
+  integrations: [sitemap({ filter: (page) => !page.includes('/admin/') && !page.includes('/mitglieder/') && !page.includes('/termine/anmeldung/') })],
   // Skripte immer als eigene Dateien ausliefern (nötig für die Content-Security-Policy)
   vite: { build: { assetsInlineLimit: 0 } },
   image: { layout: 'constrained', responsiveStyles: true },

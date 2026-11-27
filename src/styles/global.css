@@ -150,6 +150,9 @@ a.marke-kat:hover { background: var(--blau); color: #fff; }
 .termin h3 { margin: 0 0 0.15rem; font-size: 1.08rem; }
 .termin p { margin: 0; font-size: 0.95rem; color: var(--text-leise); }
 .termin.vorbei { opacity: 0.6; }
+.termin p.termin-anmelden { margin-top: 0.55rem; }
+.knopf.klein { padding: 0.4rem 0.95rem; font-size: 0.9rem; }
+.termin.vorbei .termin-anmelden { display: none; }
 .termin:has(.termin-bild) { grid-template-columns: 4.3rem 1fr 5rem; }
 .termin-bild { display: block; width: 5rem; height: 5rem; border-radius: 10px; overflow: hidden; align-self: center; border: 1px solid var(--linie); }
 .termin-bild img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
@@ -230,6 +233,7 @@ details.vergangen summary { cursor: pointer; font-weight: 700; color: var(--blau
 
 /* ---------- Formular ---------- */
 .formular { display: grid; gap: 1rem; }
+.formular[hidden] { display: none; }
 .formular label { display: grid; gap: 0.3rem; font-weight: 600; font-size: 0.95rem; }
 .formular input, .formular textarea { font: inherit; padding: 0.7rem 0.85rem; border: 1px solid #b8c4d0; border-radius: 10px; background: var(--weiss); color: var(--text); width: 100%; }
 .formular input:focus, .formular textarea:focus { border-color: var(--blau); outline: 3px solid rgba(11, 92, 171, 0.2); }

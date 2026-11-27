@@ -19,48 +19,13 @@ import seite from '../data/einstellungen.json';
 </form>
 
 <script>
+  import { sicherheitspruefung } from '../scripts/sicherheitspruefung';
   const form = document.querySelector<HTMLFormElement>('#kontaktformular');
   const geladen = Date.now();
   const FEHLER = 'Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie uns direkt per E-Mail.';
 
-  // ---- Sicherheitsprüfung (Cloudflare Turnstile). Sie wird erst geladen, wenn jemand
-  // das Formular benutzt, und nur, wenn sie für die Seite eingerichtet ist.
-  let aktiv = false;
-  let token = '';
-  let wartende: ((t: string) => void)[] = [];
-  let schutz: Promise<void> | null = null;
-  const ladeSchutz = () =>
-    (schutz ??= (async () => {
-      const info = await fetch('/api/kontakt').then((r) => r.json()).catch(() => ({}));
-      if (!info.turnstile || !form) return;
-      await new Promise<void>((fertig, fehler) => {
-        const s = document.createElement('script');
-        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        s.onload = () => fertig();
-        s.onerror = () => fehler(new Error('Sicherheitsprüfung nicht ladbar'));
-        document.head.append(s);
-      });
-      (window as any).turnstile.render(form.querySelector('[data-pruefung]'), {
-        sitekey: info.turnstile,
-        language: 'de',
-        appearance: 'interaction-only',
-        callback: (t: string) => {
-          token = t;
-          wartende.splice(0).forEach((w) => w(t));
-        },
-        'expired-callback': () => (token = ''),
-        'error-callback': () => (token = ''),
-      });
-      aktiv = true;
-    })().catch(() => {}));
-  const holeToken = () =>
-    token
-      ? Promise.resolve(token)
-      : new Promise<string>((fertig) => {
-          wartende.push(fertig);
-          setTimeout(() => fertig(''), 15000);
-        });
-  form?.addEventListener('focusin', ladeSchutz, { once: true });
+  // Sicherheitsprüfung (Cloudflare Turnstile), sofern eingerichtet
+  const pruefung = form && sicherheitspruefung(form, () => fetch('/api/kontakt').then((r) => r.json()).then((i) => i.turnstile));
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -78,9 +43,8 @@ import seite from '../data/einstellungen.json';
     knopf.disabled = true;
     knopf.textContent = 'Wird gesendet …';
     try {
-      await ladeSchutz();
-      const turnstile = aktiv ? await holeToken() : '';
-      if (aktiv && !turnstile) {
+      const turnstile = await pruefung!.token();
+      if (turnstile === null) {
         zeige('Die Sicherheitsprüfung ist noch nicht abgeschlossen. Bitte bestätigen Sie sie und senden Sie erneut.', false);
       } else {
         const daten = Object.fromEntries(new FormData(form));
@@ -97,11 +61,7 @@ import seite from '../data/einstellungen.json';
         } else {
           zeige(ergebnis.fehler || FEHLER, false);
         }
-        // ein Token gilt nur einmal
-        if (aktiv) {
-          token = '';
-          (window as any).turnstile?.reset();
-        }
+        pruefung!.zuruecksetzen();
       }
     } catch {
       zeige(FEHLER, false);

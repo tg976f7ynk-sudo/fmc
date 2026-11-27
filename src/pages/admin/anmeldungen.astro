@@ -1,0 +1,227 @@
+---
+// Anmeldungen zu Terminen – nur für angemeldete Redakteure. Teilnehmer werden nie öffentlich gezeigt.
+import Redaktion from '../../layouts/Redaktion.astro';
+---
+
+<Redaktion titel="Anmeldungen">
+  <div class="seitenkopf">
+    <div class="container">
+      <h1>Anmeldungen</h1>
+      <p>Wer hat sich zu welchem Termin angemeldet? Nur für die Redaktion sichtbar – Teilnehmer werden nie öffentlich gezeigt.</p>
+    </div>
+  </div>
+  <section class="abschnitt anmeldungen">
+    <div class="container">
+      <p class="leer" data-status>Anmeldungen werden geladen …</p>
+      <div class="box" data-anmelden hidden>
+        <p><strong>Bitte zuerst in der Redaktion anmelden.</strong> Die Anmeldungen sind nur für Redakteure sichtbar.</p>
+        <p><a class="knopf" href="/admin/">Zur Redaktion</a></p>
+      </div>
+      <div data-inhalt hidden>
+        <p class="hinweis schlecht" data-ohne-mail hidden>
+          Das E-Mail-Postfach ist noch nicht eingerichtet. Solange keine Bestätigungsmails verschickt werden können, ist die Online-Anmeldung auf der Webseite ausgeschaltet.
+        </p>
+        <div class="anm-leiste">
+          <div class="filter" role="group" aria-label="Zeitraum">
+            <button type="button" data-zeit="kommend" aria-pressed="true">Kommende Termine</button>
+            <button type="button" data-zeit="vergangen" aria-pressed="false">Vergangene Termine</button>
+          </div>
+          <button type="button" class="knopf hell klein" data-neu-laden>Aktualisieren</button>
+        </div>
+        <div data-liste></div>
+        <div class="box anm-leer" data-keine hidden>
+          <p><strong>Keine Termine mit Online-Anmeldung.</strong></p>
+          <p>So schalten Sie die Anmeldung ein: Im Redaktionssystem unter <em>Termine</em> den Termin öffnen und „Online-Anmeldung möglich“ einschalten. Optional lassen sich eine Höchstzahl an Teilnehmern und ein Anmeldeschluss festlegen.</p>
+        </div>
+        <p class="stat-hinweis">
+          Unbestätigte Anmeldungen werden nach 48 Stunden automatisch gelöscht, alle übrigen 14 Tage nach der Veranstaltung. Laden Sie die Liste bei Bedarf vorher herunter.
+        </p>
+      </div>
+    </div>
+  </section>
+</Redaktion>
+
+<style is:global>
+  .anmeldungen .anm-leiste { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; }
+  .anmeldungen .filter { margin: 0; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .anmeldungen .filter button { padding: 0.4rem 0.95rem; border-radius: 99px; border: 1px solid var(--linie); background: var(--weiss); font: inherit; font-weight: 600; font-size: 0.93rem; color: var(--text); cursor: pointer; }
+  .anmeldungen .filter button[aria-pressed='true'] { background: var(--blau); border-color: var(--blau); color: #fff; }
+  .anmeldungen .anm-termin { background: var(--weiss); border: 1px solid var(--linie); border-radius: var(--radius); box-shadow: var(--schatten); padding: 1.1rem 1.3rem; margin-bottom: 1.1rem; }
+  .anmeldungen .anm-kopf { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; justify-content: space-between; align-items: flex-start; }
+  .anmeldungen .anm-kopf h2 { font-size: 1.2rem; margin: 0; }
+  .anmeldungen .anm-kopf p { margin: 0.15rem 0 0; color: var(--text-leise); font-size: 0.93rem; }
+  .anmeldungen .anm-zahlen { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
+  .anmeldungen .anm-zahl { background: var(--blau-hell); border-radius: 10px; padding: 0.4rem 0.8rem; font-size: 0.88rem; color: var(--blau-dunkel); }
+  .anmeldungen .anm-zahl b { font-size: 1.25rem; margin-right: 0.25rem; font-variant-numeric: tabular-nums; }
+  .anmeldungen .anm-zahl.voll { background: #fdecea; color: #8c1d18; }
+  .anmeldungen .anm-balken { height: 6px; border-radius: 3px; background: #e3e9f0; overflow: hidden; margin-bottom: 0.8rem; }
+  .anmeldungen .anm-balken span { display: block; height: 100%; background: #0b5cab; }
+  .anmeldungen .anm-aktionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .anmeldungen .anm-aktionen .knopf { padding: 0.45rem 0.95rem; font-size: 0.9rem; }
+  .anmeldungen .anm-schild { display: inline-block; font-size: 0.74rem; font-weight: 700; border-radius: 99px; padding: 0.1rem 0.55rem; margin-left: 0.4rem; vertical-align: middle; background: #e6f6ec; color: #135c2c; }
+  .anmeldungen .anm-schild.zu { background: #eef2f7; color: #5b6b7b; }
+  .anmeldungen details { margin-top: 0.8rem; }
+  .anmeldungen summary { cursor: pointer; color: var(--blau); font-weight: 600; font-size: 0.95rem; }
+  .anmeldungen .anm-tabelle-huelle { overflow-x: auto; margin-top: 0.6rem; }
+  .anmeldungen table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .anmeldungen th, .anmeldungen td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--linie); vertical-align: top; }
+  .anmeldungen th { background: var(--blau-hell); white-space: nowrap; }
+  .anmeldungen td.zahl { text-align: right; font-variant-numeric: tabular-nums; }
+  .anmeldungen td small { color: var(--text-leise); }
+  .anmeldungen tr.offen td { color: var(--text-leise); }
+  .anmeldungen tr.abgemeldet td { color: var(--text-leise); text-decoration: line-through; }
+  .anmeldungen tr.abgemeldet td:last-child { text-decoration: none; }
+  .anmeldungen .status { font-size: 0.78rem; font-weight: 700; border-radius: 99px; padding: 0.05rem 0.5rem; white-space: nowrap; }
+  .anmeldungen .status.bestaetigt { background: #e6f6ec; color: #135c2c; }
+  .anmeldungen .status.offen { background: #fff4d6; color: #6b4b00; }
+  .anmeldungen .status.abgemeldet { background: #eef2f7; color: #5b6b7b; }
+  .anmeldungen .loeschen { background: none; border: 0; color: #8c1d18; font: inherit; font-size: 0.85rem; cursor: pointer; text-decoration: underline; padding: 0; }
+  .anmeldungen .stat-hinweis { color: var(--text-leise); font-size: 0.9rem; }
+</style>
+
+<script>
+  type Eintrag = { id: string; termin: string; name: string; email: string; personen: number; anmerkung: string | null; status: 'offen' | 'bestaetigt' | 'abgemeldet'; erstellt: string; bestaetigt: string | null; abgemeldet: string | null };
+  type Termin = { id: string; titel: string; datum: string; ende: string | null; wann: string; uhrzeit: string | null; ort: string | null; anmeldung: boolean; plaetze: number | null; anmeldeschluss: string | null };
+  const q = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const STATUS = { offen: 'unbestätigt', bestaetigt: 'bestätigt', abgemeldet: 'abgemeldet' };
+  const zeit = (iso: string | null) => (iso ? new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') + ' Uhr' : '');
+  const el = (tag: string, attrs: Record<string, string> = {}, ...kinder: (Node | string)[]) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) k === 'class' ? (e.className = v) : e.setAttribute(k, v);
+    e.append(...kinder);
+    return e;
+  };
+  let zeitraum: 'kommend' | 'vergangen' = 'kommend';
+  let stand: any = null;
+  let termine = new Map<string, Termin>();
+
+  function token(): string {
+    try {
+      return JSON.parse(localStorage.getItem('sveltia-cms.user') || 'null')?.token || '';
+    } catch {
+      return '';
+    }
+  }
+  const auth = () => ({ authorization: `Bearer ${token()}` });
+
+  async function laden() {
+    if (!token()) return zeigeAnmelden();
+    const [antwort, liste] = await Promise.all([
+      fetch('/api/anmeldungen', { headers: auth() }),
+      fetch('/termine.json').then((r) => r.json()).catch(() => ({ termine: [] })),
+    ]);
+    if (antwort.status === 401) return zeigeAnmelden();
+    if (!antwort.ok) throw new Error(String(antwort.status));
+    stand = await antwort.json();
+    termine = new Map(liste.termine.map((t: Termin) => [t.id, t]));
+    q('[data-status]').hidden = true;
+    q('[data-inhalt]').hidden = false;
+    q('[data-ohne-mail]').hidden = !!stand.mailBereit;
+    zeichnen();
+  }
+
+  function zeigeAnmelden() {
+    q('[data-status]').hidden = true;
+    q('[data-anmelden]').hidden = false;
+  }
+
+  async function herunterladen(t: Termin | undefined, id: string) {
+    const antwort = await fetch(`/api/anmeldungen?termin=${encodeURIComponent(id)}&format=csv`, { headers: auth() });
+    if (!antwort.ok) return alert('Die Liste konnte nicht geladen werden.');
+    const name = /filename="([^"]+)"/.exec(antwort.headers.get('content-disposition') || '')?.[1] || `anmeldungen-${id}.csv`;
+    const a = el('a', { href: URL.createObjectURL(await antwort.blob()), download: name });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL((a as HTMLAnchorElement).href), 5000);
+  }
+
+  async function loeschen(e: Eintrag) {
+    if (!confirm(`Anmeldung von ${e.name} wirklich löschen? Die Person wird darüber nicht benachrichtigt.`)) return;
+    const antwort = await fetch('/api/anmeldungen', { method: 'POST', headers: { ...auth(), 'content-type': 'application/json' }, body: JSON.stringify({ aktion: 'loeschen', id: e.id }) });
+    if (!antwort.ok) return alert('Die Anmeldung konnte nicht gelöscht werden.');
+    await laden();
+  }
+
+  function karte(gruppe: { termin: string; eintraege: Eintrag[] }) {
+    const t = termine.get(gruppe.termin);
+    const summe = (s: string) => gruppe.eintraege.filter((e) => e.status === s).reduce((n, e) => n + e.personen, 0);
+    const anzahl = (s: string) => gruppe.eintraege.filter((e) => e.status === s).length;
+    const bestaetigt = summe('bestaetigt');
+    const heute = stand.stand as string;
+    const offenFuerAnmeldung = !!t?.anmeldung && (t.ende || t.datum) >= heute && (!t.anmeldeschluss || t.anmeldeschluss >= heute) && (!t.plaetze || bestaetigt + summe('offen') < t.plaetze);
+
+    const titel = el('h2', {}, t?.titel ?? gruppe.termin, el('span', { class: `anm-schild${offenFuerAnmeldung ? '' : ' zu'}` }, offenFuerAnmeldung ? 'Anmeldung offen' : 'Anmeldung geschlossen'));
+    const info = el('p', {}, [t?.wann, t?.uhrzeit, t?.ort].filter(Boolean).join(' · ') || 'Termin wurde entfernt');
+    if (t?.anmeldeschluss) info.append(` · Anmeldeschluss ${new Date(t.anmeldeschluss + 'T12:00').toLocaleDateString('de-DE')}`);
+
+    const aktionen = el('div', { class: 'anm-aktionen' });
+    if (gruppe.eintraege.length) {
+      const csv = el('button', { type: 'button', class: 'knopf' }, 'Liste herunterladen (Excel)');
+      csv.addEventListener('click', () => herunterladen(t, gruppe.termin));
+      aktionen.append(csv);
+      const adressen = gruppe.eintraege.filter((e) => e.status === 'bestaetigt').map((e) => e.email);
+      // Rundmail an alle Bestätigten – als Bcc, damit sich die Teilnehmer nicht gegenseitig sehen
+      if (adressen.length) aktionen.append(el('a', { class: 'knopf hell', href: `mailto:?bcc=${adressen.map(encodeURIComponent).join(',')}&subject=${encodeURIComponent(t?.titel ?? '')}` }, 'E-Mail an alle (Bcc)'));
+    }
+
+    const zahlen = el('div', { class: 'anm-zahlen' },
+      el('span', { class: `anm-zahl${t?.plaetze && bestaetigt >= t.plaetze ? ' voll' : ''}` }, el('b', {}, String(bestaetigt)), t?.plaetze ? `von ${t.plaetze} Plätzen belegt` : bestaetigt === 1 ? 'Person bestätigt' : 'Personen bestätigt'),
+      el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('bestaetigt'))), 'Anmeldungen'),
+    );
+    if (anzahl('offen')) zahlen.append(el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('offen'))), 'noch unbestätigt'));
+    if (anzahl('abgemeldet')) zahlen.append(el('span', { class: 'anm-zahl' }, el('b', {}, String(anzahl('abgemeldet'))), 'abgemeldet'));
+
+    const karte = el('article', { class: 'anm-termin' }, el('div', { class: 'anm-kopf' }, el('div', {}, titel, info), aktionen), zahlen);
+    if (t?.plaetze) karte.append(el('div', { class: 'anm-balken', 'aria-hidden': 'true' }, el('span', { style: `width:${Math.min(100, (bestaetigt / t.plaetze) * 100)}%` })));
+
+    if (gruppe.eintraege.length) {
+      const zeilen = gruppe.eintraege
+        .slice()
+        .sort((a, b) => (a.status === b.status ? a.erstellt.localeCompare(b.erstellt) : ['bestaetigt', 'offen', 'abgemeldet'].indexOf(a.status) - ['bestaetigt', 'offen', 'abgemeldet'].indexOf(b.status)))
+        .map((e) => {
+          const knopf = el('button', { type: 'button', class: 'loeschen' }, 'Löschen');
+          knopf.addEventListener('click', () => loeschen(e));
+          return el('tr', { class: e.status },
+            el('td', {}, e.name),
+            el('td', {}, el('a', { href: `mailto:${e.email}` }, e.email)),
+            el('td', { class: 'zahl' }, String(e.personen)),
+            el('td', {}, e.anmerkung ?? ''),
+            el('td', {}, el('span', { class: `status ${e.status}` }, STATUS[e.status]), el('br'), el('small', {}, zeit(e.abgemeldet || e.bestaetigt || e.erstellt))),
+            el('td', {}, knopf),
+          );
+        });
+      const tabelle = el('table', {}, el('thead', {}, el('tr', {}, ...['Name', 'E-Mail', 'Personen', 'Anmerkung', 'Status', ''].map((s) => el('th', {}, s)))), el('tbody', {}, ...zeilen));
+      const details = el('details', {}, el('summary', {}, `Teilnehmer anzeigen (${gruppe.eintraege.length})`), el('div', { class: 'anm-tabelle-huelle' }, tabelle));
+      if (gruppe.eintraege.length <= 12) (details as HTMLDetailsElement).open = true;
+      karte.append(details);
+    } else {
+      karte.append(el('p', { class: 'stat-hinweis' }, 'Noch keine Anmeldungen.'));
+    }
+    return karte;
+  }
+
+  function zeichnen() {
+    const heute = stand.stand as string;
+    const ende = (id: string) => {
+      const t = termine.get(id);
+      return t ? t.ende || t.datum : '0000';
+    };
+    const gruppen = (stand.termine as { termin: string; eintraege: Eintrag[] }[])
+      .filter((g) => (zeitraum === 'kommend' ? ende(g.termin) >= heute : ende(g.termin) < heute))
+      .sort((a, b) => (zeitraum === 'kommend' ? 1 : -1) * ende(a.termin).localeCompare(ende(b.termin)));
+    q('[data-liste]').replaceChildren(...gruppen.map(karte));
+    q('[data-keine]').hidden = gruppen.length > 0;
+    q('[data-keine] strong').textContent = zeitraum === 'kommend' ? 'Keine kommenden Termine mit Online-Anmeldung.' : 'Keine vergangenen Termine mit Anmeldungen.';
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-zeit]').forEach((b) =>
+    b.addEventListener('click', () => {
+      zeitraum = b.dataset.zeit as typeof zeitraum;
+      document.querySelectorAll('[data-zeit]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      zeichnen();
+    }),
+  );
+  q('[data-neu-laden]').addEventListener('click', () => laden().catch(() => alert('Die Anmeldungen konnten nicht geladen werden.')));
+  laden().catch(() => (q('[data-status]').textContent = 'Die Anmeldungen konnten nicht geladen werden. Bitte später erneut versuchen.'));
+</script>

@@ -101,6 +101,9 @@ const config = {
         { name: 'link', label: 'Link zu weiteren Infos', widget: 'string', required: false, hint: 'z. B. Adresse eines Beitrags: /aktuelles/…/' },
         { name: 'bild', label: 'Bild (z. B. Plakat oder Einladung)', widget: 'image', required: false, hint: 'Optional. Erscheint als kleines Vorschaubild beim Termin und lässt sich zum Vergrößern antippen.' },
         { name: 'bild_alt', label: 'Bildbeschreibung', widget: 'string', required: false, hint: 'Kurz beschreiben, was zu sehen ist – für blinde Besucher und Suchmaschinen. Zum Beispiel „Rotes Wasserflugzeug startet auf dem Badesee“.' },
+        { name: 'anmeldung', label: 'Online-Anmeldung möglich', widget: 'boolean', default: false, required: false, hint: 'Einschalten, wenn sich Besucher über die Webseite anmelden sollen. Die Anmeldungen sehen Sie unter „Anmeldungen“ – sie werden nie öffentlich gezeigt.' },
+        { name: 'plaetze', label: 'Höchstzahl Teilnehmer', widget: 'number', value_type: 'int', min: 1, required: false, hint: 'Optional. Ist die Zahl erreicht, ist keine Anmeldung mehr möglich. Leer lassen = unbegrenzt.' },
+        datum('anmeldeschluss', 'Anmeldeschluss', { required: false, hint: 'Optional. Letzter Tag, an dem man sich anmelden kann. Leer lassen = bis zum Veranstaltungstag.' }),
       ],
     },
     {
